@@ -3,8 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Eye, MessageCircle, Calendar, Clock, CheckCircle, AlertCircle, XCircle, MapPin, User, Euro, Phone } from 'lucide-react';
+import { Eye, MessageCircle, Calendar, Clock, CheckCircle, AlertCircle, XCircle, MapPin, User, Euro, Phone, RefreshCw } from 'lucide-react';
 import { rideshareService } from '@/services/rideshareService';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
@@ -42,9 +41,9 @@ const statusIcons = {
 };
 
 const statusColors = {
-  pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
-  accepted: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-  rejected: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+  pending: 'bg-warning/10 text-warning border-warning/20',
+  accepted: 'bg-success/10 text-success border-success/20',
+  rejected: 'bg-destructive/10 text-destructive border-destructive/20'
 };
 
 export const RideRequests = () => {
@@ -52,28 +51,36 @@ export const RideRequests = () => {
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState<RideRequest | null>(null);
   const { toast } = useToast();
-  const { t, i18n } = useTranslation('travel');
+  const { t, i18n } = useTranslation(['profile', 'travel']);
   const { user } = useAuth();
 
   useEffect(() => {
+    console.log('🎯 RideRequests component mounted, user:', user?.email);
     if (user) {
       fetchRideRequests();
+    } else {
+      console.log('❌ No user found in RideRequests component');
+      setLoading(false);
     }
   }, [user]);
 
   const fetchRideRequests = async () => {
     try {
-      if (!user) return;
+      if (!user) {
+        console.log('❌ No user available for fetching ride requests');
+        return;
+      }
       
       console.log('🔍 Fetching ride requests for user:', user.id, 'email:', user.email);
+      setLoading(true);
       const requests = await rideshareService.getUserRideRequests(user.id);
-      console.log('📋 Fetched ride requests:', requests);
+      console.log('📋 Fetched ride requests:', requests?.length || 0, 'requests');
       setRequests(requests as RideRequest[]);
     } catch (error) {
       console.error('❌ Error fetching ride requests:', error);
       toast({
-        title: t('error'),
-        description: 'Nepodařilo se načíst žádosti o spolujízdu',
+        title: t('profile:error'),
+        description: t('profile:rideRequestsError'),
         variant: 'destructive'
       });
     } finally {
@@ -84,11 +91,11 @@ export const RideRequests = () => {
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'pending':
-        return 'Čeká na odpověď';
+        return t('profile:statusPending');
       case 'accepted':
-        return 'Přijato';
+        return t('profile:statusAccepted');
       case 'rejected':
-        return 'Zamítnuto';
+        return t('profile:statusRejected');
       default:
         return status;
     }
@@ -99,51 +106,72 @@ export const RideRequests = () => {
   };
 
   const formatPrice = (price: number, currency: string = 'EUR') => {
-    if (!price || price === 0) return t('free');
+    if (!price || price === 0) return t('travel:free');
     return formatCurrencyWithSymbol(price);
   };
 
   if (loading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
             <MessageCircle className="h-5 w-5" />
-            Moje žádosti o spolujízdu
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-8">Načítání...</div>
-        </CardContent>
-      </Card>
+            {t('profile:rideRequests')}
+          </h2>
+          <div className="animate-spin">
+            <RefreshCw className="h-4 w-4" />
+          </div>
+        </div>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center py-8 text-muted-foreground">
+              {t('profile:loading')}...
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold flex items-center gap-2">
           <MessageCircle className="h-5 w-5" />
-          Moje žádosti o spolujízdu ({requests.length})
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        {requests.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <MessageCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>Zatím jste neposlali žádnou žádost o spolujízdu.</p>
-            <p className="text-sm mt-2">
-              Navštivte sekci Cestování a kontaktujte řidiče u nabídek, které vás zajímají.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {requests.map((request) => (
-              <Card key={request.id} className="p-4">
+          {t('profile:rideRequests')} ({requests.length})
+        </h2>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={fetchRideRequests}
+          disabled={loading}
+        >
+          <RefreshCw className={`h-4 w-4 mr-1 ${loading ? 'animate-spin' : ''}`} />
+          {t('profile:refresh')}
+        </Button>
+      </div>
+
+      {requests.length === 0 ? (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center py-8 text-muted-foreground">
+              <MessageCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p className="font-medium">{t('profile:noRideRequests')}</p>
+              <p className="text-sm mt-2">
+                {t('profile:noRideRequestsDesc')}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {requests.map((request) => (
+            <Card key={request.id} className="overflow-hidden">
+              <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge className={statusColors[request.status]}>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
+                      <Badge variant="outline" className={statusColors[request.status]}>
                         <span className="flex items-center gap-1">
                           {statusIcons[request.status]}
                           {getStatusLabel(request.status)}
@@ -153,45 +181,6 @@ export const RideRequests = () => {
                         {formatDateLocal(request.created_at)}
                       </span>
                     </div>
-                    
-                    {request.rideshare_offers && (
-                      <div className="space-y-2">
-                        <div className="flex items-start gap-2">
-                          <MapPin className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
-                          <div className="min-w-0">
-                            <div className="text-xs text-green-600 font-medium">{t('from')}</div>
-                            <div className="text-sm font-medium break-words">
-                              {request.rideshare_offers.origin_address}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex items-start gap-2">
-                          <MapPin className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
-                          <div className="min-w-0">
-                            <div className="text-xs text-red-600 font-medium">{t('to')}</div>
-                            <div className="text-sm font-medium break-words">
-                              {request.rideshare_offers.destination_address}
-                            </div>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground mt-2">
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            {formatDateLocal(request.rideshare_offers.departure_date)}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {request.rideshare_offers.departure_time}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Euro className="h-3 w-3" />
-                            {formatPrice(request.rideshare_offers.price_per_person, request.rideshare_offers.currency)}
-                          </div>
-                        </div>
-                      </div>
-                    )}
                   </div>
                   
                   <Dialog>
@@ -200,88 +189,77 @@ export const RideRequests = () => {
                         variant="outline" 
                         size="sm"
                         onClick={() => setSelectedRequest(request)}
+                        className="ml-2 flex-shrink-0"
                       >
                         <Eye className="h-4 w-4 mr-1" />
-                        Detail
+                        {t('profile:detail')}
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto mx-4">
                       <DialogHeader>
-                        <DialogTitle>Detail žádosti o spolujízdu</DialogTitle>
+                        <DialogTitle>{t('profile:rideRequestDetail')}</DialogTitle>
                       </DialogHeader>
                       
                       {selectedRequest && (
-                        <div className="space-y-6">
-                          {/* Status a datum */}
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <h4 className="font-semibold mb-2">Status</h4>
-                              <Badge className={statusColors[selectedRequest.status]}>
-                                <span className="flex items-center gap-1">
-                                  {statusIcons[selectedRequest.status]}
-                                  {getStatusLabel(selectedRequest.status)}
-                                </span>
-                              </Badge>
-                            </div>
-                            <div>
-                              <h4 className="font-semibold mb-2">Odesláno</h4>
-                              <span className="text-sm">{formatDateLocal(selectedRequest.created_at)}</span>
-                            </div>
+                        <div className="space-y-4">
+                          {/* Status */}
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium">{t('profile:status')}:</span>
+                            <Badge variant="outline" className={statusColors[selectedRequest.status]}>
+                              <span className="flex items-center gap-1">
+                                {statusIcons[selectedRequest.status]}
+                                {getStatusLabel(selectedRequest.status)}
+                              </span>
+                            </Badge>
                           </div>
 
                           {/* Trasa */}
                           {selectedRequest.rideshare_offers && (
-                            <div>
-                              <h4 className="font-semibold mb-3">Trasa</h4>
-                              <div className="bg-muted/20 rounded-lg p-4 space-y-3">
+                            <div className="space-y-3">
+                              <h4 className="font-medium text-sm">{t('travel:route')}</h4>
+                              <div className="bg-muted/30 rounded-lg p-3 space-y-3">
                                 <div className="flex items-start gap-2">
-                                  <div className="w-3 h-3 rounded-full bg-green-500 mt-1.5 flex-shrink-0"></div>
+                                  <div className="w-2 h-2 rounded-full bg-success mt-2 flex-shrink-0"></div>
                                   <div className="min-w-0 flex-1">
-                                    <div className="text-xs font-medium text-green-600 mb-1">{t('from')}</div>
-                                    <div className="text-sm text-foreground break-words">
+                                    <div className="text-xs font-medium text-success mb-1">{t('travel:from')}</div>
+                                    <div className="text-sm break-words">
                                       {selectedRequest.rideshare_offers.origin_address}
                                     </div>
                                   </div>
                                 </div>
                                 
                                 <div className="flex items-start gap-2">
-                                  <div className="w-3 h-3 rounded-full bg-red-500 mt-1.5 flex-shrink-0"></div>
+                                  <div className="w-2 h-2 rounded-full bg-destructive mt-2 flex-shrink-0"></div>
                                   <div className="min-w-0 flex-1">
-                                    <div className="text-xs font-medium text-red-600 mb-1">{t('to')}</div>
-                                    <div className="text-sm text-foreground break-words">
+                                    <div className="text-xs font-medium text-destructive mb-1">{t('travel:to')}</div>
+                                    <div className="text-sm break-words">
                                       {selectedRequest.rideshare_offers.destination_address}
                                     </div>
                                   </div>
                                 </div>
                                 
-                                <div className="flex flex-wrap gap-4 pt-2 border-t border-border/20">
-                                  <div className="flex items-center gap-1.5">
-                                    <Calendar className="h-4 w-4 text-primary" />
-                                    <span className="text-sm font-medium">
-                                      {formatDateLocal(selectedRequest.rideshare_offers.departure_date)}
-                                    </span>
+                                <div className="flex flex-wrap gap-3 text-xs pt-2 border-t border-border/20">
+                                  <div className="flex items-center gap-1">
+                                    <Calendar className="h-3 w-3" />
+                                    {formatDateLocal(selectedRequest.rideshare_offers.departure_date)}
                                   </div>
-                                  <div className="flex items-center gap-1.5">
-                                    <Clock className="h-4 w-4 text-accent-foreground" />
-                                    <span className="text-sm font-medium">
-                                      {selectedRequest.rideshare_offers.departure_time}
-                                    </span>
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    {selectedRequest.rideshare_offers.departure_time}
                                   </div>
-                                  <div className="flex items-center gap-1.5">
-                                    <Euro className="h-4 w-4 text-primary" />
-                                    <span className="text-sm font-medium">
-                                      {formatPrice(selectedRequest.rideshare_offers.price_per_person, selectedRequest.rideshare_offers.currency)}
-                                    </span>
+                                  <div className="flex items-center gap-1">
+                                    <Euro className="h-3 w-3" />
+                                    {formatPrice(selectedRequest.rideshare_offers.price_per_person, selectedRequest.rideshare_offers.currency)}
                                   </div>
                                 </div>
                               </div>
                             </div>
                           )}
 
-                          {/* Vaše zpráva */}
+                          {/* Zpráva */}
                           <div>
-                            <h4 className="font-semibold mb-2">Vaše zpráva</h4>
-                            <div className="bg-muted/10 p-3 rounded-lg text-sm">
+                            <h4 className="font-medium text-sm mb-2">{t('profile:yourMessage')}</h4>
+                            <div className="bg-muted/20 p-3 rounded-lg text-sm">
                               {selectedRequest.message}
                             </div>
                           </div>
@@ -289,22 +267,25 @@ export const RideRequests = () => {
                           {/* Kontaktní údaje */}
                           {(selectedRequest.requester_email || selectedRequest.requester_phone) && (
                             <div>
-                              <h4 className="font-semibold mb-2">Poskytnuté kontaktní údaje</h4>
-                              <div className="text-sm space-y-1">
+                              <h4 className="font-medium text-sm mb-2">{t('profile:contactDetails')}</h4>
+                              <div className="text-sm space-y-2">
                                 {selectedRequest.requester_email && (
                                   <div className="flex items-center gap-2">
-                                    <User className="h-4 w-4" />
-                                    <strong>Email:</strong> {selectedRequest.requester_email}
+                                    <User className="h-4 w-4 text-muted-foreground" />
+                                    <span className="font-medium">Email:</span>
+                                    <span className="break-all">{selectedRequest.requester_email}</span>
                                   </div>
                                 )}
                                 {selectedRequest.requester_phone && (
                                   <div className="flex items-center gap-2">
-                                    <Phone className="h-4 w-4" />
-                                    <strong>Telefon:</strong> 
-                                    {selectedRequest.requester_country_code && (
-                                      <span>{selectedRequest.requester_country_code} </span>
-                                    )}
-                                    {selectedRequest.requester_phone}
+                                    <Phone className="h-4 w-4 text-muted-foreground" />
+                                    <span className="font-medium">{t('profile:phone')}:</span>
+                                    <span>
+                                      {selectedRequest.requester_country_code && (
+                                        <span>{selectedRequest.requester_country_code} </span>
+                                      )}
+                                      {selectedRequest.requester_phone}
+                                    </span>
                                   </div>
                                 )}
                               </div>
@@ -315,12 +296,52 @@ export const RideRequests = () => {
                     </DialogContent>
                   </Dialog>
                 </div>
-              </Card>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+                
+                {/* Quick route info for mobile */}
+                {request.rideshare_offers && (
+                  <div className="space-y-2">
+                    <div className="flex items-start gap-2">
+                      <MapPin className="h-4 w-4 text-success mt-0.5 flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs text-success font-medium">{t('travel:from')}</div>
+                        <div className="text-sm font-medium break-words">
+                          {request.rideshare_offers.origin_address}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start gap-2">
+                      <MapPin className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs text-destructive font-medium">{t('travel:to')}</div>
+                        <div className="text-sm font-medium break-words">
+                          {request.rideshare_offers.destination_address}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-3 text-xs text-muted-foreground mt-2 pt-2 border-t border-border/20">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        {formatDateLocal(request.rideshare_offers.departure_date)}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {request.rideshare_offers.departure_time}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Euro className="h-3 w-3" />
+                        {formatPrice(request.rideshare_offers.price_per_person, request.rideshare_offers.currency)}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 

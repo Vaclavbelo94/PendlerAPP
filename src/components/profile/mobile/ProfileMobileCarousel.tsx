@@ -39,7 +39,7 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
     }
     
     baseTabs.push(
-      { id: 'submissions', label: 'Žádosti o jízdu', icon: FileText },
+      { id: 'submissions', label: t('rideRequests'), icon: FileText },
       { id: 'subscription', label: t('subscription'), icon: Crown }
     );
     
