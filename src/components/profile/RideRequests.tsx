@@ -65,10 +65,12 @@ export const RideRequests = () => {
     try {
       if (!user) return;
       
+      console.log('🔍 Fetching ride requests for user:', user.id, 'email:', user.email);
       const requests = await rideshareService.getUserRideRequests(user.id);
+      console.log('📋 Fetched ride requests:', requests);
       setRequests(requests as RideRequest[]);
     } catch (error) {
-      console.error('Error fetching ride requests:', error);
+      console.error('❌ Error fetching ride requests:', error);
       toast({
         title: t('error'),
         description: 'Nepodařilo se načíst žádosti o spolujízdu',
