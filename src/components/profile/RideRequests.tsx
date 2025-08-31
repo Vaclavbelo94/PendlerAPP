@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/auth';
 import { formatDate } from '@/utils/enhancedCountryUtils';
 import { formatCurrencyWithSymbol } from '@/utils/currencyUtils';
+import { supabase } from '@/integrations/supabase/client';
 
 interface RideRequest {
   id: string;
@@ -85,8 +86,28 @@ export const RideRequests = () => {
       
       console.log('🔍 Fetching ride requests for user:', user.id, 'email:', user.email);
       setLoading(true);
+
+      // Test direct Supabase query for debugging
+      console.log('🧪 Testing direct Supabase query...');
+      const { data: directTest, error: directError } = await supabase
+        .from('rideshare_contacts')
+        .select(`
+          *,
+          rideshare_offers(*)
+        `)
+        .limit(5);
+      
+      console.log('🧪 Direct query test result:', {
+        directError,
+        directTestCount: directTest?.length || 0,
+        directTest: directTest?.slice(0, 2)
+      });
+
       const requests = await rideshareService.getUserRideRequests(user.id);
-      console.log('📋 Fetched ride requests:', requests?.length || 0, 'requests');
+      console.log('📋 Final fetched ride requests:', {
+        count: requests?.length || 0,
+        requests: requests?.slice(0, 2)
+      });
       setRequests(requests as RideRequest[]);
     } catch (error) {
       console.error('❌ Error fetching ride requests:', error);

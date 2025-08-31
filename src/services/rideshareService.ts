@@ -328,6 +328,17 @@ export const rideshareService = {
 
   async getUserRideRequests(userId: string) {
     try {
+      console.log('🔍 getUserRideRequests called with userId:', userId);
+      
+      // Check current auth session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      console.log('🔐 Current session:', {
+        hasSession: !!session,
+        userId: session?.user?.id,
+        email: session?.user?.email,
+        sessionError
+      });
+
       // Get requests made TO this user (as driver) - from rideshare_contacts table
       const { data, error } = await supabase
         .from('rideshare_contacts')
@@ -347,14 +358,43 @@ export const rideshareService = {
         .eq('rideshare_offers.user_id', userId)
         .order('created_at', { ascending: false });
 
+      console.log('📊 Query result:', {
+        error,
+        dataCount: data?.length || 0,
+        data: data?.slice(0, 2) // Show first 2 records for debugging
+      });
+
       if (error) {
-        console.error('Error loading user ride requests:', error);
+        console.error('❌ Error loading user ride requests:', error);
         throw new Error('Failed to load your ride requests');
       }
 
+      // Also try a direct query without join to debug
+      const { data: allContacts, error: contactsError } = await supabase
+        .from('rideshare_contacts')
+        .select('*');
+      
+      console.log('📋 All rideshare_contacts for debugging:', {
+        contactsError,
+        allContactsCount: allContacts?.length || 0,
+        allContacts: allContacts?.slice(0, 3)
+      });
+
+      // Try querying offers for this user
+      const { data: userOffers, error: offersError } = await supabase
+        .from('rideshare_offers')
+        .select('*')
+        .eq('user_id', userId);
+      
+      console.log('🚗 User offers for debugging:', {
+        offersError,
+        userOffersCount: userOffers?.length || 0,
+        userOffers: userOffers?.slice(0, 2)
+      });
+
       return data || [];
     } catch (error) {
-      console.error('Service error in getUserRideRequests:', error);
+      console.error('❌ Service error in getUserRideRequests:', error);
       throw error;
     }
   },
