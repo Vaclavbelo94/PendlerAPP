@@ -52,17 +52,29 @@ export const RideRequests = () => {
   const [selectedRequest, setSelectedRequest] = useState<RideRequest | null>(null);
   const { toast } = useToast();
   const { t, i18n } = useTranslation(['profile', 'travel']);
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
 
   useEffect(() => {
-    console.log('🎯 RideRequests component mounted, user:', user?.email);
+    console.log('🎯 RideRequests component mounted/updated:', {
+      user: user?.email,
+      authLoading,
+      hasUser: !!user
+    });
+    
+    // Wait for auth to finish loading
+    if (authLoading) {
+      console.log('⏳ Auth still loading, waiting...');
+      return;
+    }
+    
     if (user) {
+      console.log('✅ User available, fetching ride requests for:', user.email);
       fetchRideRequests();
     } else {
-      console.log('❌ No user found in RideRequests component');
+      console.log('❌ No user found after auth loading completed');
       setLoading(false);
     }
-  }, [user]);
+  }, [user, authLoading]);
 
   const fetchRideRequests = async () => {
     try {
