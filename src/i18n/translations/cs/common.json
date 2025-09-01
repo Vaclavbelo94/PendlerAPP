@@ -125,6 +125,10 @@
   "recommended": "Doporučeno",
   "title": "Název",
   "notifications": "Notifikace",
-  "noNotifications": "Žádné notifikace",
+  "noNotifications": "Žádná oznámení",
+  "noNotificationsDesc": "Zde se zobrazí vaše oznámení",
+  "markAllRead": "Označit vše jako přečtené",
+  "clearAll": "Smazat všechna oznámení",
+  "loading": "Načítání...",
   "markAsRead": "Označit jako přečtené"
 }

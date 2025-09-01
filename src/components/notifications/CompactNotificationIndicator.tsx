@@ -8,13 +8,13 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useNotifications } from '@/hooks/useNotifications';
-import { NotificationItem } from './NotificationItem';
+import { useSupabaseNotifications } from '@/hooks/useSupabaseNotifications';
+import { MobileNotificationItem } from '../mobile/MobileNotificationItem';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslation } from 'react-i18next';
 
 export const CompactNotificationIndicator = () => {
-  const { notifications, unreadCount, markAllAsRead, clearNotifications } = useNotifications();
+  const { notifications, unreadCount, markAllAsRead, clearNotifications, loading } = useSupabaseNotifications();
   const [open, setOpen] = useState(false);
   const isMobile = useIsMobile();
   const { t } = useTranslation('common');
@@ -51,9 +51,10 @@ export const CompactNotificationIndicator = () => {
                 variant="ghost" 
                 size="sm" 
                 className="h-6 text-xs px-2"
-                onClick={() => markAllAsRead()}
+                onClick={markAllAsRead}
+                disabled={loading}
               >
-                {t('markAsRead') || 'Označit jako přečtené'}
+                {t('markAllRead') || 'Označit vše'}
               </Button>
             )}
             {notifications.length > 0 && (
@@ -61,23 +62,28 @@ export const CompactNotificationIndicator = () => {
                 variant="ghost" 
                 size="sm" 
                 className="h-6 text-xs px-2"
-                onClick={() => clearNotifications()}
+                onClick={clearNotifications}
+                disabled={loading}
               >
-                {t('delete') || 'Smazat'}
+                {t('clearAll') || 'Smazat vše'}
               </Button>
             )}
           </div>
         </div>
         
         <ScrollArea className="h-[300px] pr-4">
-          {notifications.length === 0 ? (
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+            </div>
+          ) : notifications.length === 0 ? (
             <div className="py-8 text-center text-sm text-muted-foreground">
               {t('noNotifications') || 'Žádné notifikace'}
             </div>
           ) : (
             <div className="space-y-2">
               {notifications.map(notification => (
-                <NotificationItem 
+                <MobileNotificationItem 
                   key={notification.id} 
                   notification={notification} 
                   onClose={() => setOpen(false)}
