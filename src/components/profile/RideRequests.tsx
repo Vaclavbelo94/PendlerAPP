@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Eye, MessageCircle, Calendar, Clock, CheckCircle, AlertCircle, XCircle, MapPin, User, Euro, Phone, RefreshCw } from 'lucide-react';
-import { rideshareService } from '@/services/rideshareService';
+import { fixedRideshareService } from '@/services/fixedRideshareService';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/auth';
@@ -103,7 +103,7 @@ export const RideRequests = () => {
         directTest: directTest?.slice(0, 2)
       });
 
-      const requests = await rideshareService.getUserRideRequests(user.id);
+      const requests = await fixedRideshareService.getUserRideRequests(user.id);
       console.log('📋 Final fetched ride requests:', {
         count: requests?.length || 0,
         requests: requests?.slice(0, 2)

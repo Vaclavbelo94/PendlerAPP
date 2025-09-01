@@ -9,6 +9,7 @@ import ProfileWorkData from '../ProfileWorkData';
 import ProfileSubscription from '../subscription/ProfileSubscription';
 import DHLProfileSettings from '../DHLProfileSettings';
 import RideRequests from '../RideRequests';
+import { MobileRideRequests } from './MobileRideRequests';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/auth';
 
@@ -77,7 +78,7 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
       case 'dhlSettings':
         return <DHLProfileSettings />;
       case 'submissions':
-        return <RideRequests />;
+        return <MobileRideRequests />;
       case 'subscription':
         return <ProfileSubscription isPremium={unifiedUser?.isPremium || false} />;
       default:
