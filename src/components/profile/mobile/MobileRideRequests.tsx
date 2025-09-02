@@ -15,7 +15,7 @@ import { formatCurrencyWithSymbol } from '@/utils/currencyUtils';
 
 export const MobileRideRequests: React.FC = () => {
   const { user, isLoading: authLoading } = useAuth();
-  const { t } = useTranslation(['profile', 'travel']);
+  const { t, i18n } = useTranslation(['profile', 'travel']);
   const [requests, setRequests] = useState<RideRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<RideRequest | null>(null);
@@ -136,7 +136,7 @@ export const MobileRideRequests: React.FC = () => {
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <Car className="h-5 w-5 text-primary" />
-          {t('profile:rideRequests') || 'Žádosti o spolujízdu'} ({requests.length})
+          {t('profile:rideRequests') || 'Žádosti o spolujízdu'} ({requests.length === 1 ? t('profile:oneRequest') || '1 žádost' : `${requests.length} ${t('profile:requestsCount') || 'žádostí'}`})
         </h2>
         <Button
           variant="outline"
@@ -198,7 +198,7 @@ export const MobileRideRequests: React.FC = () => {
                           {request.rideshare_offers.origin_address} → {request.rideshare_offers.destination_address}
                         </h3>
                         <p className="text-xs text-muted-foreground">
-                          {formatDate(request.rideshare_offers.departure_date, 'cs')} • {request.rideshare_offers.departure_time}
+                          {formatDate(request.rideshare_offers.departure_date, i18n.language)} • {request.rideshare_offers.departure_time}
                         </p>
                       </div>
                       {getStatusBadge(request.status)}

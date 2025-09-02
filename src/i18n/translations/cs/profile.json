@@ -204,5 +204,10 @@
   "pending": "Čeká",
   "success": "Úspěch",
   "error": "Chyba",
-  "requestUpdated": "Žádost aktualizována"
+  "requestUpdated": "Žádost aktualizována",
+  "oneRequest": "1 žádost",
+  "requestsCount": "žádostí",
+  "seats": "míst",
+  "requestDetails": "Detail žádosti",
+  "requestStatus": "Stav žádosti"
 }
