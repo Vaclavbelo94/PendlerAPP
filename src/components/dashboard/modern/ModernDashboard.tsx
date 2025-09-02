@@ -14,10 +14,12 @@ import DashboardDHLSection from './DashboardDHLSection';
 import { useOptimizedOnboarding } from '@/hooks/useOptimizedOnboarding';
 import { useOptimizedDHLData } from '@/hooks/dhl/useOptimizedDHLData';
 import { useDHLAutoSetup } from '@/hooks/useDHLAutoSetup';
+import { useResponsive } from '@/hooks/useResponsive';
 
 const ModernDashboard: React.FC = () => {
   const { user, unifiedUser } = useAuth();
   const { t } = useTranslation(['dashboard']);
+  const { isMobile } = useResponsive();
   
   // Auto-setup DHL employee data
   useDHLAutoSetup();
@@ -74,8 +76,8 @@ const ModernDashboard: React.FC = () => {
             </motion.div>
           )}
 
-          {/* Expandable Statistics Section */}
-          {!shouldShowOnboarding && (
+          {/* Expandable Statistics Section - Hidden on Mobile */}
+          {!shouldShowOnboarding && !isMobile && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

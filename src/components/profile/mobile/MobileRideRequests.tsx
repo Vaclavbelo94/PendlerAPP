@@ -15,7 +15,7 @@ import { formatCurrencyWithSymbol } from '@/utils/currencyUtils';
 
 export const MobileRideRequests: React.FC = () => {
   const { user, isLoading: authLoading } = useAuth();
-  const { t } = useTranslation('profile');
+  const { t } = useTranslation(['profile', 'travel']);
   const [requests, setRequests] = useState<RideRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<RideRequest | null>(null);
@@ -37,7 +37,7 @@ export const MobileRideRequests: React.FC = () => {
       setRequests(data);
     } catch (error) {
       console.error('❌ Error fetching requests:', error);
-      toast.error(t('rideRequestsError') || 'Chyba při načítání žádostí');
+      toast.error(t('profile:rideRequestsError') || 'Chyba při načítání žádostí');
     } finally {
       setLoading(false);
     }
@@ -64,8 +64,8 @@ export const MobileRideRequests: React.FC = () => {
       
       toast.success(
         status === 'accepted' 
-          ? 'Žádost přijata' 
-          : 'Žádost odmítnuta'
+          ? (t('travel:rideRequestAccepted') || 'Žádost přijata')
+          : (t('travel:rideRequestRejected') || 'Žádost odmítnuta')
       );
     } catch (error) {
       console.error('Error updating status:', error);
@@ -92,18 +92,18 @@ export const MobileRideRequests: React.FC = () => {
       setSelectedRequest(null);
       setRating(0);
       setReview('');
-      toast.success('Hodnocení uloženo');
+      toast.success(t('travel:ratingSaved') || 'Hodnocení uloženo');
     } catch (error) {
       console.error('Error rating request:', error);
-      toast.error('Chyba při ukládání hodnocení');
+      toast.error(t('travel:ratingError') || 'Chyba při ukládání hodnocení');
     }
   };
 
   const getStatusBadge = (status: string) => {
     const variants = {
-      pending: { variant: 'secondary' as const, icon: Clock, text: 'Čeká' },
-      accepted: { variant: 'default' as const, icon: CheckCircle, text: 'Přijato' },
-      rejected: { variant: 'destructive' as const, icon: XCircle, text: 'Odmítnuto' }
+      pending: { variant: 'secondary' as const, icon: Clock, text: t('travel:pending') || 'Čeká' },
+      accepted: { variant: 'default' as const, icon: CheckCircle, text: t('travel:accepted') || 'Přijato' },
+      rejected: { variant: 'destructive' as const, icon: XCircle, text: t('travel:rejected') || 'Odmítnuto' }
     };
     
     const config = variants[status as keyof typeof variants];
@@ -136,7 +136,7 @@ export const MobileRideRequests: React.FC = () => {
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <Car className="h-5 w-5 text-primary" />
-          {t('rideRequests') || 'Žádosti o spolujízdu'} ({requests.length})
+          {t('profile:rideRequests') || 'Žádosti o spolujízdu'} ({requests.length})
         </h2>
         <Button
           variant="outline"
@@ -167,13 +167,13 @@ export const MobileRideRequests: React.FC = () => {
           >
             <Car className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
             <p className="font-medium text-muted-foreground mb-2">
-              {t('noRideRequests') || 'Žádné žádosti o spolujízdu'}
+              {t('profile:noRideRequests') || 'Žádné žádosti o spolujízdu'}
             </p>
             <p className="text-sm text-muted-foreground mb-4">
-              {t('noRideRequestsDesc') || 'Zde se zobrazí žádosti od ostatních uživatelů ohledně vašich nabídek spolujízdy'}
+              {t('profile:noRideRequestsDesc') || 'Zde se zobrazí žádosti od ostatních uživatelů ohledně vašich nabídek spolujízdy'}
             </p>
             <p className="text-xs text-muted-foreground">
-              💡 {t('rideRequestsHint') || 'Chcete-li dostávat žádosti o spolujízdu, nejprve vytvořte nabídku jízdy v sekci Spolujízda'}
+              💡 {t('profile:rideRequestsHint') || 'Chcete-li dostávat žádosti o spolujízdu, nejprve vytvořte nabídku jízdy v sekci Spolujízda'}
             </p>
           </motion.div>
         ) : (
@@ -243,7 +243,7 @@ export const MobileRideRequests: React.FC = () => {
                               className="text-xs"
                             >
                               <XCircle className="h-3 w-3 mr-1" />
-                              Odmítnout
+                              {t('travel:reject') || 'Odmítnout'}
                             </Button>
                             <Button
                               size="sm"
@@ -252,7 +252,7 @@ export const MobileRideRequests: React.FC = () => {
                               className="text-xs"
                             >
                               <CheckCircle className="h-3 w-3 mr-1" />
-                              Přijmout
+                              {t('travel:accept') || 'Přijmout'}
                             </Button>
                           </>
                         )}
@@ -265,7 +265,7 @@ export const MobileRideRequests: React.FC = () => {
                             className="text-xs"
                           >
                             <Star className="h-3 w-3 mr-1" />
-                            Hodnotit
+                            {t('travel:rate') || 'Hodnotit'}
                           </Button>
                         )}
                         
@@ -289,12 +289,12 @@ export const MobileRideRequests: React.FC = () => {
       <Dialog open={!!selectedRequest} onOpenChange={() => setSelectedRequest(null)}>
         <DialogContent className="max-w-sm mx-4">
           <DialogHeader>
-            <DialogTitle className="text-lg">Hodnocení spolujízdy</DialogTitle>
+            <DialogTitle className="text-lg">{t('travel:ratingTitle') || 'Hodnocení spolujízdy'}</DialogTitle>
           </DialogHeader>
           
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Hodnocení (1-5 hvězd)</label>
+              <label className="block text-sm font-medium mb-2">{t('travel:ratingLabel') || 'Hodnocení (1-5 hvězd)'}</label>
               <div className="flex gap-2">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -315,11 +315,11 @@ export const MobileRideRequests: React.FC = () => {
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-2">Recenze (volitelné)</label>
+              <label className="block text-sm font-medium mb-2">{t('travel:reviewLabel') || 'Recenze (volitelné)'}</label>
               <Textarea
                 value={review}
                 onChange={(e) => setReview(e.target.value)}
-                placeholder="Napište svou zkušenost se spolujízdou..."
+                placeholder={t('travel:reviewPlaceholder') || 'Napište svou zkušenost se spolujízdou...'}
                 className="min-h-[80px]"
               />
             </div>
@@ -330,14 +330,14 @@ export const MobileRideRequests: React.FC = () => {
                 onClick={() => setSelectedRequest(null)}
                 className="flex-1"
               >
-                Zrušit
+                {t('travel:cancel') || 'Zrušit'}
               </Button>
               <Button
                 onClick={handleRating}
                 disabled={rating === 0}
                 className="flex-1"
               >
-                Uložit
+                {t('travel:save') || 'Uložit'}
               </Button>
             </div>
           </div>
