@@ -175,5 +175,20 @@
   "generatingShifts": "Generuję zmiany...",
   "activatingShifts": "Aktywuję zmiany...",
   "shiftsGenerated": "Zmiany wygenerowane",
-  "shiftsGeneratedSuccess": "Pomyślnie wygenerowano {count} zmian na 2 miesiące"
+  "shiftsGeneratedSuccess": "Pomyślnie wygenerowano {count} zmian na 2 miesiące",
+  "rideRequests": "Prośby o przejazd",
+  "rideRequestDetail": "Szczegóły prośby o przejazd",
+  "noRideRequests": "Brak próśb o przejazd",
+  "noRideRequestsDesc": "Tutaj będą wyświetlane prośby od innych użytkowników dotyczące Twoich ofert przejazdów",
+  "rideRequestsHint": "Aby otrzymywać prośby o przejazd, najpierw utwórz ofertę przejazdu w sekcji Wspólne przejazdy",
+  "rideRequestsError": "Błąd podczas ładowania próśb o przejazd",
+  "rideRequestsWillAppearHere": "Tutaj będą wyświetlane prośby o przejazd",
+  "detail": "Szczegóły",
+  "refresh": "Odśwież",
+  "loading": "Ładowanie",
+  "status": "Status",
+  "statusPending": "Oczekuje na odpowiedź",
+  "statusAccepted": "Zaakceptowane",
+  "statusRejected": "Odrzucone",
+  "yourMessage": "Twoja wiadomość"
 }

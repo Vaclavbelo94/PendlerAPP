@@ -4,11 +4,11 @@ import { Button } from '@/components/ui/button';
 import { useSupabaseNotifications } from '@/hooks/useSupabaseNotifications';
 import { MobileNotificationPanel } from '../mobile/MobileNotificationPanel';
 import { CompactNotificationIndicator } from './CompactNotificationIndicator';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { useResponsive } from '@/hooks/useResponsive';
 import { cn } from '@/lib/utils';
 
 export const UnifiedNotificationSystem: React.FC = () => {
-  const isMobile = useIsMobile();
+  const { isMobile } = useResponsive();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { unreadCount } = useSupabaseNotifications();
 

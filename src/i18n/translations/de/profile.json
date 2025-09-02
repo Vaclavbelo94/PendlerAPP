@@ -175,5 +175,20 @@
   "generatingShifts": "Generiere Schichten...",
   "activatingShifts": "Aktiviere Schichten...",
   "shiftsGenerated": "Schichten generiert",
-  "shiftsGeneratedSuccess": "Erfolgreich {count} Schichten für 2 Monate generiert"
+  "shiftsGeneratedSuccess": "Erfolgreich {count} Schichten für 2 Monate generiert",
+  "rideRequests": "Mitfahranfragen",
+  "rideRequestDetail": "Mitfahranfrage Details",
+  "noRideRequests": "Keine Mitfahranfragen",
+  "noRideRequestsDesc": "Hier werden Anfragen von anderen Benutzern bezüglich Ihrer Mitfahrangebote angezeigt",
+  "rideRequestsHint": "Um Mitfahranfragen zu erhalten, erstellen Sie zunächst ein Fahrangebot im Bereich Mitfahrgelegenheiten",
+  "rideRequestsError": "Fehler beim Laden der Mitfahranfragen",
+  "rideRequestsWillAppearHere": "Hier werden Mitfahranfragen angezeigt",
+  "detail": "Details",
+  "refresh": "Aktualisieren",
+  "loading": "Laden",
+  "status": "Status",
+  "statusPending": "Warten auf Antwort",
+  "statusAccepted": "Angenommen",
+  "statusRejected": "Abgelehnt",
+  "yourMessage": "Ihre Nachricht"
 }
