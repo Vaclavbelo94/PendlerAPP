@@ -5,54 +5,83 @@
     "deleted": "Zmiana usunięta",
     "savedDescription": "Zmiana została pomyślnie dodana.",
     "updatedDescription": "Zmiana została pomyślnie edytowana.",
-    "deletedDescription": "Zmiana została pomyślnie usunięta."
+    "deletedDescription": "Zmiana została pomyślnie usunięta.",
+    "newShift": "Nowa zmiana",
+    "shiftChanged": "Zmiana zmiany",
+    "overtime": "Nadgodziny",
+    "reminder": "Przypomnienie o zmianie"
+  },
+  "rideshare": {
+    "newRequest": "Nowa prośba o współprzejazd",
+    "requestAccepted": "Prośba zaakceptowana",
+    "requestRejected": "Prośba odrzucona",
+    "offerCancelled": "Oferta anulowana",
+    "requestCancelled": "Prośba anulowana",
+    "newOffer": "Nowa oferta współprzejazdu",
+    "offerUpdated": "Oferta zaktualizowana",
+    "rideConfirmed": "Przejazd potwierdzony",
+    "reminder": "Przypomnienie o przejeździe"
+  },
+  "system": {
+    "maintenance": "Konserwacja systemu",
+    "update": "Aktualizacja aplikacji",
+    "announcement": "Ogłoszenie",
+    "welcome": "Witamy"
+  },
+  "admin": {
+    "message": "Wiadomość od administratora",
+    "announcement": "Ogłoszenie administratora",
+    "warning": "Ostrzeżenie",
+    "critical": "Krytyczne powiadomienie"
   },
   "errors": {
     "saveTitle": "Błąd podczas zapisywania",
     "deleteTitle": "Błąd podczas usuwania",
     "loadTitle": "Błąd podczas ładowania",
     "saveMessage": "Nie udało się zapisać zmiany. Spróbuj ponownie.",
-    "deleteMessage": "Nie udało się usunąć zmiany. Spróbuj ponownie.",
+    "deleteMessage": "Nie udało się usunąć zmiany. Spróbuj ponownie.",  
     "loadMessage": "Nie udało się załadować zmian. Spróbujemy przywrócić dane z lokalnej kopii zapasowej."
   },
-  "offline": {
-    "title": "Zapisano offline",
-    "description": "Zmiana została zapisana offline i zostanie zsynchronizowana po przywróceniu połączenia."
+  "actions": {
+    "markAsRead": "Oznacz jako przeczytane",
+    "markAllAsRead": "Oznacz wszystkie jako przeczytane",
+    "delete": "Usuń",
+    "deleteAll": "Usuń wszystkie",
+    "viewDetails": "Zobacz szczegóły",
+    "close": "Zamknij",
+    "refresh": "Odśwież"
   },
-  "sync": {
-    "completeTitle": "Synchronizacja zakończona",
-    "completeDescription": "Zsynchronizowano {{count}} zmian",
-    "remoteUpdateTitle": "Synchronizacja",
-    "remoteUpdate": "{{message}}"
+  "status": {
+    "read": "Przeczytane",
+    "unread": "Nieprzeczytane",
+    "loading": "Ładowanie...",
+    "empty": "Brak powiadomień",
+    "emptyDescription": "Nie masz nowych powiadomień."
   },
-  "auth": {
-    "requiredTitle": "Błąd",
-    "requiredMessage": "Aby zapisać zmianę, musisz być zalogowany i wybrać datę."
+  "priority": {
+    "low": "Niski",
+    "medium": "Średni",
+    "high": "Wysoki", 
+    "critical": "Krytyczny"
   },
-  "dataRestored": {
-    "title": "Dane przywrócone",
-    "description": "Zmiany zostały załadowane z lokalnej kopii zapasowej."
+  "categories": {
+    "all": "Wszystkie",
+    "shift": "Zmiany",
+    "rideshare": "Współprzejazdy",
+    "system": "System",
+    "admin": "Administracja"
   },
-  "generic": {
-    "errorTitle": "Błąd",
-    "errorMessage": "Wystąpił nieoczekiwany błąd."
-  },
-  "forms": {
-    "validationErrorTitle": "Błąd walidacji",
-    "requiredField": "To pole jest wymagane",
-    "invalidEmail": "Nieprawidłowy format e-mail",
-    "fieldTooShort": "Pole jest za krótkie",
-    "fieldTooLong": "Pole jest za długie",
-    "submitErrorTitle": "Błąd podczas wysyłania",
-    "submitErrorMessage": "Nie udało się wysłać formularza. Spróbuj ponownie.",
-    "networkErrorMessage": "Błąd sieci. Sprawdź połączenie z internetem."
-  },
-  "operations": {
-    "saveSuccessTitle": "Zapisano",
-    "saveSuccessMessage": "Dane zostały pomyślnie zapisane.",
-    "deleteSuccessTitle": "Usunięto",
-    "deleteSuccessMessage": "Element został pomyślnie usunięty.",
-    "updateSuccessTitle": "Zaktualizowano",
-    "updateSuccessMessage": "Dane zostały pomyślnie zaktualizowane."
+  "time": {
+    "now": "Teraz", 
+    "minuteAgo": "minutę temu",
+    "minutesAgo": "{{count}} minut temu",
+    "hourAgo": "godzinę temu",
+    "hoursAgo": "{{count}} godzin temu",
+    "dayAgo": "wczoraj",
+    "daysAgo": "{{count}} dni temu",
+    "weekAgo": "tydzień temu",
+    "weeksAgo": "{{count}} tygodni temu",
+    "monthAgo": "miesiąc temu",
+    "monthsAgo": "{{count}} miesięcy temu"
   }
 }

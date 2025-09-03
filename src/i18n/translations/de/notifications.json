@@ -2,57 +2,86 @@
   "shift": {
     "saved": "Schicht hinzugefügt",
     "updated": "Schicht aktualisiert",
-    "deleted": "Schicht entfernt", 
+    "deleted": "Schicht gelöscht",
     "savedDescription": "Schicht wurde erfolgreich hinzugefügt.",
     "updatedDescription": "Schicht wurde erfolgreich bearbeitet.",
-    "deletedDescription": "Schicht wurde erfolgreich entfernt."
+    "deletedDescription": "Schicht wurde erfolgreich gelöscht.",
+    "newShift": "Neue Schicht",
+    "shiftChanged": "Schichtänderung",
+    "overtime": "Überstunden",
+    "reminder": "Schichterinnerung"
+  },
+  "rideshare": {
+    "newRequest": "Neue Mitfahranfrage",
+    "requestAccepted": "Anfrage angenommen",
+    "requestRejected": "Anfrage abgelehnt",
+    "offerCancelled": "Angebot storniert",
+    "requestCancelled": "Anfrage storniert",
+    "newOffer": "Neues Mitfahrangebot",
+    "offerUpdated": "Angebot aktualisiert",
+    "rideConfirmed": "Fahrt bestätigt",
+    "reminder": "Fahrterinnerung"
+  },
+  "system": {
+    "maintenance": "Systemwartung",
+    "update": "App-Update",
+    "announcement": "Ankündigung",
+    "welcome": "Willkommen"
+  },
+  "admin": {
+    "message": "Administrator-Nachricht",
+    "announcement": "Administrator-Ankündigung",
+    "warning": "Warnung",
+    "critical": "Kritische Benachrichtigung"
   },
   "errors": {
     "saveTitle": "Fehler beim Speichern",
     "deleteTitle": "Fehler beim Löschen",
     "loadTitle": "Fehler beim Laden",
     "saveMessage": "Schicht konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
-    "deleteMessage": "Schicht konnte nicht entfernt werden. Bitte versuchen Sie es erneut.",
-    "loadMessage": "Schichten konnten nicht geladen werden. Wir versuchen, Daten aus der lokalen Sicherung zu wiederherstellen."
+    "deleteMessage": "Schicht konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
+    "loadMessage": "Schichten konnten nicht geladen werden. Wir versuchen, Daten aus der lokalen Sicherung wiederherzustellen."
   },
-  "offline": {
-    "title": "Offline gespeichert",
-    "description": "Schicht wurde offline gespeichert und wird bei Wiederherstellung der Verbindung synchronisiert."
+  "actions": {
+    "markAsRead": "Als gelesen markieren",
+    "markAllAsRead": "Alle als gelesen markieren",
+    "delete": "Löschen",
+    "deleteAll": "Alle löschen",
+    "viewDetails": "Details anzeigen",
+    "close": "Schließen",
+    "refresh": "Aktualisieren"
   },
-  "sync": {
-    "completeTitle": "Synchronisierung abgeschlossen",
-    "completeDescription": "{{count}} Schichten synchronisiert",
-    "remoteUpdateTitle": "Synchronisierung",
-    "remoteUpdate": "{{message}}"
+  "status": {
+    "read": "Gelesen",
+    "unread": "Ungelesen",
+    "loading": "Lädt...",
+    "empty": "Keine Benachrichtigungen",
+    "emptyDescription": "Sie haben keine neuen Benachrichtigungen."
   },
-  "auth": {
-    "requiredTitle": "Fehler",
-    "requiredMessage": "Zum Speichern der Schicht müssen Sie angemeldet sein und ein Datum auswählen."
+  "priority": {
+    "low": "Niedrig",
+    "medium": "Mittel",
+    "high": "Hoch",
+    "critical": "Kritisch"
   },
-  "dataRestored": {
-    "title": "Daten wiederhergestellt",
-    "description": "Schichten wurden aus der lokalen Sicherung geladen."
+  "categories": {
+    "all": "Alle",
+    "shift": "Schichten",
+    "rideshare": "Mitfahrgelegenheiten",
+    "system": "System",
+    "admin": "Administration"
   },
-  "generic": {
-    "errorTitle": "Fehler",
-    "errorMessage": "Ein unerwarteter Fehler ist aufgetreten."
-  },
-  "forms": {
-    "validationErrorTitle": "Validierungsfehler",
-    "requiredField": "Dieses Feld ist erforderlich",
-    "invalidEmail": "Ungültiges E-Mail-Format",
-    "fieldTooShort": "Feld ist zu kurz",
-    "fieldTooLong": "Feld ist zu lang",
-    "submitErrorTitle": "Fehler beim Senden",
-    "submitErrorMessage": "Formular konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
-    "networkErrorMessage": "Netzwerkfehler. Überprüfen Sie Ihre Internetverbindung."
-  },
-  "operations": {
-    "saveSuccessTitle": "Gespeichert",
-    "saveSuccessMessage": "Daten wurden erfolgreich gespeichert.",
-    "deleteSuccessTitle": "Gelöscht",
-    "deleteSuccessMessage": "Element wurde erfolgreich gelöscht.",
-    "updateSuccessTitle": "Aktualisiert",
-    "updateSuccessMessage": "Daten wurden erfolgreich aktualisiert."
+  "time": {
+    "now": "Jetzt",
+    "minuteAgo": "vor einer Minute",
+    "minutesAgo": "vor {{count}} Minuten",
+    "hourAgo": "vor einer Stunde",
+    "hoursAgo": "vor {{count}} Stunden", 
+    "dayAgo": "gestern",
+    "daysAgo": "vor {{count}} Tagen",
+    "weekAgo": "vor einer Woche",
+    "weeksAgo": "vor {{count}} Wochen",
+    "monthAgo": "vor einem Monat",
+    "monthsAgo": "vor {{count}} Monaten"
   }
 }

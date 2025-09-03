@@ -5,7 +5,34 @@
     "deleted": "Směna odstraněna",
     "savedDescription": "Směna byla úspěšně přidána.",
     "updatedDescription": "Směna byla úspěšně upravena.",
-    "deletedDescription": "Směna byla úspěšně odstraněna."
+    "deletedDescription": "Směna byla úspěšně odstraněna.",
+    "newShift": "Nová směna",
+    "shiftChanged": "Změna směny",
+    "overtime": "Přesčas",
+    "reminder": "Připomínka směny"
+  },
+  "rideshare": {
+    "newRequest": "Nová žádost o spolujízdu",
+    "requestAccepted": "Žádost přijata",
+    "requestRejected": "Žádost odmítnuta",
+    "offerCancelled": "Nabídka zrušena",
+    "requestCancelled": "Žádost zrušena",
+    "newOffer": "Nová nabídka spolujízdy",
+    "offerUpdated": "Nabídka aktualizována",
+    "rideConfirmed": "Jízda potvrzena",
+    "reminder": "Připomínka jízdy"
+  },
+  "system": {
+    "maintenance": "Údržba systému",
+    "update": "Aktualizace aplikace",
+    "announcement": "Oznámení",
+    "welcome": "Vítejte"
+  },
+  "admin": {
+    "message": "Zpráva od administrátora",
+    "announcement": "Oznámení administrátora",
+    "warning": "Upozornění",
+    "critical": "Kritické oznámení"
   },
   "errors": {
     "saveTitle": "Chyba při ukládání",
@@ -15,44 +42,46 @@
     "deleteMessage": "Nepodařilo se odstranit směnu. Zkuste to prosím znovu.",
     "loadMessage": "Nepodařilo se načíst směny. Zkusíme obnovit data z místní zálohy."
   },
-  "offline": {
-    "title": "Uloženo offline",
-    "description": "Směna byla uložena offline a bude synchronizována při obnovení připojení."
+  "actions": {
+    "markAsRead": "Označit jako přečtené",
+    "markAllAsRead": "Označit vše jako přečtené",
+    "delete": "Smazat",
+    "deleteAll": "Smazat vše",
+    "viewDetails": "Zobrazit detail",
+    "close": "Zavřít",
+    "refresh": "Obnovit"
   },
-  "sync": {
-    "completeTitle": "Synchronizace dokončena",
-    "completeDescription": "Synchronizováno {{count}} směn",
-    "remoteUpdateTitle": "Synchronizace",
-    "remoteUpdate": "{{message}}"
+  "status": {
+    "read": "Přečteno",
+    "unread": "Nepřečteno",
+    "loading": "Načítání...",
+    "empty": "Žádná oznámení",
+    "emptyDescription": "Nemáte žádná nová oznámení."
   },
-  "auth": {
-    "requiredTitle": "Chyba",
-    "requiredMessage": "Pro uložení směny musíte být přihlášeni a vybrat datum."
+  "priority": {
+    "low": "Nízká",
+    "medium": "Střední", 
+    "high": "Vysoká",
+    "critical": "Kritická"
   },
-  "dataRestored": {
-    "title": "Data obnovena",
-    "description": "Směny byly načteny z místní zálohy."
+  "categories": {
+    "all": "Vše",
+    "shift": "Směny",
+    "rideshare": "Spolujízdy",
+    "system": "Systém",
+    "admin": "Administrace"
   },
-  "generic": {
-    "errorTitle": "Chyba",
-    "errorMessage": "Došlo k neočekávané chybě."
-  },
-  "forms": {
-    "validationErrorTitle": "Chyba validace",
-    "requiredField": "Toto pole je povinné",
-    "invalidEmail": "Neplatný formát e-mailu",
-    "fieldTooShort": "Pole je příliš krátké",
-    "fieldTooLong": "Pole je příliš dlouhé",
-    "submitErrorTitle": "Chyba při odesílání",
-    "submitErrorMessage": "Nepodařilo se odeslat formulář. Zkuste to prosím znovu.",
-    "networkErrorMessage": "Chyba sítě. Zkontrolujte připojení k internetu."
-  },
-  "operations": {
-    "saveSuccessTitle": "Uloženo",
-    "saveSuccessMessage": "Data byla úspěšně uložena.",
-    "deleteSuccessTitle": "Odstraněno",
-    "deleteSuccessMessage": "Položka byla úspěšně odstraněna.",
-    "updateSuccessTitle": "Aktualizováno", 
-    "updateSuccessMessage": "Data byla úspěšně aktualizována."
+  "time": {
+    "now": "Teď",
+    "minuteAgo": "před minutou",
+    "minutesAgo": "před {{count}} minutami",
+    "hourAgo": "před hodinou", 
+    "hoursAgo": "před {{count}} hodinami",
+    "dayAgo": "včera",
+    "daysAgo": "před {{count}} dny",
+    "weekAgo": "před týdnem",
+    "weeksAgo": "před {{count}} týdny",
+    "monthAgo": "před měsícem",
+    "monthsAgo": "před {{count}} měsíci"
   }
 }
