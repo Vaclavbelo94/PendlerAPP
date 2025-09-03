@@ -1625,11 +1625,15 @@ export type Database = {
       }
       notifications: {
         Row: {
+          action_url: string | null
+          category: string | null
           created_at: string
+          expires_at: string | null
           id: string
           language: string | null
           message: string
           metadata: Json | null
+          priority: string | null
           read: boolean
           related_to: Json | null
           title: string
@@ -1638,11 +1642,15 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          action_url?: string | null
+          category?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
           language?: string | null
           message: string
           metadata?: Json | null
+          priority?: string | null
           read?: boolean
           related_to?: Json | null
           title: string
@@ -1651,11 +1659,15 @@ export type Database = {
           user_id: string
         }
         Update: {
+          action_url?: string | null
+          category?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
           language?: string | null
           message?: string
           metadata?: Json | null
+          priority?: string | null
           read?: boolean
           related_to?: Json | null
           title?: string
@@ -3592,9 +3604,29 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_expired_notifications: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       cleanup_rate_limit_logs: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      create_enhanced_notification: {
+        Args: {
+          p_action_url?: string
+          p_category?: string
+          p_expires_at?: string
+          p_language?: string
+          p_message: string
+          p_metadata?: Json
+          p_priority?: string
+          p_related_to?: Json
+          p_title: string
+          p_type?: string
+          p_user_id: string
+        }
+        Returns: string
       }
       create_notification: {
         Args: {
