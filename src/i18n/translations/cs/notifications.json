@@ -49,14 +49,17 @@
     "deleteAll": "Smazat vše",
     "viewDetails": "Zobrazit detail",
     "close": "Zavřít",
-    "refresh": "Obnovit"
+    "refresh": "Obnovit",
+    "loadMore": "Načíst další",
+    "viewAll": "Zobrazit všechna oznámení"
   },
   "status": {
     "read": "Přečteno",
     "unread": "Nepřečteno",
     "loading": "Načítání...",
     "empty": "Žádná oznámení",
-    "emptyDescription": "Nemáte žádná nová oznámení."
+    "emptyDescription": "Nemáte žádná nová oznámení.",
+    "notifications": "Oznámení"
   },
   "priority": {
     "low": "Nízká",

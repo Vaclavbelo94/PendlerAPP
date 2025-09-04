@@ -17,7 +17,7 @@ export const CompactNotificationIndicator = () => {
   const { notifications, unreadCount, markAllAsRead, clearNotifications, loading } = useSupabaseNotifications();
   const [open, setOpen] = useState(false);
   const isMobile = useIsMobile();
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('notifications');
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -39,12 +39,12 @@ export const CompactNotificationIndicator = () => {
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
-          <span className="sr-only">{t('notifications') || 'Notifikace'}</span>
+          <span className="sr-only">{t('status.notifications')}</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80" align="end">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-sm">{t('notifications') || 'Notifikace'}</h3>
+          <h3 className="font-semibold text-sm">{t('status.notifications')}</h3>
           <div className="flex gap-1">
             {unreadCount > 0 && (
               <Button 
@@ -54,7 +54,7 @@ export const CompactNotificationIndicator = () => {
                 onClick={markAllAsRead}
                 disabled={loading}
               >
-                {t('markAllRead') || 'Označit vše'}
+                {t('actions.markAllAsRead')}
               </Button>
             )}
             {notifications.length > 0 && (
@@ -65,7 +65,7 @@ export const CompactNotificationIndicator = () => {
                 onClick={clearNotifications}
                 disabled={loading}
               >
-                {t('clearAll') || 'Smazat vše'}
+                {t('actions.deleteAll')}
               </Button>
             )}
           </div>
@@ -78,7 +78,7 @@ export const CompactNotificationIndicator = () => {
             </div>
           ) : notifications.length === 0 ? (
             <div className="py-8 text-center text-sm text-muted-foreground">
-              {t('noNotifications') || 'Žádné notifikace'}
+              {t('status.empty')}
             </div>
           ) : (
             <div className="space-y-2">

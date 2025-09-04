@@ -49,14 +49,17 @@
     "deleteAll": "Usuń wszystkie",
     "viewDetails": "Zobacz szczegóły",
     "close": "Zamknij",
-    "refresh": "Odśwież"
+    "refresh": "Odśwież",
+    "loadMore": "Załaduj więcej",
+    "viewAll": "Pokaż wszystkie powiadomienia"
   },
   "status": {
     "read": "Przeczytane",
     "unread": "Nieprzeczytane",
     "loading": "Ładowanie...",
     "empty": "Brak powiadomień",
-    "emptyDescription": "Nie masz nowych powiadomień."
+    "emptyDescription": "Nie masz nowych powiadomień.",
+    "notifications": "Powiadomienia"
   },
   "priority": {
     "low": "Niski",

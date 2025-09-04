@@ -62,14 +62,15 @@ export const UnifiedNotificationCenter: React.FC = () => {
 
         {/* Mobile slide-out panel */}
         {isOpen && (
-          <div className="fixed inset-0 z-50 bg-background">
-            <div className="flex flex-col h-full">
+          <div className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-sm">
+            <div className="fixed inset-0 bg-background border-l shadow-xl">
+              <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between p-4 border-b">
                 <div className="flex items-center gap-2">
                   <Bell className="h-5 w-5" />
                   <h2 className="text-lg font-semibold">
-                    {t('notifications:status.notifications')}
+                    {t('status.notifications')}
                   </h2>
                   {unreadCount > 0 && (
                     <Badge variant="secondary">{unreadCount}</Badge>
@@ -94,7 +95,7 @@ export const UnifiedNotificationCenter: React.FC = () => {
                     disabled={loading}
                   >
                     <RefreshCw className={cn("h-4 w-4 mr-1", loading && "animate-spin")} />
-                    {t('notifications:actions.refresh')}
+                    {t('actions.refresh')}
                   </Button>
                   {unreadCount > 0 && (
                     <Button
@@ -103,7 +104,7 @@ export const UnifiedNotificationCenter: React.FC = () => {
                       onClick={markAllAsRead}
                     >
                       <CheckCheck className="h-4 w-4 mr-1" />
-                      {t('notifications:actions.markAllAsRead')}
+                      {t('actions.markAllAsRead')}
                     </Button>
                   )}
                 </div>
@@ -116,7 +117,7 @@ export const UnifiedNotificationCenter: React.FC = () => {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={deleteAllNotifications}>
                       <Trash2 className="h-4 w-4 mr-2" />
-                      {t('notifications:actions.deleteAll')}
+                      {t('actions.deleteAll')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -135,13 +136,13 @@ export const UnifiedNotificationCenter: React.FC = () => {
                 <div className="p-4 space-y-2">
                   {loading && filteredNotifications.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
-                      {t('notifications:status.loading')}
+                      {t('status.loading')}
                     </div>
                   ) : filteredNotifications.length === 0 ? (
                     <div className="text-center py-8 text-muted-foreground">
                       <Bell className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                      <p>{t('notifications:status.empty')}</p>
-                      <p className="text-sm">{t('notifications:status.emptyDescription')}</p>
+                      <p>{t('status.empty')}</p>
+                      <p className="text-sm">{t('status.emptyDescription')}</p>
                     </div>
                   ) : (
                     <>
@@ -165,13 +166,14 @@ export const UnifiedNotificationCenter: React.FC = () => {
                           onClick={loadMoreNotifications}
                           disabled={loading}
                         >
-                          {loading ? t('notifications:status.loading') : 'Načíst další'}
+                          {loading ? t('status.loading') : t('actions.loadMore')}
                         </Button>
                       )}
                     </>
                   )}
                 </div>
               </ScrollArea>
+              </div>
             </div>
           </div>
         )}
@@ -210,7 +212,7 @@ export const UnifiedNotificationCenter: React.FC = () => {
           <div className="flex items-center justify-between p-4 border-b">
             <div className="flex items-center gap-2">
               <Bell className="h-4 w-4" />
-              <h3 className="font-semibold">Oznámení</h3>
+              <h3 className="font-semibold">{t('status.notifications')}</h3>
               {unreadCount > 0 && (
                 <Badge variant="secondary" className="text-xs">
                   {unreadCount}
@@ -236,12 +238,12 @@ export const UnifiedNotificationCenter: React.FC = () => {
                   {unreadCount > 0 && (
                     <DropdownMenuItem onClick={markAllAsRead}>
                       <CheckCheck className="h-4 w-4 mr-2" />
-                      {t('notifications:actions.markAllAsRead')}
+                      {t('actions.markAllAsRead')}
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem onClick={deleteAllNotifications}>
                     <Trash2 className="h-4 w-4 mr-2" />
-                    {t('notifications:actions.deleteAll')}
+                    {t('actions.deleteAll')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -262,13 +264,13 @@ export const UnifiedNotificationCenter: React.FC = () => {
             <div className="p-2">
               {loading && filteredNotifications.length === 0 ? (
                 <div className="text-center py-6 text-muted-foreground text-sm">
-                  {t('notifications:status.loading')}
+                  {t('status.loading')}
                 </div>
               ) : filteredNotifications.length === 0 ? (
                 <div className="text-center py-6 text-muted-foreground">
                   <Bell className="h-6 w-6 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">{t('notifications:status.empty')}</p>
-                  <p className="text-xs">{t('notifications:status.emptyDescription')}</p>
+                  <p className="text-sm">{t('status.empty')}</p>
+                  <p className="text-xs">{t('status.emptyDescription')}</p>
                 </div>
               ) : (
                 <div className="space-y-1">
@@ -293,7 +295,7 @@ export const UnifiedNotificationCenter: React.FC = () => {
                         onClick={() => setIsOpen(false)}
                         className="text-xs"
                       >
-                        Zobrazit všechna oznámení
+                        {t('actions.viewAll')}
                       </Button>
                     </div>
                   )}

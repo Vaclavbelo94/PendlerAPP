@@ -49,14 +49,17 @@
     "deleteAll": "Alle löschen",
     "viewDetails": "Details anzeigen",
     "close": "Schließen",
-    "refresh": "Aktualisieren"
+    "refresh": "Aktualisieren",
+    "loadMore": "Mehr laden",
+    "viewAll": "Alle Benachrichtigungen anzeigen"
   },
   "status": {
     "read": "Gelesen",
     "unread": "Ungelesen",
     "loading": "Lädt...",
     "empty": "Keine Benachrichtigungen",
-    "emptyDescription": "Sie haben keine neuen Benachrichtigungen."
+    "emptyDescription": "Sie haben keine neuen Benachrichtigungen.",
+    "notifications": "Benachrichtigungen"
   },
   "priority": {
     "low": "Niedrig",
