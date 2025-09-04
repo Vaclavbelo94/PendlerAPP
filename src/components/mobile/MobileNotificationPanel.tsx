@@ -16,7 +16,7 @@ export const MobileNotificationPanel: React.FC<MobileNotificationPanelProps> = (
   isOpen,
   onClose
 }) => {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation('notifications');
   const { 
     notifications, 
     loading, 
@@ -42,7 +42,7 @@ export const MobileNotificationPanel: React.FC<MobileNotificationPanelProps> = (
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 z-50"
+            className="fixed inset-0 bg-black/50 z-[99]"
             onClick={onClose}
           />
           
@@ -52,14 +52,14 @@ export const MobileNotificationPanel: React.FC<MobileNotificationPanelProps> = (
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-full max-w-sm bg-background border-l shadow-xl z-50 flex flex-col"
+            className="fixed right-0 top-0 h-full w-full max-w-sm bg-background border-l shadow-xl z-[100] flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b">
               <div className="flex items-center gap-2">
                 <Bell className="h-5 w-5 text-primary" />
                 <h2 className="font-semibold text-lg">
-                  {t('notifications') || 'Oznámení'}
+                  {t('status.notifications')}
                   {unreadCount > 0 && (
                     <span className="ml-2 px-2 py-1 bg-primary text-primary-foreground text-xs rounded-full">
                       {unreadCount}
@@ -83,7 +83,7 @@ export const MobileNotificationPanel: React.FC<MobileNotificationPanelProps> = (
                   className="flex-1"
                 >
                   <CheckCheck className="h-4 w-4 mr-2" />
-                  {t('markAllRead') || 'Označit vše'}
+                  {t('actions.markAllAsRead')}
                 </Button>
                 <Button
                   variant="outline"
@@ -92,7 +92,7 @@ export const MobileNotificationPanel: React.FC<MobileNotificationPanelProps> = (
                   className="flex-1"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  {t('clearAll') || 'Smazat vše'}
+                  {t('actions.deleteAll')}
                 </Button>
               </div>
             )}
@@ -107,10 +107,10 @@ export const MobileNotificationPanel: React.FC<MobileNotificationPanelProps> = (
                 <div className="flex flex-col items-center justify-center h-full p-8 text-center">
                   <Bell className="h-12 w-12 text-muted-foreground mb-4" />
                   <p className="font-medium text-muted-foreground">
-                    {t('noNotifications') || 'Žádná oznámení'}
+                    {t('status.empty')}
                   </p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {t('noNotificationsDesc') || 'Zde se zobrazí vaše oznámení'}
+                    {t('status.emptyDescription')}
                   </p>
                 </div>
               ) : (
