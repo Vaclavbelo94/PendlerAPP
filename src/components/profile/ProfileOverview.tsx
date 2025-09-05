@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from '@/hooks/auth';
 import { User, Mail, Calendar, MapPin, Briefcase, Edit2, Save, X } from "lucide-react";
 import { useTranslation } from 'react-i18next';
-import { TestNotificationButton } from '@/components/notifications/TestNotificationButton';
+import { CreateNotificationTest } from '@/components/notifications/CreateNotificationTest';
 import { useProfileSettings } from './settings/useProfileSettings';
 import CityAutocomplete from '@/components/common/CityAutocomplete';
 import { useToast } from '@/hooks/use-toast';
@@ -209,7 +209,7 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ onEdit, onSave, onCan
               <Label className="text-xs text-muted-foreground mb-2 block">
                 Testovací funkce
               </Label>
-              <TestNotificationButton />
+              <CreateNotificationTest />
             </div>
           </div>
         )}
