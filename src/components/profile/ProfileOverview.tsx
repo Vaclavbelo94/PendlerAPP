@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from '@/hooks/auth';
 import { User, Mail, Calendar, MapPin, Briefcase, Edit2, Save, X } from "lucide-react";
 import { useTranslation } from 'react-i18next';
+import { TestNotificationButton } from '@/components/notifications/TestNotificationButton';
 import { useProfileSettings } from './settings/useProfileSettings';
 import CityAutocomplete from '@/components/common/CityAutocomplete';
 import { useToast } from '@/hooks/use-toast';
@@ -197,10 +198,20 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ onEdit, onSave, onCan
         </div>
 
         {!isEditing && (
-          <Button onClick={onEdit} className="w-full">
-            <Edit2 className="h-4 w-4 mr-2" />
-            {t('editProfile')}
-          </Button>
+          <div className="space-y-3">
+            <Button onClick={onEdit} className="w-full">
+              <Edit2 className="h-4 w-4 mr-2" />
+              {t('editProfile')}
+            </Button>
+            
+            {/* Development/Testing Section */}
+            <div className="pt-4 border-t border-border/50">
+              <Label className="text-xs text-muted-foreground mb-2 block">
+                Testovací funkce
+              </Label>
+              <TestNotificationButton />
+            </div>
+          </div>
         )}
 
         {isEditing && (
