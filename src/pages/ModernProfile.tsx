@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { LogIn } from 'lucide-react';
 import { ModernProfileCarousel } from '@/components/profile/modern/ModernProfileCarousel';
 import UnifiedNavbar from '@/components/layouts/UnifiedNavbar';
-import { NavbarRightContent } from '@/components/navbar/NavbarRightContent';
+import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 
 const ModernProfile = () => {
   const { user } = useAuth();
