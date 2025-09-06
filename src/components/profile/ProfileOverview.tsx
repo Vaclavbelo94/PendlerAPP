@@ -204,7 +204,7 @@ const ProfileOverview: React.FC<ProfileOverviewProps> = ({ onEdit, onSave, onCan
               {t('editProfile')}
             </Button>
             
-            {/* Development/Testing Section */}
+            {/* Development/Testing Section - Always visible */}
             <div className="pt-4 border-t border-border/50">
               <Label className="text-xs text-muted-foreground mb-2 block">
                 Testovací funkce
