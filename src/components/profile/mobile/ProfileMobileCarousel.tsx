@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Briefcase, Crown, Truck, FileText } from 'lucide-react';
+import { User, Briefcase, Crown, Truck, FileText, TestTube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSwipeNavigation } from '@/hooks/useSwipeNavigation';
 import ProfileOverview from '../ProfileOverview';
@@ -33,7 +33,8 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
   const getTabs = () => {
     const baseTabs = [
       { id: 'overview', label: t('overview'), icon: User },
-      { id: 'workData', label: t('workData'), icon: Briefcase }
+      { id: 'workData', label: t('workData'), icon: Briefcase },
+      { id: 'testing', label: 'Test', icon: TestTube }
     ];
     
     if (unifiedUser?.isDHLEmployee) {
@@ -76,15 +77,20 @@ export const ProfileMobileCarousel: React.FC<ProfileMobileCarouselProps> = ({
         );
       case 'workData':
         return <ProfileWorkData />;
-      case 'dhlSettings':
-        return <DHLProfileSettings />;
-      case 'submissions':
+      case 'testing':
         return (
           <div className="space-y-4">
-            <MobileRideRequests />
+            <div className="text-center mb-4">
+              <h3 className="text-lg font-medium">Testovací funkce</h3>
+              <p className="text-sm text-muted-foreground">Testování oznámení systému</p>
+            </div>
             <CreateNotificationTest />
           </div>
         );
+      case 'dhlSettings':
+        return <DHLProfileSettings />;
+      case 'submissions':
+        return <MobileRideRequests />;
       case 'subscription':
         return <ProfileSubscription isPremium={unifiedUser?.isPremium || false} />;
       default:
