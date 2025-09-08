@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { AuthContextType, UnifiedUser, UserRole } from '@/types/auth';
 import { roleManager, AuthData } from '@/services/RoleManager';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface OptimizedAuthState {
   user: User | null;
@@ -25,6 +26,7 @@ interface OptimizedAuthState {
  */
 export const useOptimizedAuth = (): AuthContextType => {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   
   const [state, setState] = useState<OptimizedAuthState>({
     user: null,
@@ -72,6 +74,9 @@ export const useOptimizedAuth = (): AuthContextType => {
               setTimeout(async () => {
                 if (!isMounted) return;
                 await loadUserData(user);
+                
+                // Handle admin redirect to mobile version
+                handleAdminRedirect(user);
               }, 0);
             }
 
@@ -110,6 +115,7 @@ export const useOptimizedAuth = (): AuthContextType => {
           // Load user data if already logged in
           if (user) {
             await loadUserData(user);
+            handleAdminRedirect(user);
           }
         }
       } catch (error) {
@@ -134,7 +140,24 @@ export const useOptimizedAuth = (): AuthContextType => {
     };
   }, []);
 
-  // Load complete user data in background
+  // Handle admin redirect to mobile version
+  const handleAdminRedirect = useCallback((user: User) => {
+    if (!isMobile) return;
+    
+    const currentPath = window.location.pathname;
+    const isAdminPath = currentPath.includes('/admin');
+    const isMobileAdminPath = currentPath.includes('/admin/mobile');
+    
+    // If on desktop admin path and user is on mobile, redirect to mobile admin
+    if (isAdminPath && !isMobileAdminPath) {
+      // Check if user has admin permissions
+      const quickRoles = roleManager.getQuickRoles(user);
+      if (quickRoles.isAdmin) {
+        navigate('/admin/mobile', { replace: true });
+      }
+    }
+  }, [isMobile, navigate]);
+
   const loadUserData = useCallback(async (user: User) => {
     try {
       console.log('OptimizedAuth: Loading user data for:', user.email);
