@@ -83,8 +83,12 @@ export const useOAuthCallback = () => {
             // Clean up the URL
             window.history.replaceState(null, '', window.location.pathname);
             
-            // Navigate to dashboard
-            navigate('/dashboard', { replace: true });
+            // Navigate based on user role
+            const { getAdminRedirectPath } = await import('@/utils/authRedirectUtils');
+            const adminPath = getAdminRedirectPath(data.session.user);
+            const redirectPath = adminPath || '/dashboard';
+            console.log('OAuth callback redirecting to:', redirectPath);
+            navigate(redirectPath, { replace: true });
             return;
           }
         }
@@ -107,8 +111,12 @@ export const useOAuthCallback = () => {
           // Clean up the URL
           window.history.replaceState(null, '', window.location.pathname);
           
-          // Navigate to dashboard
-          navigate('/dashboard', { replace: true });
+          // Navigate based on user role
+          const { getAdminRedirectPath } = await import('@/utils/authRedirectUtils');
+          const adminPath = getAdminRedirectPath(data.session.user);
+          const redirectPath = adminPath || '/dashboard';
+          console.log('OAuth callback redirecting to:', redirectPath);
+          navigate(redirectPath, { replace: true });
         } else {
           console.error('No session after OAuth callback');
           toast.error('Chyba při zpracování přihlášení');

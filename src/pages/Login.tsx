@@ -11,7 +11,7 @@ import LoginForm from "@/components/auth/LoginForm";
 import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 import StorageWarning from "@/components/auth/StorageWarning";
 import UnifiedNavbar from '@/components/layouts/UnifiedNavbar';
-import { getRedirectPath } from "@/utils/authRoleUtils";
+import { getAdminRedirectPath } from "@/utils/authRedirectUtils";
 
 const Login = () => {
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -33,8 +33,11 @@ const Login = () => {
     }
     
     if (user && session) {
-      console.log('User already logged in, redirecting to dashboard');
-      navigate('/dashboard');
+      console.log('User already logged in, determining redirect path');
+      const adminPath = getAdminRedirectPath(user);
+      const redirectPath = adminPath || '/dashboard';
+      console.log('Redirecting to:', redirectPath);
+      navigate(redirectPath);
       return;
     }
     
