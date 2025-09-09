@@ -31,9 +31,9 @@ export const getAdminRedirectPath = (user: User | null): string | null => {
     return '/dhl-admin';
   }
   
-  // Main admin goes to main admin panel
+  // Main admin goes to mobile admin panel
   if (isMainAdminSync(user)) {
-    return '/admin/v2';
+    return '/admin/mobile';
   }
   
   // Other special users go to main admin panel
