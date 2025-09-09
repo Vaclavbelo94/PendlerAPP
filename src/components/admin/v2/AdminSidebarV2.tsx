@@ -21,7 +21,8 @@ import {
   BarChart3, 
   Database,
   Activity,
-  Gift
+  Gift,
+  Bell
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { useAdminV2 } from '@/hooks/useAdminV2';
@@ -49,6 +50,12 @@ const adminMenuItems = [
     title: 'Premium kódy',
     url: '/admin/v2/premium-codes',
     icon: Gift,
+    requiredPermission: 'admin' as const,
+  },
+  {
+    title: 'Notifikace',
+    url: '/admin/v2/notifications',
+    icon: Bell,
     requiredPermission: 'admin' as const,
   },
   {

@@ -10,6 +10,7 @@ import { AnalyticsV2 } from '@/components/admin/v2/pages/AnalyticsV2';
 import { DatabaseV2 } from '@/components/admin/v2/pages/DatabaseV2';
 import { MonitoringV2 } from '@/components/admin/v2/pages/MonitoringV2';
 import { CompanyPremiumCodesV2 } from '@/components/admin/v2/pages/CompanyPremiumCodesV2';
+import { NotificationsV2 } from '@/components/admin/v2/pages/NotificationsV2';
 
 const AdminV2: React.FC = () => {
   return (
@@ -18,6 +19,7 @@ const AdminV2: React.FC = () => {
         <Route path="/" element={<AdminDashboardV2 />} />
         <Route path="/companies" element={<CompanyManagementV2 />} />
         <Route path="/premium-codes" element={<CompanyPremiumCodesV2 />} />
+        <Route path="/notifications" element={<NotificationsV2 />} />
         <Route path="/accounts" element={<AccountManagementV2 />} />
         <Route path="/settings" element={<WebSettingsV2 />} />
         <Route path="/security" element={<SecurityV2 />} />
