@@ -42,8 +42,16 @@ export const calculateWeeklyOvertimeForDHLWechselschicht = (weeklyShifts: Shift[
 /**
  * Kontrolluje zda je pozice DHL Wechselschicht (30h týdně)
  */
-export const isDHLWechselschichtPosition = (company?: string, positionType?: string): boolean => {
-  return company === 'dhl' && positionType !== 'technik';
+export const isDHLWechselschichtPosition = (company?: string, positionType?: string, positionName?: string): boolean => {
+  if (company !== 'dhl') return false;
+  
+  // Check by position name (contains "Wechselschicht" or "30h")
+  if (positionName) {
+    return positionName.toLowerCase().includes('wechselschicht') || positionName.toLowerCase().includes('30h');
+  }
+  
+  // Fallback: any non-technik position is considered Wechselschicht
+  return positionType !== 'technik';
 };
 
 /**

@@ -85,7 +85,11 @@ export const useOvertimeData = ({ userId, month, year, customStandardHours }: Us
     }
 
     // Check if DHL Wechselschicht position (30h/week)
-    const isWechselschicht = isDHL && userAssignment?.dhl_position?.position_type !== 'technik';
+    const isWechselschicht = isDHL && isDHLWechselschichtPosition(
+      company, 
+      userAssignment?.dhl_position?.position_type,
+      userAssignment?.dhl_position?.name
+    );
     
     if (isWechselschicht) {
       // For DHL Wechselschicht: calculate weekly overtime (30h/week standard)
