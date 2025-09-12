@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useShiftsData } from '@/hooks/shifts/useShiftsData';
 import { useCompany } from '@/hooks/useCompany';
 import { useDHLData } from '@/hooks/dhl/useDHLData';
-import { calculateShiftDuration, calculateOvertimeForShift, getOvertimeStatsByType } from '@/utils/overtimeCalculations';
+import { calculateShiftDuration, calculateOvertimeForShift, getOvertimeStatsByType, isDHLWechselschichtPosition } from '@/utils/overtimeCalculations';
 import { Shift } from '@/types/shifts';
 
 interface OvertimeData {
@@ -84,39 +84,72 @@ export const useOvertimeData = ({ userId, month, year, customStandardHours }: Us
       return;
     }
 
-    // Calculate overtime for each shift with company-specific standards
-    const shiftsWithOvertime = filteredShifts.map(shift => {
-      const actualHours = calculateShiftDuration(shift.start_time, shift.end_time);
-      const standardHours = getStandardHours(shift.type, userAssignment?.dhl_position);
-      const overtime = Math.max(0, actualHours - standardHours);
+    // Check if DHL Wechselschicht position (30h/week)
+    const isWechselschicht = isDHL && userAssignment?.dhl_position?.position_type !== 'technik';
+    
+    if (isWechselschicht) {
+      // For DHL Wechselschicht: calculate weekly overtime (30h/week standard)
+      const totalWeeklyHours = filteredShifts.reduce((total, shift) => {
+        return total + calculateShiftDuration(shift.start_time, shift.end_time);
+      }, 0);
       
-      return {
-        ...shift,
-        actualHours,
-        standardHours,
-        overtime
+      const weeklyOvertime = Math.max(0, totalWeeklyHours - 30);
+      
+      // Distribute weekly overtime proportionally by shift type
+      const totalActualHours = totalWeeklyHours || 1; // Avoid division by zero
+      const overtimeByType = {
+        morning: 0,
+        afternoon: 0,
+        night: 0
       };
-    });
+      
+      filteredShifts.forEach(shift => {
+        const shiftHours = calculateShiftDuration(shift.start_time, shift.end_time);
+        const proportion = shiftHours / totalActualHours;
+        overtimeByType[shift.type] += weeklyOvertime * proportion;
+      });
 
-    // Group overtime by shift type
-    const overtimeByType = {
-      morning: 0,
-      afternoon: 0,
-      night: 0
-    };
+      setOvertimeData({
+        morning: Math.round(overtimeByType.morning * 10) / 10,
+        afternoon: Math.round(overtimeByType.afternoon * 10) / 10,
+        night: Math.round(overtimeByType.night * 10) / 10,
+        total: Math.round(weeklyOvertime * 10) / 10
+      });
+    } else {
+      // For other positions: calculate daily overtime
+      const shiftsWithOvertime = filteredShifts.map(shift => {
+        const actualHours = calculateShiftDuration(shift.start_time, shift.end_time);
+        const standardHours = getStandardHours(shift.type, userAssignment?.dhl_position);
+        const overtime = Math.max(0, actualHours - standardHours);
+        
+        return {
+          ...shift,
+          actualHours,
+          standardHours,
+          overtime
+        };
+      });
 
-    shiftsWithOvertime.forEach(shift => {
-      overtimeByType[shift.type] += shift.overtime;
-    });
+      // Group overtime by shift type
+      const overtimeByType = {
+        morning: 0,
+        afternoon: 0,
+        night: 0
+      };
 
-    const total = overtimeByType.morning + overtimeByType.afternoon + overtimeByType.night;
+      shiftsWithOvertime.forEach(shift => {
+        overtimeByType[shift.type] += shift.overtime;
+      });
 
-    setOvertimeData({
-      morning: Math.round(overtimeByType.morning * 10) / 10, // Round to 1 decimal
-      afternoon: Math.round(overtimeByType.afternoon * 10) / 10,
-      night: Math.round(overtimeByType.night * 10) / 10,
-      total: Math.round(total * 10) / 10
-    });
+      const total = overtimeByType.morning + overtimeByType.afternoon + overtimeByType.night;
+
+      setOvertimeData({
+        morning: Math.round(overtimeByType.morning * 10) / 10,
+        afternoon: Math.round(overtimeByType.afternoon * 10) / 10,
+        night: Math.round(overtimeByType.night * 10) / 10,
+        total: Math.round(total * 10) / 10
+      });
+    }
 
   }, [filteredShifts, userAssignment, isDHL]);
 

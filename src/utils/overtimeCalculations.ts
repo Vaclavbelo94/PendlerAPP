@@ -28,6 +28,25 @@ export const getCompanyStandardHours = (
 };
 
 /**
+ * Vypočítá týdenní přesčasy pro DHL Wechselschicht pozice (30h/týden)
+ */
+export const calculateWeeklyOvertimeForDHLWechselschicht = (weeklyShifts: Shift[]): number => {
+  const totalWeeklyHours = weeklyShifts.reduce((total, shift) => {
+    return total + calculateShiftDuration(shift.start_time, shift.end_time);
+  }, 0);
+  
+  const standardWeeklyHours = 30; // DHL Wechselschicht standard
+  return Math.max(0, totalWeeklyHours - standardWeeklyHours);
+};
+
+/**
+ * Kontrolluje zda je pozice DHL Wechselschicht (30h týdně)
+ */
+export const isDHLWechselschichtPosition = (company?: string, positionType?: string): boolean => {
+  return company === 'dhl' && positionType !== 'technik';
+};
+
+/**
  * Vypočítá délku směny v hodinách
  */
 export const calculateShiftDuration = (startTime: string, endTime: string): number => {
