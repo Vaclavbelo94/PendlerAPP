@@ -92,32 +92,38 @@ export const useOvertimeData = ({ userId, month, year, customStandardHours }: Us
     );
     
     if (isWechselschicht) {
-      // For DHL Wechselschicht: calculate weekly overtime (30h/week standard)
-      const totalWeeklyHours = filteredShifts.reduce((total, shift) => {
-        return total + calculateShiftDuration(shift.start_time, shift.end_time);
-      }, 0);
-      
-      const weeklyOvertime = Math.max(0, totalWeeklyHours - 30);
-      
-      // Distribute weekly overtime proportionally by shift type
-      const totalActualHours = totalWeeklyHours || 1; // Avoid division by zero
+      // For DHL Wechselschicht: calculate daily overtime with 6h standard per shift
+      const shiftsWithOvertime = filteredShifts.map(shift => {
+        const actualHours = calculateShiftDuration(shift.start_time, shift.end_time);
+        const standardHours = 6; // DHL Wechselschicht standard: 6h per shift
+        const overtime = Math.max(0, actualHours - standardHours);
+        
+        return {
+          ...shift,
+          actualHours,
+          standardHours,
+          overtime
+        };
+      });
+
+      // Group overtime by shift type
       const overtimeByType = {
         morning: 0,
         afternoon: 0,
         night: 0
       };
-      
-      filteredShifts.forEach(shift => {
-        const shiftHours = calculateShiftDuration(shift.start_time, shift.end_time);
-        const proportion = shiftHours / totalActualHours;
-        overtimeByType[shift.type] += weeklyOvertime * proportion;
+
+      shiftsWithOvertime.forEach(shift => {
+        overtimeByType[shift.type] += shift.overtime;
       });
+
+      const total = overtimeByType.morning + overtimeByType.afternoon + overtimeByType.night;
 
       setOvertimeData({
         morning: Math.round(overtimeByType.morning * 10) / 10,
         afternoon: Math.round(overtimeByType.afternoon * 10) / 10,
         night: Math.round(overtimeByType.night * 10) / 10,
-        total: Math.round(weeklyOvertime * 10) / 10
+        total: Math.round(total * 10) / 10
       });
     } else {
       // For other positions: calculate daily overtime
