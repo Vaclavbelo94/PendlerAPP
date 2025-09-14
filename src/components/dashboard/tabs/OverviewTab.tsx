@@ -5,9 +5,35 @@ import { Button } from '@/components/ui/button';
 import { CalendarDays, TrendingUp, Clock, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/auth';
+import { supabase } from '@/integrations/supabase/client';
+import { useState, useEffect } from 'react';
 
 const OverviewTab = () => {
   const { user } = useAuth();
+  const [displayName, setDisplayName] = useState<string>('');
+  
+  // Load user's display name from extended profile
+  useEffect(() => {
+    const loadDisplayName = async () => {
+      if (!user?.id) return;
+      
+      try {
+        const { data: extendedProfile } = await supabase
+          .from('user_extended_profiles')
+          .select('display_name')
+          .eq('user_id', user.id)
+          .maybeSingle();
+          
+        const name = extendedProfile?.display_name || user?.email?.split('@')[0] || 'uživatel';
+        setDisplayName(name);
+      } catch (error) {
+        console.error('Error loading display name:', error);
+        setDisplayName(user?.email?.split('@')[0] || 'uživatel');
+      }
+    };
+    
+    loadDisplayName();
+  }, [user]);
 
   // Mock data - would come from API
   const stats = {
@@ -22,7 +48,7 @@ const OverviewTab = () => {
       {/* Welcome section */}
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Vítejte zpět, {user?.email?.split('@')[0]}!
+          Vítejte zpět, {displayName}!
         </h2>
         <p className="text-gray-600">
           Zde je přehled vašich nejnovějších aktivit a nadcházejících směn.

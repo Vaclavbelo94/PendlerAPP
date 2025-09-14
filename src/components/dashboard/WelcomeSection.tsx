@@ -1,22 +1,46 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '@/integrations/supabase/client';
 
 export const WelcomeSection = () => {
   const { user } = useAuth();
   const { t } = useTranslation(['dashboard', 'ui']);
-  const username = user?.email?.split('@')[0] || t('ui:user');
+  const [displayName, setDisplayName] = useState<string>('');
+  
+  // Load user's display name from extended profile
+  useEffect(() => {
+    const loadDisplayName = async () => {
+      if (!user?.id) return;
+      
+      try {
+        const { data: extendedProfile } = await supabase
+          .from('user_extended_profiles')
+          .select('display_name')
+          .eq('user_id', user.id)
+          .maybeSingle();
+          
+        const name = extendedProfile?.display_name || user?.email?.split('@')[0] || t('ui:user');
+        setDisplayName(name);
+      } catch (error) {
+        console.error('Error loading display name:', error);
+        setDisplayName(user?.email?.split('@')[0] || t('ui:user'));
+      }
+    };
+    
+    loadDisplayName();
+  }, [user, t]);
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold tracking-tight">
-          {t('dashboard:welcome')}, {username}!
+          {t('dashboard:welcome')}, {displayName}!
         </h2>
         <p className="text-muted-foreground mt-1">
           {t('dashboard:welcomeBack')} {t('dashboard:workAssistant')}
