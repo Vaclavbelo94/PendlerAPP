@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Shift } from '@/types/shifts';
 import { format, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
+import { useOvertimeData } from '@/hooks/useOvertimeData';
+import { useAuth } from '@/hooks/auth';
 
 interface MobileShiftsStatsProps {
   shifts: Shift[];
@@ -15,6 +17,14 @@ const MobileShiftsStats: React.FC<MobileShiftsStatsProps> = ({
   currentDate
 }) => {
   const { t } = useTranslation('shifts');
+  const { user } = useAuth();
+  
+  // Get proper overtime calculation for current month
+  const { overtimeData } = useOvertimeData({
+    userId: user?.id,
+    month: currentDate.getMonth(),
+    year: currentDate.getFullYear()
+  });
 
   // Filter shifts for current month
   const monthStart = startOfMonth(currentDate);
@@ -52,8 +62,8 @@ const MobileShiftsStats: React.FC<MobileShiftsStatsProps> = ({
     return sum + calculateShiftHours(shift.start_time, shift.end_time);
   }, 0);
 
-  const standardHours = totalShifts * 8; // Assuming 8 hours per shift
-  const overtimeHours = Math.max(0, totalHours - standardHours);
+  // Use proper overtime calculation from useOvertimeData hook
+  const overtimeHours = overtimeData.total;
 
   const stats = [
     {
