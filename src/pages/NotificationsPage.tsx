@@ -61,16 +61,36 @@ const NotificationsPage: React.FC = () => {
     
     return notifications.filter(notification => {
       const type = notification.type.toLowerCase();
+      const category = notification.category?.toLowerCase() || '';
       
       switch (selectedFilter) {
         case 'shift':
-          return type.includes('shift') || type.includes('overtime');
+          return (
+            type.includes('shift') || 
+            type.includes('overtime') ||
+            category.includes('shift') ||
+            notification.related_to?.type === 'shift'
+          );
         case 'rideshare':
-          return type.includes('rideshare') || type.includes('travel');
+          return (
+            type.includes('rideshare') || 
+            type.includes('travel') ||
+            category.includes('rideshare')
+          );
         case 'system':
-          return type.includes('system') || type.includes('maintenance') || type.includes('update');
+          return (
+            type.includes('system') || 
+            type.includes('maintenance') || 
+            type.includes('update') ||
+            category.includes('system')
+          );
         case 'admin':
-          return type.includes('admin') || type.includes('warning') || type.includes('critical');
+          return (
+            type.includes('admin') || 
+            type.includes('warning') || 
+            type.includes('critical') ||
+            category.includes('admin')
+          );
         default:
           return true;
       }
@@ -385,11 +405,35 @@ const NotificationsPage: React.FC = () => {
                     ? notifications.length 
                     : notifications.filter(n => {
                         const type = n.type.toLowerCase();
+                        const category = n.category?.toLowerCase() || '';
                         switch (key) {
-                          case 'shift': return type.includes('shift') || type.includes('overtime');
-                          case 'rideshare': return type.includes('rideshare') || type.includes('travel');
-                          case 'system': return type.includes('system') || type.includes('maintenance') || type.includes('update');
-                          case 'admin': return type.includes('admin') || type.includes('warning') || type.includes('critical');
+                          case 'shift': 
+                            return (
+                              type.includes('shift') || 
+                              type.includes('overtime') ||
+                              category.includes('shift') ||
+                              n.related_to?.type === 'shift'
+                            );
+                          case 'rideshare': 
+                            return (
+                              type.includes('rideshare') || 
+                              type.includes('travel') ||
+                              category.includes('rideshare')
+                            );
+                          case 'system': 
+                            return (
+                              type.includes('system') || 
+                              type.includes('maintenance') || 
+                              type.includes('update') ||
+                              category.includes('system')
+                            );
+                          case 'admin': 
+                            return (
+                              type.includes('admin') || 
+                              type.includes('warning') || 
+                              type.includes('critical') ||
+                              category.includes('admin')
+                            );
                           default: return false;
                         }
                       }).length;

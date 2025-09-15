@@ -3,24 +3,24 @@
     "saved": "Schicht hinzugefügt",
     "updated": "Schicht aktualisiert",
     "deleted": "Schicht gelöscht",
-    "savedDescription": "Schicht wurde erfolgreich hinzugefügt.",
-    "updatedDescription": "Schicht wurde erfolgreich bearbeitet.",
-    "deletedDescription": "Schicht wurde erfolgreich gelöscht.",
+    "savedDescription": "Die Schicht wurde erfolgreich hinzugefügt.",
+    "updatedDescription": "Die Schicht wurde erfolgreich bearbeitet.",
+    "deletedDescription": "Die Schicht wurde erfolgreich gelöscht.",
     "newShift": "Neue Schicht",
     "shiftChanged": "Schichtänderung",
     "overtime": "Überstunden",
     "reminder": "Schichterinnerung"
   },
   "rideshare": {
-    "newRequest": "Neue Mitfahranfrage",
+    "newRequest": "Neue Mitfahrgelegenheit-Anfrage",
     "requestAccepted": "Anfrage angenommen",
     "requestRejected": "Anfrage abgelehnt",
     "offerCancelled": "Angebot storniert",
     "requestCancelled": "Anfrage storniert",
-    "newOffer": "Neues Mitfahrangebot",
+    "newOffer": "Neues Mitfahrgelegenheit-Angebot",
     "offerUpdated": "Angebot aktualisiert",
     "rideConfirmed": "Fahrt bestätigt",
-    "reminder": "Fahrterinnerung"
+    "reminder": "Fahrt-Erinnerung"
   },
   "system": {
     "maintenance": "Systemwartung",
@@ -29,7 +29,7 @@
     "welcome": "Willkommen"
   },
   "admin": {
-    "message": "Administrator-Nachricht",
+    "message": "Nachricht vom Administrator",
     "announcement": "Administrator-Ankündigung",
     "warning": "Warnung",
     "critical": "Kritische Benachrichtigung"
@@ -56,7 +56,7 @@
   "status": {
     "read": "Gelesen",
     "unread": "Ungelesen",
-    "loading": "Lädt...",
+    "loading": "Laden...",
     "empty": "Keine Benachrichtigungen",
     "emptyDescription": "Sie haben keine neuen Benachrichtigungen.",
     "notifications": "Benachrichtigungen"
@@ -68,23 +68,34 @@
     "critical": "Kritisch"
   },
   "categories": {
-    "all": "Alle",
-    "shift": "Schichten",
-    "rideshare": "Mitfahrgelegenheiten",
-    "system": "System",
-    "admin": "Administration"
+    "all": "Alle Benachrichtigungen",
+    "shift": "Schichten und Überstunden",
+    "rideshare": "Mitfahrgelegenheiten und Reisen",
+    "system": "Systembenachrichtigungen",
+    "admin": "Verwaltung und Warnungen"
   },
   "time": {
     "now": "Jetzt",
     "minuteAgo": "vor einer Minute",
     "minutesAgo": "vor {{count}} Minuten",
     "hourAgo": "vor einer Stunde",
-    "hoursAgo": "vor {{count}} Stunden", 
+    "hoursAgo": "vor {{count}} Stunden",
     "dayAgo": "gestern",
     "daysAgo": "vor {{count}} Tagen",
     "weekAgo": "vor einer Woche",
     "weeksAgo": "vor {{count}} Wochen",
     "monthAgo": "vor einem Monat",
     "monthsAgo": "vor {{count}} Monaten"
+  },
+  "navigation": {
+    "notifications": "Benachrichtigungen",
+    "notificationsDesc": "Alle Benachrichtigungen und Nachrichten anzeigen"
+  },
+  "filters": {
+    "filterBy": "Filtern nach",
+    "showAll": "Alle anzeigen",
+    "noResults": "Keine Ergebnisse",
+    "noResultsDescription": "Für diesen Filter wurden keine Ergebnisse gefunden.",
+    "swipeHint": "Wischen, um zwischen Kategorien zu wechseln"
   }
 }

@@ -38,18 +38,24 @@ export const useTestNotifications = () => {
     setIsCreating(true);
     
     try {
-      const user = userId || (await supabase.auth.getUser()).data.user?.id;
+      const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
       
-      if (!user) {
+      if (userError || !currentUser) {
         toast.error('Uživatel není přihlášen');
         return;
       }
 
-      // Create a sample shift notification
+      const targetUserId = userId || currentUser.id;
+      
+      // Create a sample shift notification for tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowDateStr = tomorrow.toISOString().split('T')[0];
+
       const { error } = await supabase
         .from('notifications')
         .insert({
-          user_id: user,
+          user_id: targetUserId,
           title: 'Zítra začíná směna',
           message: 'Noční směna zítra od 22:00 do 06:00',
           type: 'shift_reminder',
@@ -58,8 +64,8 @@ export const useTestNotifications = () => {
           language: 'cs',
           related_to: {
             type: 'shift',
-            shift_id: 'test-shift-id',
-            shift_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            shift_id: 'test-shift-tomorrow',
+            shift_date: tomorrowDateStr,
             shift_time: '22:00'
           },
           metadata: {
@@ -77,7 +83,7 @@ export const useTestNotifications = () => {
         return;
       }
 
-      toast.success('Ukázkové oznámení vytvořeno');
+      toast.success('Ukázkové oznámení o směně vytvořeno');
     } catch (error) {
       console.error('Error creating sample notification:', error);
       toast.error('Chyba při vytváření ukázkového oznámení');

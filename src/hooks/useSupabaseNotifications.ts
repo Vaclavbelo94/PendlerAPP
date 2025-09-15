@@ -8,6 +8,7 @@ export interface SupabaseNotification {
   title: string;
   message: string;
   type: string; // Changed to string to match DB type
+  category?: string; // Added category field
   created_at: string;
   read: boolean;
   user_id: string;

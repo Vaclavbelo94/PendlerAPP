@@ -120,6 +120,10 @@ Deno.serve(async (req) => {
         title = 'Jutro rozpoczyna się zmiana'
         shiftTypeName = getShiftTypeNamePL(shift.type)
         message = `${shiftTypeName} jutro od ${shiftTime} do ${endTime}`
+      } else if (language === 'de') {
+        title = 'Schicht beginnt morgen'
+        shiftTypeName = getShiftTypeNameDE(shift.type)
+        message = `${shiftTypeName} morgen von ${shiftTime} bis ${endTime}`
       } else { // Default to Czech
         title = 'Zítra začíná směna'
         shiftTypeName = getShiftTypeNameCS(shift.type)
@@ -193,6 +197,24 @@ Deno.serve(async (req) => {
     )
   }
 })
+
+function getShiftTypeNameDE(type: string): string {
+  switch (type?.toLowerCase()) {
+    case 'morning':
+    case 'ranní':
+      return 'Frühschicht'
+    case 'afternoon':
+    case 'odpolední':
+      return 'Spätschicht'
+    case 'night':
+    case 'noční':
+      return 'Nachtschicht'
+    case 'overtime':
+      return 'Überstunden'
+    default:
+      return 'Schicht'
+  }
+}
 
 function getShiftTypeNameCS(type: string): string {
   switch (type?.toLowerCase()) {
