@@ -244,5 +244,14 @@
     "errorDeletingDescription": "Schicht konnte nicht gelöscht werden",
     "notLoggedIn": "Fehler",
     "notLoggedInDescription": "Sie sind nicht angemeldet"
+  },
+  "shiftTypes": {
+    "morning": "Morgen",
+    "afternoon": "Nachmittag", 
+    "night": "Nacht"
+  },
+  "common": {
+    "cancel": "Abbrechen",
+    "retry": "Erneut versuchen"
   }
 }

@@ -60,6 +60,25 @@ export const ShiftNotificationItem: React.FC<ShiftNotificationItemProps> = ({
     }
   };
 
+  const getShiftTypeLabel = (type: string) => {
+    const { t } = useTranslation('shifts');
+    switch (type?.toLowerCase()) {
+      case 'morning':
+      case 'ranní':
+        return t('shiftTypes.morning', 'Ranní');
+      case 'afternoon':
+      case 'odpolední':
+        return t('shiftTypes.afternoon', 'Odpolední');
+      case 'night':
+      case 'noční':
+        return t('shiftTypes.night', 'Noční');
+      case 'overtime':
+        return t('overtime', 'Přesčas');
+      default:
+        return type;
+    }
+  };
+
   const getShiftTypeIcon = (type: string) => {
     switch (type?.toLowerCase()) {
       case 'morning':
@@ -139,14 +158,14 @@ export const ShiftNotificationItem: React.FC<ShiftNotificationItemProps> = ({
                     </div>
                   )}
                   
-                  {shiftType && (
-                    <Badge 
-                      variant="outline" 
-                      className={cn("h-5 text-xs border", getShiftTypeColor(shiftType))}
-                    >
-                      {shiftType}
-                    </Badge>
-                  )}
+                   {shiftType && (
+                     <Badge 
+                       variant="outline" 
+                       className={cn("h-5 text-xs border", getShiftTypeColor(shiftType))}
+                     >
+                       {getShiftTypeLabel(shiftType)}
+                     </Badge>
+                   )}
                 </div>
               )}
             </div>

@@ -34,7 +34,7 @@ import DashboardBackground from '@/components/common/DashboardBackground';
 type NotificationFilter = 'all' | 'shift' | 'rideshare' | 'system' | 'admin';
 
 const NotificationsPage: React.FC = () => {
-  const { t } = useTranslation('notifications');
+  const { t, i18n } = useTranslation('notifications');
   const isMobile = useIsMobile();
   const {
     notifications,
@@ -350,17 +350,18 @@ const NotificationsPage: React.FC = () => {
                     <div className="flex items-center gap-3 text-center">
                       {filterButtons[currentFilterIndex]?.icon}
                       <span className="font-medium truncate text-base">
-                        {(() => {
-                          const currentFilter = filterButtons[currentFilterIndex]?.key;
-                          switch (currentFilter) {
-                            case 'all': return t('categories.all');
-                            case 'shift': return t('categories.shift');
-                            case 'rideshare': return t('categories.rideshare');
-                            case 'system': return t('categories.system');
-                            case 'admin': return t('categories.admin');
-                            default: return t('categories.all');
-                          }
-                        })()}
+                         {(() => {
+                           const currentFilter = filterButtons[currentFilterIndex]?.key;
+                           // Use mobile-friendly labels for the carousel
+                           switch (currentFilter) {
+                             case 'all': return t('categories.all');
+                             case 'shift': return isMobile && i18n.language === 'de' ? 'Schichten' : t('categories.shift');
+                             case 'rideshare': return isMobile && i18n.language === 'de' ? 'Mitfahrt' : t('categories.rideshare');
+                             case 'system': return isMobile ? 'System' : t('categories.system');
+                             case 'admin': return isMobile ? 'Admin' : t('categories.admin');
+                             default: return t('categories.all');
+                           }
+                         })()}
                       </span>
                       {(() => {
                         const currentFilter = filterButtons[currentFilterIndex]?.key;
@@ -418,7 +419,7 @@ const NotificationsPage: React.FC = () => {
                   
                   {/* Swipe Hint Text */}
                   <p className="text-xs text-muted-foreground text-center opacity-70">
-                    Potáhněte pro přepnutí kategorií
+                    {t('filters.swipeHint')}
                   </p>
                 </div>
               </div>
@@ -473,16 +474,28 @@ const NotificationsPage: React.FC = () => {
                     }
                   })();
 
+                  // Responsive label for mobile - use shorter text for long German translations
+                  const mobileLabel = (() => {
+                    switch (key) {
+                      case 'all': return isMobile ? t('filters.showAll', 'Alle') : labelText;
+                      case 'shift': return isMobile ? t('shifts.shifts', 'Schichten').substring(0, 8) : labelText;
+                      case 'rideshare': return isMobile ? 'Mitfahrt' : labelText;
+                      case 'system': return isMobile ? 'System' : labelText;
+                      case 'admin': return isMobile ? 'Admin' : labelText;
+                      default: return labelText;
+                    }
+                  })();
+
                   return (
                     <Button
                       key={key}
                       variant={selectedFilter === key ? "default" : "outline"}
                       size="sm"
                       onClick={() => handleFilterSelect(key)}
-                      className="flex items-center gap-2"
+                      className="flex items-center gap-2 truncate"
                     >
                       {icon}
-                      {labelText}
+                      <span className="truncate">{labelText}</span>
                       {count > 0 && (
                         <Badge 
                           variant={selectedFilter === key ? "secondary" : "default"} 

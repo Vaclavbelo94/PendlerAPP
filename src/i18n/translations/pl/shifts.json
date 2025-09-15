@@ -1,4 +1,3 @@
-
 {
   "title": "Zmiany",
   "shiftsDescription": "Śledź swoje zmiany, analizuj zarobki i optymalizuj swój harmonogram pracy.",
@@ -196,6 +195,7 @@
       "missingSchedule": "Nie przyszedł harmonogram",
       "wrongShift": "Błąd w zmianie",
       "scheduleConflict": "Konflikt w harmonogramie"
+    }
   },
   "toasts": {
     "shiftAdded": "Zmiana dodana",
@@ -214,6 +214,14 @@
     "errorDeletingDescription": "Nie udało się usunąć zmiany",
     "notLoggedIn": "Błąd",
     "notLoggedInDescription": "Nie jesteś zalogowany"
+  },
+  "shiftTypes": {
+    "morning": "Poranna",
+    "afternoon": "Popołudniowa", 
+    "night": "Nocna"
+  },
+  "common": {
+    "cancel": "Anuluj",
+    "retry": "Spróbuj ponownie"
   }
-}
 }

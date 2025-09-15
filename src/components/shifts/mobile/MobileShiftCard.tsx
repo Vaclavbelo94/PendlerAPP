@@ -38,10 +38,10 @@ const MobileShiftCard: React.FC<MobileShiftCardProps> = ({
   };
 
   const getShiftTypeLabel = (type: string) => {
-    switch (type) {
-      case 'morning': return t('morning', 'Ranní');
-      case 'afternoon': return t('afternoon', 'Odpolední');
-      case 'night': return t('night', 'Noční');
+    switch (type?.toLowerCase()) {
+      case 'morning': return t('shiftTypes.morning', 'Ranní');
+      case 'afternoon': return t('shiftTypes.afternoon', 'Odpolední');
+      case 'night': return t('shiftTypes.night', 'Noční');
       case 'custom': return t('customShift', 'Vlastní');
       default: return type;
     }
