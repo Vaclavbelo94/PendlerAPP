@@ -68,57 +68,57 @@ const MobileShiftCard: React.FC<MobileShiftCardProps> = ({
 
   return (
     <Card className={cn(
-      "mb-3 transition-all duration-200",
-      isToday && "ring-2 ring-primary",
+      "transition-all duration-200 shadow-sm",
+      isToday && "ring-1 ring-primary/50",
       shift ? "hover:shadow-md" : "opacity-75"
     )}>
-      <CardContent className="p-4">
+      <CardContent className="p-3">
         <div className="flex items-center justify-between">
-          <div className="flex-1">
-            {/* Date and day */}
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-sm font-medium text-foreground">
+          <div className="flex-1 min-w-0">
+            {/* Date and day - kompaktní */}
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-medium text-foreground truncate">
                 {dayAbbrev} {dateString}
               </span>
               {isToday && (
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="outline" className="text-xs px-1 py-0">
                   {t('today', 'Dnes')}
                 </Badge>
               )}
             </div>
 
-            {/* Shift details or free day */}
+            {/* Shift details or free day - kompaktní */}
             {shift ? (
-              <div className="space-y-2">
+              <div className="space-y-1">
                 <div className="flex items-center gap-2">
                   <div className={cn(
-                    "w-3 h-3 rounded-full",
+                    "w-2 h-2 rounded-full flex-shrink-0",
                     getShiftTypeColor(shift.type).split(' ')[0]
                   )} />
-                  <span className="font-medium text-foreground">
+                  <span className="text-sm font-medium text-foreground truncate">
                     {getShiftTypeLabel(shift.type)}
                   </span>
                   {isOfficialSchedule && (
-                    <Badge variant="secondary" className="text-xs">
-                      {t('mobile.officialSchedule', 'Oficiální rozpis')}
+                    <Badge variant="secondary" className="text-xs px-1 py-0 ml-auto">
+                      {t('mobile.officialSchedule', 'Oficiální')}
                     </Badge>
                   )}
                 </div>
                 
-                <div className="text-sm text-muted-foreground">
+                <div className="text-xs text-muted-foreground">
                   {formatTime(shift.start_time)} – {formatTime(shift.end_time)}
                 </div>
 
                 {shift.notes && (
-                  <div className="text-xs text-muted-foreground bg-muted p-2 rounded">
-                    {shift.notes}
+                  <div className="text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded text-ellipsis overflow-hidden">
+                    {shift.notes.length > 50 ? `${shift.notes.substring(0, 50)}...` : shift.notes}
                   </div>
                 )}
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-gray-400" />
-                <span className="text-muted-foreground">
+                <div className="w-2 h-2 rounded-full bg-gray-400 flex-shrink-0" />
+                <span className="text-sm text-muted-foreground">
                   {t('mobile.freeDay', 'Volno')}
                 </span>
               </div>
@@ -126,15 +126,15 @@ const MobileShiftCard: React.FC<MobileShiftCardProps> = ({
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 ml-2 flex-shrink-0">
             {isOfficialSchedule && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => onReport?.(date)}
-                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                className="h-6 w-6 text-muted-foreground hover:text-foreground"
               >
-                <AlertCircle className="h-4 w-4" />
+                <AlertCircle className="h-3 w-3" />
               </Button>
             )}
             
@@ -143,9 +143,9 @@ const MobileShiftCard: React.FC<MobileShiftCardProps> = ({
                 variant="ghost"
                 size="icon"
                 onClick={() => onEdit?.(shift)}
-                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                className="h-6 w-6 text-muted-foreground hover:text-foreground"
               >
-                <MoreVertical className="h-4 w-4" />
+                <MoreVertical className="h-3 w-3" />
               </Button>
             )}
           </div>
