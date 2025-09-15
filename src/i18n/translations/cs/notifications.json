@@ -95,6 +95,7 @@
     "filterBy": "Filtrovat podle",
     "showAll": "Zobrazit vše",
     "noResults": "Žádné výsledky",
-    "noResultsDescription": "Pro tento filtr nebyly nalezeny žádné výsledky."
+    "noResultsDescription": "Pro tento filtr nebyly nalezeny žádné výsledky.",
+    "swipeHint": "Potáhněte pro přepnutí kategorií"
   }
 }

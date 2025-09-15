@@ -95,6 +95,7 @@
     "filterBy": "Filtruj według",
     "showAll": "Pokaż wszystkie",
     "noResults": "Brak wyników",
-    "noResultsDescription": "Nie znaleziono wyników dla tego filtru."
+    "noResultsDescription": "Nie znaleziono wyników dla tego filtru.",
+    "swipeHint": "Przesuń, aby przełączyć kategorie"
   }
 }

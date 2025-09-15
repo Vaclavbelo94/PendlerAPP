@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useSupabaseNotifications } from '@/hooks/useSupabaseNotifications';
@@ -45,6 +45,9 @@ const NotificationsPage: React.FC = () => {
 
   const [selectedFilter, setSelectedFilter] = useState<NotificationFilter>('all');
   const [currentFilterIndex, setCurrentFilterIndex] = useState(0);
+  const [isSwipeTransition, setIsSwipeTransition] = useState(false);
+  
+  const carouselRef = useRef<HTMLDivElement>(null);
 
   // Filter notifications based on selected category
   const filteredNotifications = useMemo(() => {
@@ -115,17 +118,48 @@ const NotificationsPage: React.FC = () => {
     setCurrentFilterIndex(newIndex);
   };
 
-  const handlePreviousFilter = () => {
+  const handlePreviousFilter = useCallback(() => {
+    setIsSwipeTransition(true);
     const newIndex = currentFilterIndex > 0 ? currentFilterIndex - 1 : filterButtons.length - 1;
     setCurrentFilterIndex(newIndex);
     setSelectedFilter(filterButtons[newIndex].key);
-  };
+    setTimeout(() => setIsSwipeTransition(false), 300);
+  }, [currentFilterIndex, filterButtons]);
 
-  const handleNextFilter = () => {
+  const handleNextFilter = useCallback(() => {
+    setIsSwipeTransition(true);
     const newIndex = currentFilterIndex < filterButtons.length - 1 ? currentFilterIndex + 1 : 0;
     setCurrentFilterIndex(newIndex);
     setSelectedFilter(filterButtons[newIndex].key);
-  };
+    setTimeout(() => setIsSwipeTransition(false), 300);
+  }, [currentFilterIndex, filterButtons]);
+
+  // Touch/Swipe handlers
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+  
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    const swipeDistance = touchStartX.current - touchEndX.current;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(swipeDistance) > minSwipeDistance) {
+      if (swipeDistance > 0) {
+        // Swipe left - next filter
+        handleNextFilter();
+      } else {
+        // Swipe right - previous filter
+        handlePreviousFilter();
+      }
+    }
+  }, [handleNextFilter, handlePreviousFilter]);
 
   // Update filter index when selectedFilter changes programmatically
   useEffect(() => {
@@ -235,19 +269,32 @@ const NotificationsPage: React.FC = () => {
 
             {/* Filter Carousel - Mobile vs Desktop */}
             {isMobile ? (
-              // Mobile Carousel with Navigation Arrows
+              // Mobile Carousel with Navigation Arrows and Swipe Support
               <div className="relative">
-                <div className="flex items-center justify-between bg-muted/30 rounded-lg p-3">
+                <div 
+                  ref={carouselRef}
+                  className={cn(
+                    "flex items-center justify-between bg-muted/30 rounded-lg p-3",
+                    "select-none touch-pan-y", // Prevent text selection and enable vertical scroll
+                    isSwipeTransition && "transition-all duration-300"
+                  )}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                >
                   <Button
                     variant="ghost"
                     size="icon"
                     onClick={handlePreviousFilter}
-                    className="h-8 w-8 flex-shrink-0"
+                    className="h-8 w-8 flex-shrink-0 z-10"
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
 
-                  <div className="flex-1 flex items-center justify-center min-w-0">
+                  <div className={cn(
+                    "flex-1 flex items-center justify-center min-w-0 overflow-hidden",
+                    isSwipeTransition && "animate-scale-in"
+                  )}>
                     <div className="flex items-center gap-2 text-center">
                       {filterButtons[currentFilterIndex]?.icon}
                       <span className="font-medium truncate">
@@ -281,29 +328,36 @@ const NotificationsPage: React.FC = () => {
                     variant="ghost"
                     size="icon"
                     onClick={handleNextFilter}
-                    className="h-8 w-8 flex-shrink-0"
+                    className="h-8 w-8 flex-shrink-0 z-10"
                   >
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
 
-                {/* Progress Dots */}
-                <div className="flex justify-center mt-3 gap-1.5">
-                  {filterButtons.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        setCurrentFilterIndex(index);
-                        setSelectedFilter(filterButtons[index].key);
-                      }}
-                      className={cn(
-                        "h-2 w-2 rounded-full transition-all duration-200",
-                        index === currentFilterIndex 
-                          ? "bg-primary scale-125" 
-                          : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-                      )}
-                    />
-                  ))}
+                {/* Progress Dots with Swipe Hint */}
+                <div className="flex flex-col items-center gap-2 mt-3">
+                  <div className="flex justify-center gap-1.5">
+                    {filterButtons.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          setCurrentFilterIndex(index);
+                          setSelectedFilter(filterButtons[index].key);
+                        }}
+                        className={cn(
+                          "h-2 w-2 rounded-full transition-all duration-200",
+                          index === currentFilterIndex 
+                            ? "bg-primary scale-125" 
+                            : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                        )}
+                      />
+                    ))}
+                  </div>
+                  
+                  {/* Swipe Hint Text */}
+                  <p className="text-xs text-muted-foreground text-center opacity-70">
+                    {t('filters.swipeHint')}
+                  </p>
                 </div>
               </div>
             ) : (
