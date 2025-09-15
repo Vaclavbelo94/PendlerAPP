@@ -197,7 +197,7 @@ export const rideshareService = {
         offer_id: offerId,
         requester_user_id: user.id,
         requester_email: email || user.email,
-        requester_phone: phoneNumber,
+        phone_number: phoneNumber,
         message: message,
         status: 'pending'
       };
