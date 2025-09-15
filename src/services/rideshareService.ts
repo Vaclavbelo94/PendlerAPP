@@ -178,15 +178,13 @@ export const rideshareService = {
       }
 
       const { data, error } = await supabase
-        .from('ride_requests')
+        .from('rideshare_contacts')
         .insert({
-          rideshare_offer_id: offerId,
+          offer_id: offerId,
           requester_user_id: user.id,
-          driver_user_id: offer.user_id,
-          message: message,
-          requester_email: email,
+          requester_email: email || user.email,
           requester_phone: phoneNumber,
-          requester_country_code: countryCode,
+          message: message,
           status: 'pending'
         })
         .select()
@@ -207,7 +205,7 @@ export const rideshareService = {
   async getDriverContacts(userId: string) {
     try {
       const { data, error } = await supabase
-        .from('ride_requests')
+        .from('rideshare_contacts')
         .select(`
           *,
           rideshare_offers!inner(
@@ -217,10 +215,11 @@ export const rideshareService = {
             departure_time,
             seats_available,
             price_per_person,
-            currency
+            currency,
+            user_id
           )
         `)
-        .eq('driver_user_id', userId)
+        .eq('rideshare_offers.user_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -238,7 +237,7 @@ export const rideshareService = {
   async updateContactStatus(contactId: string, status: string) {
     try {
       const { error } = await supabase
-        .from('ride_requests')
+        .from('rideshare_contacts')
         .update({ status })
         .eq('id', contactId);
 

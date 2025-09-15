@@ -29,54 +29,27 @@ export const useTestAllNotifications = () => {
       return;
     }
 
-    console.log('Creating test rideshare contact notification for user:', user.id);
+    console.log('Creating test rideshare contact for user:', user.id);
     
-    // Create a mock rideshare contact notification
-    await supabase.from('notifications').insert({
-      user_id: user.id,
-      title: 'Žádost o kontakt',
-      message: 'Někdo se zajímá o vaši spolujízdu z Praha do Brno',
-      type: 'rideshare_contact',
-      category: 'rideshare',
-      priority: 'medium',
-      language: 'cs',
-      metadata: {
-        contact_id: 'test-contact-' + Date.now(),
-        offer_id: 'test-offer-1',
-        requester_email: 'test@example.com',
-        origin_address: 'Praha, Česká republika',
-        destination_address: 'Brno, Česká republika',
-        departure_time: '14:00'
-      },
-      related_to: {
-        type: 'rideshare_contact',
-        id: 'test-contact-' + Date.now()
-      }
-    });
+    try {
+      // Create a mock rideshare contact that will trigger the real-time listener
+      const { data, error } = await supabase.from('rideshare_contacts').insert({
+        offer_id: 'test-offer-' + Date.now(),
+        requester_user_id: user.id,
+        requester_email: user.email || 'test@example.com',
+        message: 'Test žádost o kontakt - chci se zúčastnit vaší spolujízdy z Praha do Brno.',
+        status: 'pending'
+      }).select().single();
 
-    // Also create a "request sent" notification
-    await supabase.from('notifications').insert({
-      user_id: user.id,
-      title: 'Žádost odeslána',
-      message: 'Vaše žádost o spolujízdu byla úspěšně odeslána řidiči',
-      type: 'rideshare_request_sent',
-      category: 'rideshare',
-      priority: 'low',
-      language: 'cs',
-      metadata: {
-        contact_id: 'test-contact-sent-' + Date.now(),
-        offer_id: 'test-offer-1',
-        origin_address: 'Praha, Česká republika',
-        destination_address: 'Brno, Česká republika',
-        departure_time: '14:00'
-      },
-      related_to: {
-        type: 'rideshare_contact',
-        id: 'test-contact-sent-' + Date.now()
+      if (error) {
+        console.error('Error creating test rideshare contact:', error);
+        return;
       }
-    });
 
-    console.log('Test rideshare contact notifications created');
+      console.log('Test rideshare contact created successfully:', data);
+    } catch (error) {
+      console.error('Error in createTestRideshareContact:', error);
+    }
   };
 
   const createAllTestNotifications = async () => {

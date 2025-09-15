@@ -12,13 +12,11 @@ import { formatPhoneNumber, getDriverDisplayName } from '@/utils/countryUtils';
 
 interface RideRequest {
   id: string;
-  rideshare_offer_id: string;
+  offer_id: string;
   requester_user_id: string;
-  driver_user_id: string;
   message: string;
-  requester_email: string;
-  requester_phone: string;
-  requester_country_code: string;
+  requester_email?: string;
+  requester_phone?: string;
   status: string;
   created_at: string;
   updated_at: string;
@@ -30,6 +28,7 @@ interface RideRequest {
     seats_available: number;
     price_per_person: number;
     currency: string;
+    user_id: string;
   };
 }
 
@@ -225,7 +224,7 @@ const RideRequestsSection = () => {
                   <p className="text-sm bg-muted/50 rounded p-2">{request.message}</p>
                 </div>
 
-                {/* Contact Info */}
+                 {/* Contact Info */}
                 {(request.requester_email || request.requester_phone) && (
                   <div className="space-y-2">
                     <h5 className="text-sm font-medium">{t('contactInfo')}:</h5>
@@ -237,7 +236,7 @@ const RideRequestsSection = () => {
                       )}
                       {request.requester_phone && (
                         <span className="bg-muted/50 rounded px-2 py-1">
-                          📞 {request.requester_country_code}{request.requester_phone}
+                          📞 {request.requester_phone}
                         </span>
                       )}
                     </div>
@@ -252,7 +251,7 @@ const RideRequestsSection = () => {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleCall(request.requester_phone!, request.requester_country_code || '+420')}
+                      onClick={() => handleCall(request.requester_phone!, '+420')}
                       className="flex items-center gap-2"
                     >
                       <Phone className="h-4 w-4" />
