@@ -128,16 +128,13 @@ export const useRideshareNotifications = () => {
               .single();
 
             if (offer) {
-              // Create notification for the driver
-              if (offer.user_id) {
-                await supabase.from('notifications').insert({
-                  user_id: offer.user_id,
+              // Create notification for the driver (only if it's not the same user)
+              if (offer.user_id && offer.user_id !== payload.new.requester_user_id) {
+                addNotification({
                   title: t('rideshare.contactRequest'),
                   message: `Někdo se zajímá o vaši spolujízdu z ${offer.origin_address} do ${offer.destination_address}`,
                   type: 'rideshare_contact',
                   category: 'rideshare',
-                  priority: 'medium',
-                  language: 'cs',
                   metadata: {
                     contact_id: payload.new.id,
                     offer_id: payload.new.offer_id,
@@ -155,14 +152,11 @@ export const useRideshareNotifications = () => {
 
               // Create confirmation notification for the requester
               if (payload.new.requester_user_id) {
-                await supabase.from('notifications').insert({
-                  user_id: payload.new.requester_user_id,
+                addNotification({
                   title: t('rideshare.requestSent'),
                   message: `Vaše žádost o spolujízdu byla odeslána`,
                   type: 'rideshare_request_sent',
                   category: 'rideshare',
-                  priority: 'low',
-                  language: 'cs',
                   metadata: {
                     contact_id: payload.new.id,
                     offer_id: payload.new.offer_id,
