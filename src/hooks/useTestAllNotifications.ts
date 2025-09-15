@@ -21,9 +21,19 @@ export const useTestAllNotifications = () => {
   const createTestRideshareContact = async () => {
     console.log('Creating test rideshare contact...');
     
-    // Create a mock rideshare contact that triggers notifications
+    // Get current user ID from auth
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      console.error('No authenticated user found');
+      return;
+    }
+
+    console.log('Creating test rideshare contact notification for user:', user.id);
+    
+    // Create a mock rideshare contact notification
     await supabase.from('notifications').insert({
-      user_id: '43ba4ee6-c961-45da-87c8-c04da012f1f0',
+      user_id: user.id,
       title: 'Žádost o kontakt',
       message: 'Někdo se zajímá o vaši spolujízdu z Praha do Brno',
       type: 'rideshare_contact',
@@ -31,7 +41,7 @@ export const useTestAllNotifications = () => {
       priority: 'medium',
       language: 'cs',
       metadata: {
-        contact_id: 'test-contact-1',
+        contact_id: 'test-contact-' + Date.now(),
         offer_id: 'test-offer-1',
         requester_email: 'test@example.com',
         origin_address: 'Praha, Česká republika',
@@ -40,11 +50,33 @@ export const useTestAllNotifications = () => {
       },
       related_to: {
         type: 'rideshare_contact',
-        id: 'test-contact-1'
+        id: 'test-contact-' + Date.now()
       }
     });
 
-    console.log('Test rideshare contact notification created');
+    // Also create a "request sent" notification
+    await supabase.from('notifications').insert({
+      user_id: user.id,
+      title: 'Žádost odeslána',
+      message: 'Vaše žádost o spolujízdu byla úspěšně odeslána řidiči',
+      type: 'rideshare_request_sent',
+      category: 'rideshare',
+      priority: 'low',
+      language: 'cs',
+      metadata: {
+        contact_id: 'test-contact-sent-' + Date.now(),
+        offer_id: 'test-offer-1',
+        origin_address: 'Praha, Česká republika',
+        destination_address: 'Brno, Česká republika',
+        departure_time: '14:00'
+      },
+      related_to: {
+        type: 'rideshare_contact',
+        id: 'test-contact-sent-' + Date.now()
+      }
+    });
+
+    console.log('Test rideshare contact notifications created');
   };
 
   const createAllTestNotifications = async () => {
