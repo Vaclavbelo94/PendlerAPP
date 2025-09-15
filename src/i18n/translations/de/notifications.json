@@ -12,15 +12,20 @@
     "reminder": "Schichterinnerung"
   },
   "rideshare": {
-    "newRequest": "Neue Mitfahrgelegenheit-Anfrage",
+    "newRequest": "Neue Mitfahrgesuche",
     "requestAccepted": "Anfrage angenommen",
     "requestRejected": "Anfrage abgelehnt",
     "offerCancelled": "Angebot storniert",
     "requestCancelled": "Anfrage storniert",
-    "newOffer": "Neues Mitfahrgelegenheit-Angebot",
+    "newOffer": "Neues Mitfahrangebot",
     "offerUpdated": "Angebot aktualisiert",
     "rideConfirmed": "Fahrt bestätigt",
-    "reminder": "Fahrt-Erinnerung"
+    "reminder": "Fahrt-Erinnerung",
+    "routeFrom": "Von",
+    "routeTo": "Nach",
+    "seatsAvailable": "Verfügbare Plätze",
+    "pricePerPerson": "Preis pro Person",
+    "departureTime": "Abfahrtszeit"
   },
   "system": {
     "maintenance": "Systemwartung",

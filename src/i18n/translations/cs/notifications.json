@@ -20,7 +20,12 @@
     "newOffer": "Nová nabídka spolujízdy",
     "offerUpdated": "Nabídka aktualizována",
     "rideConfirmed": "Jízda potvrzena",
-    "reminder": "Připomínka jízdy"
+    "reminder": "Připomínka jízdy",
+    "routeFrom": "Z",
+    "routeTo": "Do",
+    "seatsAvailable": "Míst k dispozici",
+    "pricePerPerson": "Cena za osobu",
+    "departureTime": "Čas odjezdu"
   },
   "system": {
     "maintenance": "Údržba systému",
@@ -76,6 +81,7 @@
   },
   "time": {
     "now": "Teď",
+    "tomorrow": "Zítra",
     "minuteAgo": "před minutou",
     "minutesAgo": "před {{count}} minutami",
     "hourAgo": "před hodinou", 

@@ -20,7 +20,12 @@
     "newOffer": "Nowa oferta współprzejazdu",
     "offerUpdated": "Oferta zaktualizowana",
     "rideConfirmed": "Przejazd potwierdzony",
-    "reminder": "Przypomnienie o przejeździe"
+    "reminder": "Przypomnienie o przejeździe",
+    "routeFrom": "Z",
+    "routeTo": "Do",
+    "seatsAvailable": "Dostępne miejsca",
+    "pricePerPerson": "Cena za osobę",
+    "departureTime": "Czas odjazdu"
   },
   "system": {
     "maintenance": "Konserwacja systemu",
@@ -76,7 +81,7 @@
   },
   "time": {
     "now": "Teraz",
-    "tomorrow": "Jutro", 
+    "tomorrow": "Jutro",
     "minuteAgo": "minutę temu",
     "minutesAgo": "{{count}} minut temu",
     "hourAgo": "godzinę temu",

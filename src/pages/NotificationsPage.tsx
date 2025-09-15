@@ -2,9 +2,12 @@ import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useSupabaseNotifications } from '@/hooks/useSupabaseNotifications';
-import { useTestNotifications } from '@/hooks/useTestNotifications';
+import { useTestAllNotifications } from '@/hooks/useTestAllNotifications';
 import { MobileNotificationItem } from '@/components/mobile/MobileNotificationItem';
 import { ShiftNotificationItem } from '@/components/notifications/ShiftNotificationItem';
+import { RideshareNotificationItem } from '@/components/notifications/RideshareNotificationItem';
+import { SystemNotificationItem } from '@/components/notifications/SystemNotificationItem';
+import { AdminNotificationItem } from '@/components/notifications/AdminNotificationItem';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -47,7 +50,7 @@ const NotificationsPage: React.FC = () => {
     refresh
   } = useSupabaseNotifications();
 
-  const { createSampleShiftNotification, isCreating } = useTestNotifications();
+  const { createSampleShiftNotification, createTestNotificationByType, isCreating } = useTestAllNotifications();
 
   const [selectedFilter, setSelectedFilter] = useState<NotificationFilter>('all');
   const [currentFilterIndex, setCurrentFilterIndex] = useState(0);
@@ -227,7 +230,37 @@ const NotificationsPage: React.FC = () => {
                     disabled={isCreating}
                   >
                     <Bell className="h-4 w-4 mr-2" />
-                    Test oznámení
+                    Test Směna
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => createTestNotificationByType('rideshare')}
+                    disabled={isCreating}
+                  >
+                    <Car className="h-4 w-4 mr-2" />
+                    Test Spolujízda
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => createTestNotificationByType('system')}
+                    disabled={isCreating}
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    Test Systém
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => createTestNotificationByType('admin')}
+                    disabled={isCreating}
+                  >
+                    <Shield className="h-4 w-4 mr-2" />
+                    Test Admin
                   </Button>
 
                   <Button
@@ -270,16 +303,51 @@ const NotificationsPage: React.FC = () => {
             {isMobile && (
               <div className="space-y-3 mb-6">
                 {/* Test button always visible on mobile */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => createSampleShiftNotification()}
-                  disabled={isCreating}
-                  className="w-full justify-start"
-                >
-                  <Bell className="h-4 w-4 mr-2" />
-                  Test oznámení
-                </Button>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => createSampleShiftNotification()}
+                    disabled={isCreating}
+                    className="justify-start"
+                  >
+                    <Bell className="h-4 w-4 mr-2" />
+                    Test Směna
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => createTestNotificationByType('rideshare')}
+                    disabled={isCreating}
+                    className="justify-start"
+                  >
+                    <Car className="h-4 w-4 mr-2" />
+                    Test Spolujízda
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => createTestNotificationByType('system')}
+                    disabled={isCreating}
+                    className="justify-start"
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    Test Systém
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => createTestNotificationByType('admin')}
+                    disabled={isCreating}
+                    className="justify-start"
+                  >
+                    <Shield className="h-4 w-4 mr-2" />
+                    Test Admin
+                  </Button>
+                </div>
 
                 {notifications.length > 0 && (
                   <div className="flex items-center gap-2">
@@ -544,36 +612,86 @@ const NotificationsPage: React.FC = () => {
             ) : (
               <ScrollArea className="h-[calc(100vh-24rem)]">
                 <div className="space-y-3 pr-4">
-                  {filteredNotifications.map((notification) => {
-                    // Use specialized component for shift notifications
-                    if (notification.related_to?.type === 'shift' || notification.type === 'shift_reminder') {
-                      return (
-                        <ShiftNotificationItem
-                          key={notification.id}
-                          notification={notification}
-                          onMarkAsRead={markAsRead}
-                          onDelete={deleteNotification}
-                        />
-                      );
-                    }
-                    
-                    // Use general component for other notifications
-                    return (
-                      <div
-                        key={notification.id}
-                        className={cn(
-                          "p-4 rounded-lg border transition-colors",
-                          !notification.read 
-                            ? "bg-accent/50 border-primary/20" 
-                            : "bg-card border-border hover:bg-accent/30"
-                        )}
-                      >
-                        <MobileNotificationItem 
-                          notification={notification}
-                        />
-                      </div>
-                    );
-                  })}
+                   {filteredNotifications.map((notification) => {
+                     // Use specialized component based on notification type/category
+                     const notificationType = notification.type?.toLowerCase() || '';
+                     const notificationCategory = notification.category?.toLowerCase() || '';
+                     
+                     // Shift notifications
+                     if (notification.related_to?.type === 'shift' || 
+                         notificationType.includes('shift') || 
+                         notificationCategory.includes('shift')) {
+                       return (
+                         <ShiftNotificationItem
+                           key={notification.id}
+                           notification={notification}
+                           onMarkAsRead={markAsRead}
+                           onDelete={deleteNotification}
+                         />
+                       );
+                     }
+                     
+                     // Rideshare notifications
+                     if (notificationType.includes('rideshare') || 
+                         notificationType.includes('travel') ||
+                         notificationCategory.includes('rideshare')) {
+                       return (
+                         <RideshareNotificationItem
+                           key={notification.id}
+                           notification={notification}
+                           onMarkAsRead={markAsRead}
+                           onDelete={deleteNotification}
+                         />
+                       );
+                     }
+                     
+                     // System notifications
+                     if (notificationType.includes('system') || 
+                         notificationType.includes('maintenance') || 
+                         notificationType.includes('update') ||
+                         notificationCategory.includes('system')) {
+                       return (
+                         <SystemNotificationItem
+                           key={notification.id}
+                           notification={notification}
+                           onMarkAsRead={markAsRead}
+                           onDelete={deleteNotification}
+                         />
+                       );
+                     }
+                     
+                     // Admin notifications
+                     if (notificationType.includes('admin') || 
+                         notificationType.includes('warning') || 
+                         notificationType.includes('critical') ||
+                         notificationCategory.includes('admin')) {
+                       return (
+                         <AdminNotificationItem
+                           key={notification.id}
+                           notification={notification}
+                           onMarkAsRead={markAsRead}
+                           onDelete={deleteNotification}
+                         />
+                       );
+                     }
+                     
+                     // Fallback to generic mobile component
+                     return (
+                       <div
+                         key={notification.id}
+                         className={cn(
+                           "p-4 rounded-lg border transition-colors",
+                           !notification.read 
+                             ? "bg-accent/50 border-primary/20" 
+                             : "bg-card border-border hover:bg-accent/30"
+                         )}
+                       >
+                         <MobileNotificationItem 
+                           notification={notification}
+                         />
+                       </div>
+                     );
+                   })}
                 </div>
               </ScrollArea>
             )}
