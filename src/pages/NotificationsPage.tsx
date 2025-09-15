@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useSupabaseNotifications } from '@/hooks/useSupabaseNotifications';
@@ -22,7 +22,9 @@ import {
   AlertCircle,
   Info,
   CheckCircle,
-  XCircle
+  XCircle,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import DashboardBackground from '@/components/common/DashboardBackground';
@@ -42,6 +44,7 @@ const NotificationsPage: React.FC = () => {
   } = useSupabaseNotifications();
 
   const [selectedFilter, setSelectedFilter] = useState<NotificationFilter>('all');
+  const [currentFilterIndex, setCurrentFilterIndex] = useState(0);
 
   // Filter notifications based on selected category
   const filteredNotifications = useMemo(() => {
@@ -108,20 +111,29 @@ const NotificationsPage: React.FC = () => {
 
   const handleFilterSelect = (filter: NotificationFilter) => {
     setSelectedFilter(filter);
-    
-    // Auto-scroll to center the selected filter button on mobile
-    if (isMobile && scrollRef.current) {
-      const filterIndex = filterButtons.findIndex(btn => btn.key === filter);
-      const buttonWidth = 120; // Approximate button width
-      const containerWidth = scrollRef.current.offsetWidth;
-      const scrollPosition = (filterIndex * buttonWidth) - (containerWidth / 2) + (buttonWidth / 2);
-      
-      scrollRef.current.scrollTo({
-        left: Math.max(0, scrollPosition),
-        behavior: 'smooth'
-      });
-    }
+    const newIndex = filterButtons.findIndex(btn => btn.key === filter);
+    setCurrentFilterIndex(newIndex);
   };
+
+  const handlePreviousFilter = () => {
+    const newIndex = currentFilterIndex > 0 ? currentFilterIndex - 1 : filterButtons.length - 1;
+    setCurrentFilterIndex(newIndex);
+    setSelectedFilter(filterButtons[newIndex].key);
+  };
+
+  const handleNextFilter = () => {
+    const newIndex = currentFilterIndex < filterButtons.length - 1 ? currentFilterIndex + 1 : 0;
+    setCurrentFilterIndex(newIndex);
+    setSelectedFilter(filterButtons[newIndex].key);
+  };
+
+  // Update filter index when selectedFilter changes programmatically
+  useEffect(() => {
+    const newIndex = filterButtons.findIndex(btn => btn.key === selectedFilter);
+    if (newIndex !== -1 && newIndex !== currentFilterIndex) {
+      setCurrentFilterIndex(newIndex);
+    }
+  }, [selectedFilter, filterButtons, currentFilterIndex]);
 
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
@@ -223,77 +235,75 @@ const NotificationsPage: React.FC = () => {
 
             {/* Filter Carousel - Mobile vs Desktop */}
             {isMobile ? (
-              // Mobile Swipe Carousel
-              <div className="relative -mx-4 px-4">
-                <div 
-                  ref={scrollRef}
-                  className="flex gap-3 overflow-x-auto scrollbar-hide pb-3 px-1"
-                  style={{
-                    scrollSnapType: 'x mandatory',
-                    WebkitOverflowScrolling: 'touch',
-                    scrollbarWidth: 'none',
-                    msOverflowStyle: 'none'
-                  }}
-                >
-                  {filterButtons.map(({ key, labelKey, icon }) => {
-                    const count = key === 'all' 
-                      ? notifications.length 
-                      : notifications.filter(n => {
-                          const type = n.type.toLowerCase();
-                          switch (key) {
-                            case 'shift': return type.includes('shift') || type.includes('overtime');
-                            case 'rideshare': return type.includes('rideshare') || type.includes('travel');
-                            case 'system': return type.includes('system') || type.includes('maintenance') || type.includes('update');
-                            case 'admin': return type.includes('admin') || type.includes('warning') || type.includes('critical');
-                            default: return false;
-                          }
-                        }).length;
+              // Mobile Carousel with Navigation Arrows
+              <div className="relative">
+                <div className="flex items-center justify-between bg-muted/30 rounded-lg p-3">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handlePreviousFilter}
+                    className="h-8 w-8 flex-shrink-0"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
 
-                    return (
-                      <Button
-                        key={key}
-                        variant={selectedFilter === key ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => handleFilterSelect(key)}
-                        className={cn(
-                          "flex items-center gap-2 whitespace-nowrap flex-shrink-0",
-                          "min-w-[130px] justify-center px-4 py-2 h-10",
-                          "scroll-snap-align-center transition-all duration-200",
-                          selectedFilter === key && "shadow-md scale-105"
-                        )}
-                        style={{ scrollSnapAlign: 'center' }}
-                      >
-                        {icon}
-                        <span className="font-medium">{t(labelKey)}</span>
-                        {count > 0 && (
-                          <Badge 
-                            variant={selectedFilter === key ? "secondary" : "default"} 
-                            className="ml-1 text-xs font-semibold"
-                          >
+                  <div className="flex-1 flex items-center justify-center min-w-0">
+                    <div className="flex items-center gap-2 text-center">
+                      {filterButtons[currentFilterIndex]?.icon}
+                      <span className="font-medium truncate">
+                        {t(filterButtons[currentFilterIndex]?.labelKey)}
+                      </span>
+                      {(() => {
+                        const currentFilter = filterButtons[currentFilterIndex]?.key;
+                        const count = currentFilter === 'all' 
+                          ? notifications.length 
+                          : notifications.filter(n => {
+                              const type = n.type.toLowerCase();
+                              switch (currentFilter) {
+                                case 'shift': return type.includes('shift') || type.includes('overtime');
+                                case 'rideshare': return type.includes('rideshare') || type.includes('travel');
+                                case 'system': return type.includes('system') || type.includes('maintenance') || type.includes('update');
+                                case 'admin': return type.includes('admin') || type.includes('warning') || type.includes('critical');
+                                default: return false;
+                              }
+                            }).length;
+                        
+                        return count > 0 ? (
+                          <Badge variant="secondary" className="ml-1 text-xs">
                             {count}
                           </Badge>
-                        )}
-                      </Button>
-                    );
-                  })}
+                        ) : null;
+                      })()}
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleNextFilter}
+                    className="h-8 w-8 flex-shrink-0"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
                 </div>
-                
-                {/* Mobile Scroll Indicators */}
+
+                {/* Progress Dots */}
                 <div className="flex justify-center mt-3 gap-1.5">
-                  {filterButtons.map((_, index) => {
-                    const isActive = filterButtons[index].key === selectedFilter;
-                    return (
-                      <div
-                        key={index}
-                        className={cn(
-                          "h-2 w-2 rounded-full transition-all duration-200",
-                          isActive 
-                            ? "bg-primary scale-125" 
-                            : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
-                        )}
-                      />
-                    );
-                  })}
+                  {filterButtons.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setCurrentFilterIndex(index);
+                        setSelectedFilter(filterButtons[index].key);
+                      }}
+                      className={cn(
+                        "h-2 w-2 rounded-full transition-all duration-200",
+                        index === currentFilterIndex 
+                          ? "bg-primary scale-125" 
+                          : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                      )}
+                    />
+                  ))}
                 </div>
               </div>
             ) : (
