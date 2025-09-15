@@ -328,12 +328,12 @@ const NotificationsPage: React.FC = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => createTestNotificationByType('rideshare')}
+                    onClick={() => createTestRideshareContact()}
                     disabled={isCreating}
                     className="justify-start"
                   >
                     <Car className="h-4 w-4 mr-2" />
-                    Test Spolujízda
+                    Test Kontakt
                   </Button>
 
                   <Button

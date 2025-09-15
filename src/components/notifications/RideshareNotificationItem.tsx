@@ -1,10 +1,12 @@
-import React from 'react';
-import { Car, MapPin, Clock, User, CheckCircle, AlertCircle, XCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Car, MapPin, Clock, User, CheckCircle, AlertCircle, XCircle, Check, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { SupabaseNotification } from '@/hooks/useSupabaseNotifications';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
 interface RideshareNotificationItemProps {
@@ -19,6 +21,7 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
   onDelete
 }) => {
   const { t, i18n } = useTranslation('notifications');
+  const [isProcessing, setIsProcessing] = useState(false);
   
   // Extract rideshare info from metadata
   const origin = notification.metadata?.origin_address || '';
@@ -76,6 +79,12 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
 
   const getRideshareTypeLabel = () => {
     const type = notification.type?.toLowerCase();
+    if (type?.includes('contact')) {
+      return t('rideshare.contactRequest');
+    }
+    if (type?.includes('request_sent')) {
+      return t('rideshare.requestSent');
+    }
     if (type?.includes('request')) {
       return t('rideshare.newRequest');
     }
@@ -92,6 +101,92 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
       return t('rideshare.requestCancelled');
     }
     return notification.title;
+  };
+
+  const handleAcceptRequest = async () => {
+    if (!notification.metadata?.contact_id) return;
+    
+    setIsProcessing(true);
+    try {
+      // Update contact status to accepted
+      const { error } = await supabase
+        .from('rideshare_contacts')
+        .update({ status: 'accepted' })
+        .eq('id', notification.metadata.contact_id);
+
+      if (error) throw error;
+
+      // Create notification for requester
+      if (notification.metadata.requester_user_id) {
+        await supabase.from('notifications').insert({
+          user_id: notification.metadata.requester_user_id,
+          title: t('rideshare.requestAccepted'),
+          message: `Vaše žádost o spolujízdu byla přijata`,
+          type: 'rideshare_accepted',
+          category: 'rideshare',
+          priority: 'high',
+          language: 'cs',
+          metadata: {
+            contact_id: notification.metadata.contact_id,
+            offer_id: notification.metadata.offer_id,
+            origin_address: notification.metadata.origin_address,
+            destination_address: notification.metadata.destination_address,
+            departure_time: notification.metadata.departure_time
+          }
+        });
+      }
+
+      toast.success('Žádost byla přijata');
+      if (onMarkAsRead) onMarkAsRead(notification.id);
+    } catch (error) {
+      console.error('Error accepting request:', error);
+      toast.error('Chyba při přijímání žádosti');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleRejectRequest = async () => {
+    if (!notification.metadata?.contact_id) return;
+    
+    setIsProcessing(true);
+    try {
+      // Update contact status to rejected
+      const { error } = await supabase
+        .from('rideshare_contacts')
+        .update({ status: 'rejected' })
+        .eq('id', notification.metadata.contact_id);
+
+      if (error) throw error;
+
+      // Create notification for requester
+      if (notification.metadata.requester_user_id) {
+        await supabase.from('notifications').insert({
+          user_id: notification.metadata.requester_user_id,
+          title: t('rideshare.requestRejected'),
+          message: `Vaše žádost o spolujízdu byla zamítnuta`,
+          type: 'rideshare_rejected',
+          category: 'rideshare',
+          priority: 'medium',
+          language: 'cs',
+          metadata: {
+            contact_id: notification.metadata.contact_id,
+            offer_id: notification.metadata.offer_id,
+            origin_address: notification.metadata.origin_address,
+            destination_address: notification.metadata.destination_address,
+            departure_time: notification.metadata.departure_time
+          }
+        });
+      }
+
+      toast.success('Žádost byla zamítnuta');
+      if (onMarkAsRead) onMarkAsRead(notification.id);
+    } catch (error) {
+      console.error('Error rejecting request:', error);
+      toast.error('Chyba při zamítání žádosti');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -188,6 +283,32 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
               </span>
               
               <div className="flex items-center gap-1">
+                {/* Contact request actions for drivers */}
+                {notification.type === 'rideshare_contact' && notification.metadata?.contact_id && (
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAcceptRequest}
+                      disabled={isProcessing}
+                      className="h-7 px-2 text-xs text-green-700 hover:text-green-800 border-green-200 hover:border-green-300"
+                    >
+                      <Check className="h-3 w-3 mr-1" />
+                      Přijmout
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleRejectRequest}
+                      disabled={isProcessing}
+                      className="h-7 px-2 text-xs text-red-700 hover:text-red-800 border-red-200 hover:border-red-300"
+                    >
+                      <X className="h-3 w-3 mr-1" />
+                      Zamítnout
+                    </Button>
+                  </div>
+                )}
+
                 {!notification.read && onMarkAsRead && (
                   <Button
                     variant="ghost"
