@@ -200,3 +200,12 @@
 .shadow-elegant {
   box-shadow: 0 10px 30px -10px hsl(var(--primary) / 0.3);
 }
+
+/* Scrollbar utilities */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}

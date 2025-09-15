@@ -68,11 +68,11 @@
     "critical": "Krytyczny"
   },
   "categories": {
-    "all": "Wszystkie",
-    "shift": "Zmiany",
-    "rideshare": "Współprzejazdy",
-    "system": "System",
-    "admin": "Administracja"
+    "all": "Wszystkie powiadomienia",
+    "shift": "Zmiany i nadgodziny",
+    "rideshare": "Współprzejazdy i podróże",
+    "system": "Powiadomienia systemowe", 
+    "admin": "Zarządzanie i ostrzeżenia"
   },
   "time": {
     "now": "Teraz", 
@@ -86,5 +86,15 @@
     "weeksAgo": "{{count}} tygodni temu",
     "monthAgo": "miesiąc temu",
     "monthsAgo": "{{count}} miesięcy temu"
+  },
+  "navigation": {
+    "notifications": "Powiadomienia",
+    "notificationsDesc": "Wyświetl wszystkie powiadomienia i wiadomości"
+  },
+  "filters": {
+    "filterBy": "Filtruj według",
+    "showAll": "Pokaż wszystkie",
+    "noResults": "Brak wyników",
+    "noResultsDescription": "Nie znaleziono wyników dla tego filtru."
   }
 }

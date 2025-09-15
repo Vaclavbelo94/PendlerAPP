@@ -68,11 +68,11 @@
     "critical": "Kritická"
   },
   "categories": {
-    "all": "Vše",
-    "shift": "Směny",
-    "rideshare": "Spolujízdy",
-    "system": "Systém",
-    "admin": "Administrace"
+    "all": "Všechna oznámení",
+    "shift": "Směny a přesčasy",
+    "rideshare": "Spolujízdy a cesty", 
+    "system": "Systémová oznámení",
+    "admin": "Správa a upozornění"
   },
   "time": {
     "now": "Teď",

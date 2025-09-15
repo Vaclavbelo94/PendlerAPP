@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useSupabaseNotifications } from '@/hooks/useSupabaseNotifications';
@@ -92,17 +92,36 @@ const NotificationsPage: React.FC = () => {
     return <Info className={iconClass} />;
   };
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+
   const filterButtons: Array<{
     key: NotificationFilter;
-    labelKey: keyof typeof t;
+    labelKey: string;
     icon: React.ReactNode;
   }> = [
-    { key: 'all', labelKey: 'categories.all' as keyof typeof t, icon: <Bell className="h-4 w-4" /> },
-    { key: 'shift', labelKey: 'categories.shift' as keyof typeof t, icon: <Calendar className="h-4 w-4" /> },
-    { key: 'rideshare', labelKey: 'categories.rideshare' as keyof typeof t, icon: <Car className="h-4 w-4" /> },
-    { key: 'system', labelKey: 'categories.system' as keyof typeof t, icon: <Settings className="h-4 w-4" /> },
-    { key: 'admin', labelKey: 'categories.admin' as keyof typeof t, icon: <Shield className="h-4 w-4" /> },
+    { key: 'all', labelKey: 'categories.all', icon: <Bell className="h-4 w-4" /> },
+    { key: 'shift', labelKey: 'categories.shift', icon: <Calendar className="h-4 w-4" /> },
+    { key: 'rideshare', labelKey: 'categories.rideshare', icon: <Car className="h-4 w-4" /> },
+    { key: 'system', labelKey: 'categories.system', icon: <Settings className="h-4 w-4" /> },
+    { key: 'admin', labelKey: 'categories.admin', icon: <Shield className="h-4 w-4" /> },
   ];
+
+  const handleFilterSelect = (filter: NotificationFilter) => {
+    setSelectedFilter(filter);
+    
+    // Auto-scroll to center the selected filter button on mobile
+    if (isMobile && scrollRef.current) {
+      const filterIndex = filterButtons.findIndex(btn => btn.key === filter);
+      const buttonWidth = 120; // Approximate button width
+      const containerWidth = scrollRef.current.offsetWidth;
+      const scrollPosition = (filterIndex * buttonWidth) - (containerWidth / 2) + (buttonWidth / 2);
+      
+      scrollRef.current.scrollTo({
+        left: Math.max(0, scrollPosition),
+        behavior: 'smooth'
+      });
+    }
+  };
 
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
@@ -202,40 +221,74 @@ const NotificationsPage: React.FC = () => {
               </div>
             )}
 
-            {/* Filter Buttons */}
-            <div className="flex flex-wrap gap-2">
-              {filterButtons.map(({ key, labelKey, icon }) => {
-                const count = key === 'all' 
-                  ? notifications.length 
-                  : notifications.filter(n => {
-                      const type = n.type.toLowerCase();
-                      switch (key) {
-                        case 'shift': return type.includes('shift') || type.includes('overtime');
-                        case 'rideshare': return type.includes('rideshare') || type.includes('travel');
-                        case 'system': return type.includes('system') || type.includes('maintenance') || type.includes('update');
-                        case 'admin': return type.includes('admin') || type.includes('warning') || type.includes('critical');
-                        default: return false;
-                      }
-                    }).length;
+            {/* Filter Carousel */}
+            <div className="relative">
+              <div 
+                ref={scrollRef}
+                className="flex gap-2 overflow-x-auto scrollbar-hide pb-2"
+                style={{
+                  scrollSnapType: 'x mandatory',
+                  WebkitOverflowScrolling: 'touch'
+                }}
+              >
+                {filterButtons.map(({ key, labelKey, icon }) => {
+                  const count = key === 'all' 
+                    ? notifications.length 
+                    : notifications.filter(n => {
+                        const type = n.type.toLowerCase();
+                        switch (key) {
+                          case 'shift': return type.includes('shift') || type.includes('overtime');
+                          case 'rideshare': return type.includes('rideshare') || type.includes('travel');
+                          case 'system': return type.includes('system') || type.includes('maintenance') || type.includes('update');
+                          case 'admin': return type.includes('admin') || type.includes('warning') || type.includes('critical');
+                          default: return false;
+                        }
+                      }).length;
 
-                return (
-                  <Button
-                    key={key}
-                    variant={selectedFilter === key ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => setSelectedFilter(key)}
-                    className="flex items-center gap-2"
-                  >
-                    {icon}
-                    {t(labelKey)}
-                    {count > 0 && (
-                      <Badge variant={selectedFilter === key ? "secondary" : "default"} className="ml-1">
-                        {count}
-                      </Badge>
-                    )}
-                  </Button>
-                );
-              })}
+                  return (
+                    <Button
+                      key={key}
+                      variant={selectedFilter === key ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleFilterSelect(key)}
+                      className={cn(
+                        "flex items-center gap-2 whitespace-nowrap flex-shrink-0",
+                        "scroll-snap-align: center",
+                        isMobile && "min-w-[110px] justify-center"
+                      )}
+                    >
+                      {icon}
+                      {t(labelKey)}
+                      {count > 0 && (
+                        <Badge 
+                          variant={selectedFilter === key ? "secondary" : "default"} 
+                          className="ml-1 text-xs"
+                        >
+                          {count}
+                        </Badge>
+                      )}
+                    </Button>
+                  );
+                })}
+              </div>
+              
+              {/* Scroll indicators for mobile */}
+              {isMobile && (
+                <div className="flex justify-center mt-2 gap-1">
+                  {filterButtons.map((_, index) => {
+                    const isActive = filterButtons[index].key === selectedFilter;
+                    return (
+                      <div
+                        key={index}
+                        className={cn(
+                          "h-1.5 w-1.5 rounded-full transition-colors",
+                          isActive ? "bg-primary" : "bg-muted-foreground/30"
+                        )}
+                      />
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
