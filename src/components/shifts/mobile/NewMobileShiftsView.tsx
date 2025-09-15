@@ -79,15 +79,17 @@ const NewMobileShiftsView: React.FC<NewMobileShiftsViewProps> = ({
     switch (activeSection) {
       case 'calendar':
         return (
-          <div className="flex-1 flex flex-col">
-            <MobileCalendarView
-              currentDate={currentDate}
-              selectedDate={selectedDate}
-              shifts={shiftsToUse}
-              onDateSelect={handleDateSelect}
-            />
+          <div className="flex-1 flex flex-col overflow-hidden">
+            <div className="flex-1 overflow-y-auto">
+              <MobileCalendarView
+                currentDate={currentDate}
+                selectedDate={selectedDate}
+                shifts={shiftsToUse}
+                onDateSelect={handleDateSelect}
+              />
+            </div>
             {selectedDate && (
-              <div className="p-4 border-t border-border">
+              <div className="p-4 border-t border-border pb-20">
                 <MobileShiftCard
                   date={selectedDate}
                   shift={getShiftForDate(selectedDate)}
