@@ -2,7 +2,9 @@ import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useSupabaseNotifications } from '@/hooks/useSupabaseNotifications';
+import { useTestNotifications } from '@/hooks/useTestNotifications';
 import { MobileNotificationItem } from '@/components/mobile/MobileNotificationItem';
+import { ShiftNotificationItem } from '@/components/notifications/ShiftNotificationItem';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -38,10 +40,14 @@ const NotificationsPage: React.FC = () => {
     notifications,
     unreadCount,
     loading,
+    markAsRead,
     markAllAsRead,
+    deleteNotification,
     clearNotifications,
     refresh
   } = useSupabaseNotifications();
+
+  const { createSampleShiftNotification, isCreating } = useTestNotifications();
 
   const [selectedFilter, setSelectedFilter] = useState<NotificationFilter>('all');
   const [currentFilterIndex, setCurrentFilterIndex] = useState(0);
@@ -193,6 +199,17 @@ const NotificationsPage: React.FC = () => {
 
               {/* Header Actions */}
               <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => createSampleShiftNotification()}
+                  disabled={isCreating}
+                  className="hidden sm:flex"
+                >
+                  <Bell className="h-4 w-4 mr-2" />
+                  Test oznámení
+                </Button>
+
                 <Button
                   variant="outline"
                   size="sm"
@@ -426,7 +443,7 @@ const NotificationsPage: React.FC = () => {
                 {selectedFilter !== 'all' && (
                   <Button
                     variant="outline"
-                    onClick={() => setSelectedFilter('all')}
+                    onClick={() => handleFilterSelect('all')}
                   >
                     {t('categories.all')}
                   </Button>
@@ -435,21 +452,36 @@ const NotificationsPage: React.FC = () => {
             ) : (
               <ScrollArea className="h-[calc(100vh-24rem)]">
                 <div className="space-y-3 pr-4">
-                  {filteredNotifications.map((notification) => (
-                    <div
-                      key={notification.id}
-                      className={cn(
-                        "p-4 rounded-lg border transition-colors",
-                        !notification.read 
-                          ? "bg-accent/50 border-primary/20" 
-                          : "bg-card border-border hover:bg-accent/30"
-                      )}
-                    >
-                      <MobileNotificationItem 
-                        notification={notification}
-                      />
-                    </div>
-                  ))}
+                  {filteredNotifications.map((notification) => {
+                    // Use specialized component for shift notifications
+                    if (notification.related_to?.type === 'shift' || notification.type === 'shift_reminder') {
+                      return (
+                        <ShiftNotificationItem
+                          key={notification.id}
+                          notification={notification}
+                          onMarkAsRead={markAsRead}
+                          onDelete={deleteNotification}
+                        />
+                      );
+                    }
+                    
+                    // Use general component for other notifications
+                    return (
+                      <div
+                        key={notification.id}
+                        className={cn(
+                          "p-4 rounded-lg border transition-colors",
+                          !notification.read 
+                            ? "bg-accent/50 border-primary/20" 
+                            : "bg-card border-border hover:bg-accent/30"
+                        )}
+                      >
+                        <MobileNotificationItem 
+                          notification={notification}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               </ScrollArea>
             )}
