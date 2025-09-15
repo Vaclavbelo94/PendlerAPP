@@ -5,43 +5,50 @@ export const useRideshareToast = () => {
   const { t } = useTranslation('toast');
 
   const showContactRequestSent = () => {
-    toast.success(t('rideshare.contactRequestSent'), {
+    console.log('Toast: Contact request sent', t('rideshare.contactRequestSent'));
+    toast.success(t('rideshare.contactRequestSent') || 'Žádost o kontakt byla odeslána', {
       duration: 4000,
     });
   };
 
   const showContactError = () => {
-    toast.error(t('rideshare.contactError'), {
+    console.log('Toast: Contact error', t('rideshare.contactError'));
+    toast.error(t('rideshare.contactError') || 'Chyba při kontaktování řidiče', {
       duration: 5000,
     });
   };
 
   const showPhoneRequired = () => {
-    toast.error(t('rideshare.phoneRequired'), {
+    console.log('Toast: Phone required', t('rideshare.phoneRequired'));
+    toast.error(t('rideshare.phoneRequired') || 'Telefonní číslo je povinné', {
       duration: 4000,
     });
   };
 
   const showInvalidPhone = () => {
-    toast.error(t('rideshare.invalidPhone'), {
+    console.log('Toast: Invalid phone', t('rideshare.invalidPhone'));
+    toast.error(t('rideshare.invalidPhone') || 'Neplatné telefonní číslo', {
       duration: 4000,
     });
   };
 
   const showOfferCreated = () => {
-    toast.success(t('rideshare.offerCreated'), {
+    console.log('Toast: Offer created', t('rideshare.offerCreated'));
+    toast.success(t('rideshare.offerCreated') || 'Nabídka spolujízdy byla vytvořena', {
       duration: 4000,
     });
   };
 
   const showOfferDeleted = () => {
-    toast.success(t('rideshare.offerDeleted'), {
+    console.log('Toast: Offer deleted', t('rideshare.offerDeleted'));
+    toast.success(t('rideshare.offerDeleted') || 'Nabídka spolujízdy byla odstraněna', {
       duration: 3000,
     });
   };
 
   const showOfferUpdated = () => {
-    toast.success(t('rideshare.offerUpdated'), {
+    console.log('Toast: Offer updated', t('rideshare.offerUpdated'));
+    toast.success(t('rideshare.offerUpdated') || 'Nabídka spolujízdy byla aktualizována', {
       duration: 4000,
     });
   };
