@@ -108,9 +108,84 @@ export const useRideshareNotifications = () => {
       )
       .subscribe();
 
+    // Subscribe to rideshare contacts changes (contact requests)
+    const contactsChannel = supabase
+      .channel('rideshare-contacts-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'rideshare_contacts'
+        },
+        async (payload) => {
+          if (payload.new) {
+            // Get offer details to create meaningful notification
+            const { data: offer } = await supabase
+              .from('rideshare_offers')
+              .select('*')
+              .eq('id', payload.new.offer_id)
+              .single();
+
+            if (offer) {
+              // Create notification for the driver
+              if (offer.user_id) {
+                await supabase.from('notifications').insert({
+                  user_id: offer.user_id,
+                  title: t('rideshare.contactRequest'),
+                  message: `Někdo se zajímá o vaši spolujízdu z ${offer.origin_address} do ${offer.destination_address}`,
+                  type: 'rideshare_contact',
+                  category: 'rideshare',
+                  priority: 'medium',
+                  language: 'cs',
+                  metadata: {
+                    contact_id: payload.new.id,
+                    offer_id: payload.new.offer_id,
+                    requester_email: payload.new.requester_email,
+                    origin_address: offer.origin_address,
+                    destination_address: offer.destination_address,
+                    departure_time: offer.departure_time
+                  },
+                  related_to: {
+                    type: 'rideshare_contact',
+                    id: payload.new.id
+                  }
+                });
+              }
+
+              // Create confirmation notification for the requester
+              if (payload.new.requester_user_id) {
+                await supabase.from('notifications').insert({
+                  user_id: payload.new.requester_user_id,
+                  title: t('rideshare.requestSent'),
+                  message: `Vaše žádost o spolujízdu byla odeslána`,
+                  type: 'rideshare_request_sent',
+                  category: 'rideshare',
+                  priority: 'low',
+                  language: 'cs',
+                  metadata: {
+                    contact_id: payload.new.id,
+                    offer_id: payload.new.offer_id,
+                    origin_address: offer.origin_address,
+                    destination_address: offer.destination_address,
+                    departure_time: offer.departure_time
+                  },
+                  related_to: {
+                    type: 'rideshare_contact',
+                    id: payload.new.id
+                  }
+                });
+              }
+            }
+          }
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(offersChannel);
       supabase.removeChannel(requestsChannel);
+      supabase.removeChannel(contactsChannel);
     };
   }, [addNotification, t]);
 

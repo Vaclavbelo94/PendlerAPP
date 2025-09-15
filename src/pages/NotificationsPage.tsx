@@ -50,7 +50,7 @@ const NotificationsPage: React.FC = () => {
     refresh
   } = useSupabaseNotifications();
 
-  const { createSampleShiftNotification, createTestNotificationByType, isCreating } = useTestAllNotifications();
+  const { createSampleShiftNotification, createTestRideshareContact, createTestNotificationByType, isCreating } = useTestAllNotifications();
 
   const [selectedFilter, setSelectedFilter] = useState<NotificationFilter>('all');
   const [currentFilterIndex, setCurrentFilterIndex] = useState(0);
@@ -231,6 +231,16 @@ const NotificationsPage: React.FC = () => {
                   >
                     <Bell className="h-4 w-4 mr-2" />
                     Test Směna
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => createTestRideshareContact()}
+                    disabled={isCreating}
+                  >
+                    <Car className="h-4 w-4 mr-2" />
+                    Test Kontakt
                   </Button>
 
                   <Button

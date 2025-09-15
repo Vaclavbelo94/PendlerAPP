@@ -2,6 +2,7 @@ import { useTestNotifications } from './useTestNotifications';
 import { useRideshareNotifications } from './useRideshareNotifications';
 import { useSystemNotifications } from './useSystemNotifications';
 import { useAdminNotifications } from './useAdminNotifications';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useTestAllNotifications = () => {
   const { createSampleShiftNotification, isCreating: isCreatingShift } = useTestNotifications();
@@ -17,12 +18,42 @@ export const useTestAllNotifications = () => {
     createTestAdminAnnouncement 
   } = useAdminNotifications();
 
+  const createTestRideshareContact = async () => {
+    console.log('Creating test rideshare contact...');
+    
+    // Create a mock rideshare contact that triggers notifications
+    await supabase.from('notifications').insert({
+      user_id: '43ba4ee6-c961-45da-87c8-c04da012f1f0',
+      title: 'Žádost o kontakt',
+      message: 'Někdo se zajímá o vaši spolujízdu z Praha do Brno',
+      type: 'rideshare_contact',
+      category: 'rideshare',
+      priority: 'medium',
+      language: 'cs',
+      metadata: {
+        contact_id: 'test-contact-1',
+        offer_id: 'test-offer-1',
+        requester_email: 'test@example.com',
+        origin_address: 'Praha, Česká republika',
+        destination_address: 'Brno, Česká republika',
+        departure_time: '14:00'
+      },
+      related_to: {
+        type: 'rideshare_contact',
+        id: 'test-contact-1'
+      }
+    });
+
+    console.log('Test rideshare contact notification created');
+  };
+
   const createAllTestNotifications = async () => {
     try {
       // Create test notifications for all categories
       await Promise.all([
         createSampleShiftNotification(),
         createTestRideshareNotification(),
+        createTestRideshareContact(),
         createTestSystemNotification(),
         createTestAdminNotification()
       ]);
@@ -31,7 +62,7 @@ export const useTestAllNotifications = () => {
     }
   };
 
-  const createTestNotificationByType = async (type: 'shift' | 'rideshare' | 'system' | 'admin') => {
+  const createTestNotificationByType = async (type: 'shift' | 'rideshare' | 'rideshare_contact' | 'system' | 'admin') => {
     try {
       switch (type) {
         case 'shift':
@@ -39,6 +70,9 @@ export const useTestAllNotifications = () => {
           break;
         case 'rideshare':
           await createTestRideshareNotification();
+          break;
+        case 'rideshare_contact':
+          await createTestRideshareContact();
           break;
         case 'system':
           await createTestSystemNotification();
@@ -59,6 +93,7 @@ export const useTestAllNotifications = () => {
     // Individual test functions
     createSampleShiftNotification,
     createTestRideshareNotification,
+    createTestRideshareContact,
     createTestSystemNotification,
     createTestUpdateNotification,
     createTestAnnouncementNotification,
