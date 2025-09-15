@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export const useTestNotifications = () => {
   const [isCreating, setIsCreating] = useState(false);
+  const { t } = useTranslation('toast');
 
   const createTestShiftNotification = async () => {
     setIsCreating(true);
@@ -18,17 +20,17 @@ export const useTestNotifications = () => {
 
       if (error) {
         console.error('Error creating test notifications:', error);
-        toast.error('Chyba při vytváření testovacích oznámení');
+        toast.error(t('errors.createTestError'));
         return;
       }
 
       console.log('Test notifications created:', data);
-      toast.success(`Vytvořeno ${data.created || 0} testovacích oznámení`);
+      toast.success(t('test.testNotificationCreated', { count: data.created || 0 }));
       
       return data;
     } catch (error) {
       console.error('Error calling daily-shift-notifications function:', error);
-      toast.error('Chyba při volání funkce oznámení');
+      toast.error(t('errors.functionCallError'));
     } finally {
       setIsCreating(false);
     }
@@ -41,7 +43,7 @@ export const useTestNotifications = () => {
       const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
       
       if (userError || !currentUser) {
-        toast.error('Uživatel není přihlášen');
+        toast.error(t('errors.notLoggedIn'));
         return;
       }
 
@@ -56,8 +58,8 @@ export const useTestNotifications = () => {
         .from('notifications')
         .insert({
           user_id: targetUserId,
-          title: 'Zítra začíná směna',
-          message: 'Noční směna zítra od 22:00 do 06:00',
+          title: t('test.sampleNotificationTitle'),
+          message: t('test.sampleNotificationMessage'),
           type: 'shift_reminder',
           category: 'shift',
           priority: 'medium',
@@ -79,14 +81,14 @@ export const useTestNotifications = () => {
 
       if (error) {
         console.error('Error creating sample notification:', error);
-        toast.error('Chyba při vytváření ukázkového oznámení');
+        toast.error(t('errors.createSampleError'));
         return;
       }
 
-      toast.success('Ukázkové oznámení o směně vytvořeno');
+      toast.success(t('test.sampleNotificationCreated'));
     } catch (error) {
       console.error('Error creating sample notification:', error);
-      toast.error('Chyba při vytváření ukázkového oznámení');
+      toast.error(t('errors.createSampleError'));
     } finally {
       setIsCreating(false);
     }

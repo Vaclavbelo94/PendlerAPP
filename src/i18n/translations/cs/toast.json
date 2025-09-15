@@ -1,0 +1,57 @@
+{
+  "success": {
+    "dataSaved": "Data byla uložena",
+    "operationComplete": "Operace dokončena",
+    "exportComplete": "Export dokončen",
+    "settingsSaved": "Nastavení bylo uloženo",
+    "userUpdated": "Uživatel aktualizován",
+    "userDeleted": "Uživatel byl smazán",
+    "permissionGranted": "Oprávnění bylo uděleno",
+    "permissionRevoked": "Oprávnění bylo odebráno",
+    "codeCreated": "Kód byl vytvořen",
+    "codeDeactivated": "Kód byl deaktivován",
+    "backupCreated": "Záloha databáze vytvořena úspěšně",
+    "actionCompleted": "Akce dokončena",
+    "statsLoaded": "Statistiky načteny",
+    "activityExported": "Aktivita exportována",
+    "dataExported": "Data exportována",
+    "defaultsRestored": "Nastavení bylo obnoveno na výchozí hodnoty",
+    "allNotificationsRead": "Všechna oznámení označena jako přečtená",
+    "allNotificationsDeleted": "Všechna oznámení smazána"
+  },
+  "errors": {
+    "saveError": "Chyba při ukládání",
+    "loadError": "Chyba při načítání",
+    "networkError": "Chyba sítě",
+    "authError": "Chyba autentizace",
+    "permissionError": "Nemáte oprávnění",
+    "userNotFound": "Uživatel nebyl nalezen",
+    "actionFailed": "Akce se nezdařila",
+    "exportFailed": "Export se nezdařil",
+    "queryError": "Chyba při provádění dotazu",
+    "invalidQuery": "Neplatný dotaz",
+    "selectOnlyAllowed": "Pouze SELECT dotazy jsou povoleny",
+    "enterQuery": "Zadejte SQL dotaz",
+    "runQueryFirst": "Nejprv proveďte dotaz",
+    "confirmAction": "Potvrďte provedení akce",
+    "fillEmailFields": "Vyplňte předmět a obsah emailu",
+    "selectAction": "Vyberte akci k provedení",
+    "loginFailed": "Přihlášení selhalo",
+    "noAdminRights": "Nemáte administrátorská práva",
+    "createSampleError": "Chyba při vytváření ukázkového oznámení",
+    "createTestError": "Chyba při vytváření testovacích oznámení",
+    "functionCallError": "Chyba při volání funkce oznámení",
+    "notLoggedIn": "Uživatel není přihlášen"
+  },
+  "info": {
+    "processing": "Zpracovávám...",
+    "syncInProgress": "Synchronizace probíhá",
+    "refreshRequired": "Uživatel musí obnovit stránku nebo se znovu přihlásit pro aktualizaci premium statusu"
+  },
+  "test": {
+    "sampleNotificationTitle": "Zítra začíná směna",
+    "sampleNotificationMessage": "Noční směna zítra od 22:00 do 06:00",
+    "testNotificationCreated": "Vytvořeno {{count}} testovacích oznámení",
+    "sampleNotificationCreated": "Ukázkové oznámení o směně vytvořeno"
+  }
+}

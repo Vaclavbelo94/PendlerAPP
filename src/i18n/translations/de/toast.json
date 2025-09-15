@@ -1,0 +1,57 @@
+{
+  "success": {
+    "dataSaved": "Daten wurden gespeichert",
+    "operationComplete": "Operation abgeschlossen",
+    "exportComplete": "Export abgeschlossen",
+    "settingsSaved": "Einstellungen wurden gespeichert",
+    "userUpdated": "Benutzer aktualisiert",
+    "userDeleted": "Benutzer wurde gelöscht",
+    "permissionGranted": "Berechtigung wurde erteilt",
+    "permissionRevoked": "Berechtigung wurde entzogen",
+    "codeCreated": "Code wurde erstellt",
+    "codeDeactivated": "Code wurde deaktiviert",
+    "backupCreated": "Datenbank-Backup erfolgreich erstellt",
+    "actionCompleted": "Aktion abgeschlossen",
+    "statsLoaded": "Statistiken geladen",
+    "activityExported": "Aktivität exportiert",
+    "dataExported": "Daten exportiert",
+    "defaultsRestored": "Einstellungen auf Standardwerte zurückgesetzt",
+    "allNotificationsRead": "Alle Benachrichtigungen als gelesen markiert",
+    "allNotificationsDeleted": "Alle Benachrichtigungen gelöscht"
+  },
+  "errors": {
+    "saveError": "Fehler beim Speichern",
+    "loadError": "Fehler beim Laden",
+    "networkError": "Netzwerkfehler",
+    "authError": "Authentifizierungsfehler",
+    "permissionError": "Keine Berechtigung",
+    "userNotFound": "Benutzer nicht gefunden",
+    "actionFailed": "Aktion fehlgeschlagen",
+    "exportFailed": "Export fehlgeschlagen",
+    "queryError": "Fehler beim Ausführen der Abfrage",
+    "invalidQuery": "Ungültige Abfrage",
+    "selectOnlyAllowed": "Nur SELECT-Abfragen sind erlaubt",
+    "enterQuery": "SQL-Abfrage eingeben",
+    "runQueryFirst": "Führen Sie zuerst eine Abfrage aus",
+    "confirmAction": "Aktion bestätigen",
+    "fillEmailFields": "E-Mail-Betreff und -Inhalt ausfüllen",
+    "selectAction": "Aktion auswählen",
+    "loginFailed": "Anmeldung fehlgeschlagen",
+    "noAdminRights": "Keine Administratorrechte",
+    "createSampleError": "Fehler beim Erstellen der Beispielbenachrichtigung",
+    "createTestError": "Fehler beim Erstellen von Testbenachrichtigungen",
+    "functionCallError": "Fehler beim Aufrufen der Benachrichtigungsfunktion",
+    "notLoggedIn": "Benutzer ist nicht angemeldet"
+  },
+  "info": {
+    "processing": "Verarbeitung...",
+    "syncInProgress": "Synchronisierung läuft",
+    "refreshRequired": "Benutzer muss die Seite aktualisieren oder sich erneut anmelden, um den Premium-Status zu aktualisieren"
+  },
+  "test": {
+    "sampleNotificationTitle": "Schicht beginnt morgen",
+    "sampleNotificationMessage": "Nachtschicht morgen von 22:00 bis 06:00",
+    "testNotificationCreated": "{{count}} Testbenachrichtigungen erstellt",
+    "sampleNotificationCreated": "Beispiel-Schichtbenachrichtigung erstellt"
+  }
+}

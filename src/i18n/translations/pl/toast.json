@@ -1,0 +1,57 @@
+{
+  "success": {
+    "dataSaved": "Dane zostały zapisane",
+    "operationComplete": "Operacja zakończona",
+    "exportComplete": "Eksport zakończony",
+    "settingsSaved": "Ustawienia zostały zapisane",
+    "userUpdated": "Użytkownik zaktualizowany",
+    "userDeleted": "Użytkownik został usunięty",
+    "permissionGranted": "Uprawnienie zostało przyznane",
+    "permissionRevoked": "Uprawnienie zostało odebrane",
+    "codeCreated": "Kod został utworzony",
+    "codeDeactivated": "Kod został dezaktywowany",
+    "backupCreated": "Kopia zapasowa bazy danych utworzona pomyślnie",
+    "actionCompleted": "Akcja zakończona",
+    "statsLoaded": "Statystyki załadowane",
+    "activityExported": "Aktywność wyeksportowana",
+    "dataExported": "Dane wyeksportowane",
+    "defaultsRestored": "Ustawienia przywrócone do wartości domyślnych",
+    "allNotificationsRead": "Wszystkie powiadomienia oznaczone jako przeczytane",
+    "allNotificationsDeleted": "Wszystkie powiadomienia usunięte"
+  },
+  "errors": {
+    "saveError": "Błąd podczas zapisywania",
+    "loadError": "Błąd podczas ładowania",
+    "networkError": "Błąd sieci",
+    "authError": "Błąd uwierzytelniania",
+    "permissionError": "Brak uprawnień",
+    "userNotFound": "Użytkownik nie został znaleziony",
+    "actionFailed": "Akcja nie powiodła się",
+    "exportFailed": "Eksport nie powiódł się",
+    "queryError": "Błąd podczas wykonywania zapytania",
+    "invalidQuery": "Nieprawidłowe zapytanie",
+    "selectOnlyAllowed": "Dozwolone są tylko zapytania SELECT",
+    "enterQuery": "Wprowadź zapytanie SQL",
+    "runQueryFirst": "Najpierw wykonaj zapytanie",
+    "confirmAction": "Potwierdź wykonanie akcji",
+    "fillEmailFields": "Wypełnij temat i treść e-maila",
+    "selectAction": "Wybierz akcję do wykonania",
+    "loginFailed": "Logowanie nie powiodło się",
+    "noAdminRights": "Brak uprawnień administratora",
+    "createSampleError": "Błąd podczas tworzenia przykładowego powiadomienia",
+    "createTestError": "Błąd podczas tworzenia powiadomień testowych",
+    "functionCallError": "Błąd podczas wywoływania funkcji powiadomień",
+    "notLoggedIn": "Użytkownik nie jest zalogowany"
+  },
+  "info": {
+    "processing": "Przetwarzanie...",
+    "syncInProgress": "Synchronizacja w toku",
+    "refreshRequired": "Użytkownik musi odświeżyć stronę lub zalogować się ponownie, aby zaktualizować status premium"
+  },
+  "test": {
+    "sampleNotificationTitle": "Zmiana zaczyna się jutro",
+    "sampleNotificationMessage": "Zmiana nocna jutro od 22:00 do 06:00",
+    "testNotificationCreated": "Utworzono {{count}} powiadomień testowych",
+    "sampleNotificationCreated": "Utworzono przykładowe powiadomienie o zmianie"
+  }
+}

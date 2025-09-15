@@ -21,7 +21,7 @@ export interface SupabaseNotification {
 
 export const useSupabaseNotifications = () => {
   const { user } = useAuth();
-  const { t } = useTranslation('notifications');
+  const { t } = useTranslation('toast');
   const [notifications, setNotifications] = useState<SupabaseNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -130,7 +130,7 @@ export const useSupabaseNotifications = () => {
         prev.map(notification => ({ ...notification, read: true }))
       );
 
-      toast.success(t('actions.markAllAsRead'));
+      toast.success(t('success.allNotificationsRead'));
     } catch (err) {
       console.error('Error in markAllAsRead:', err);
     }
@@ -172,7 +172,7 @@ export const useSupabaseNotifications = () => {
       }
 
       setNotifications([]);
-      toast.success(t('actions.deleteAll'));
+      toast.success(t('success.allNotificationsDeleted'));
     } catch (err) {
       console.error('Error in clearNotifications:', err);
     }
