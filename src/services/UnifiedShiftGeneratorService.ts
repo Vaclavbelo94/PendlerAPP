@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { WocheCalculatorService } from "./WocheCalculatorService";
+import { calculateSimpleWoche, getWocheForDate } from "@/utils/dhl/simpleWocheCalculator";
 
 export interface UnifiedGeneratedShift {
   id?: string;
@@ -204,10 +205,9 @@ export class UnifiedShiftGeneratorService {
     date: Date,
     assignment: any
   ): Promise<UnifiedGeneratedShift | null> {
-    // Calculate which Woche to use based on 15-week cycle
-    const calendarWeek = WocheCalculatorService.getCalendarWeek(date);
+    // Calculate which Woche to use based on 15-week cycle and user's current setup
     const userCurrentWoche = assignment.current_woche || 1;
-    const targetWoche = this.calculateWocheForDate(userCurrentWoche, calendarWeek);
+    const targetWoche = this.calculateWocheForDate(userCurrentWoche, date);
 
     // Get the pattern for the calculated Woche
     const { data: pattern } = await supabase
@@ -253,12 +253,12 @@ export class UnifiedShiftGeneratorService {
       is_dhl_managed: true,
       is_wechselschicht_generated: true,
       notes: `${pattern.pattern_name} - ${shiftType}`,
-      original_dhl_data: {
-        woche: targetWoche,
-        pattern_name: pattern.pattern_name,
-        shift_type: shiftType,
-        calendar_week: calendarWeek
-      }
+        original_dhl_data: {
+          woche: targetWoche,
+          pattern_name: pattern.pattern_name,
+          shift_type: shiftType,
+          calendar_week: WocheCalculatorService.getCalendarWeek(date)
+        }
     };
   }
 
@@ -270,15 +270,16 @@ export class UnifiedShiftGeneratorService {
     date: Date,
     assignment: any
   ): Promise<UnifiedGeneratedShift | null> {
+    const userCurrentWoche = assignment.current_woche || 1;
+    const targetWoche = this.calculateWocheForDate(userCurrentWoche, date);
     const calendarWeek = WocheCalculatorService.getCalendarWeek(date);
-    const userWoche = assignment.current_woche || 1;
 
     // Get shift template for this position, woche, and calendar week
     const { data: template } = await supabase
       .from('dhl_position_shift_templates')
       .select('*')
       .eq('position_id', assignment.dhl_positions?.id)
-      .eq('woche_number', userWoche)
+      .eq('woche_number', targetWoche)
       .eq('calendar_week', calendarWeek)
       .single();
 
@@ -312,7 +313,7 @@ export class UnifiedShiftGeneratorService {
       original_dhl_data: {
         template_id: template.id,
         calendar_week: calendarWeek,
-        woche: userWoche
+        woche: targetWoche
       }
     };
   }
@@ -389,34 +390,13 @@ export class UnifiedShiftGeneratorService {
   }
 
   // Helper methods
-  private static calculateWocheForDate(userCurrentWoche: number, targetCalendarWeek: number): number {
+  private static calculateWocheForDate(userCurrentWoche: number, targetDate: Date): number {
     if (!userCurrentWoche || userCurrentWoche < 1 || userCurrentWoche > 15) {
       return 1;
     }
 
-    const today = new Date();
-    const currentCalendarWeek = WocheCalculatorService.getCalendarWeek(today);
-    
-    let weeksDiff = targetCalendarWeek - currentCalendarWeek;
-    
-    // Handle year rollover
-    if (weeksDiff > 26) {
-      weeksDiff -= 52;
-    } else if (weeksDiff < -26) {
-      weeksDiff += 52;
-    }
-
-    let result = userCurrentWoche + weeksDiff;
-    
-    // Handle overflow/underflow with 15-week cycle
-    while (result > 15) {
-      result -= 15;
-    }
-    while (result < 1) {
-      result += 15;
-    }
-    
-    return result;
+    // Use the simple Woche calculator that correctly handles the user's current Woche as reference
+    return getWocheForDate(userCurrentWoche, targetDate);
   }
 
   private static getWechselschichtTimes(pattern: any, shiftType: string): { start: string, end: string } | null {
