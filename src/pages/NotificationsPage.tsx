@@ -206,12 +206,12 @@ const NotificationsPage: React.FC = () => {
                 <Bell className="h-8 w-8 text-primary" />
                 <div>
                   <h1 className="text-3xl font-bold text-foreground">
-                    Oznámení
+                    {t('status.notifications')}
                   </h1>
                   <p className="text-muted-foreground">
                     {notifications.length > 0 
-                      ? `${notifications.length} ${notifications.length === 1 ? 'oznámení' : 'oznámení'}, ${unreadCount} ${unreadCount === 1 ? 'nepřečtené' : 'nepřečtených'}`
-                      : 'Nemáte žádná nová oznámení'
+                      ? t('navigation.notificationsDesc')
+                      : t('status.emptyDescription')
                     }
                   </p>
                 </div>
@@ -353,12 +353,12 @@ const NotificationsPage: React.FC = () => {
                         {(() => {
                           const currentFilter = filterButtons[currentFilterIndex]?.key;
                           switch (currentFilter) {
-                            case 'all': return 'Všechna oznámení';
-                            case 'shift': return 'Směny a přesčasy';
-                            case 'rideshare': return 'Spolujízdy a cesty';
-                            case 'system': return 'Systémová oznámení';
-                            case 'admin': return 'Správa a upozornění';
-                            default: return 'Všechna oznámení';
+                            case 'all': return t('categories.all');
+                            case 'shift': return t('categories.shift');
+                            case 'rideshare': return t('categories.rideshare');
+                            case 'system': return t('categories.system');
+                            case 'admin': return t('categories.admin');
+                            default: return t('categories.all');
                           }
                         })()}
                       </span>
@@ -464,12 +464,12 @@ const NotificationsPage: React.FC = () => {
 
                   const labelText = (() => {
                     switch (key) {
-                      case 'all': return 'Všechna oznámení';
-                      case 'shift': return 'Směny a přesčasy';
-                      case 'rideshare': return 'Spolujízdy a cesty';
-                      case 'system': return 'Systémová oznámení';
-                      case 'admin': return 'Správa a upozornění';
-                      default: return 'Všechna oznámení';
+                      case 'all': return t('categories.all');
+                      case 'shift': return t('categories.shift');
+                      case 'rideshare': return t('categories.rideshare');
+                      case 'system': return t('categories.system');
+                      case 'admin': return t('categories.admin');
+                      default: return t('categories.all');
                     }
                   })();
 
@@ -512,19 +512,11 @@ const NotificationsPage: React.FC = () => {
             ) : filteredNotifications.length === 0 ? (
               <div className="text-center py-12">
                 <Bell className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-semibold mb-2">Žádná oznámení</h3>
+                <h3 className="text-lg font-semibold mb-2">{t('status.empty')}</h3>
                 <p className="text-muted-foreground mb-4">
                   {selectedFilter === 'all' 
-                    ? 'Nemáte žádná nová oznámení.'
-                    : `Žádná oznámení v kategorii "${(() => {
-                        switch (selectedFilter) {
-                          case 'shift': return 'Směny a přesčasy';
-                          case 'rideshare': return 'Spolujízdy a cesty';
-                          case 'system': return 'Systémová oznámení';
-                          case 'admin': return 'Správa a upozornění';
-                          default: return 'Všechna oznámení';
-                        }
-                      })()}"`
+                    ? t('status.emptyDescription')
+                    : t('filters.noResultsDescription')
                   }
                 </p>
                 {selectedFilter !== 'all' && (
@@ -532,7 +524,7 @@ const NotificationsPage: React.FC = () => {
                     variant="outline"
                     onClick={() => handleFilterSelect('all')}
                   >
-                    Všechna oznámení
+                    {t('categories.all')}
                   </Button>
                 )}
               </div>
