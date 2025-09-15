@@ -21,7 +21,7 @@ export const UnifiedMobileNavbar: React.FC<UnifiedMobileNavbarProps> = ({
       <nav className="sticky top-0 z-[60] w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between px-4">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/dashboard" className="flex items-center space-x-2">
             <div className="flex items-center space-x-2">
               <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-primary to-primary/80 flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-sm">PA</span>
