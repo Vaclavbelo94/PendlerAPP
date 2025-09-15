@@ -53,5 +53,14 @@
     "sampleNotificationMessage": "Noční směna zítra od 22:00 do 06:00",
     "testNotificationCreated": "Vytvořeno {{count}} testovacích oznámení",
     "sampleNotificationCreated": "Ukázkové oznámení o směně vytvořeno"
+  },
+  "rideshare": {
+    "contactRequestSent": "Žádost o kontakt byla odeslána",
+    "contactError": "Chyba při kontaktování řidiče",
+    "phoneRequired": "Telefonní číslo je povinné",
+    "invalidPhone": "Neplatné telefonní číslo",
+    "offerCreated": "Nabídka spolujízdy byla vytvořena",
+    "offerDeleted": "Nabídka spolujízdy byla odstraněna",
+    "offerUpdated": "Nabídka spolujízdy byla aktualizována"
   }
 }

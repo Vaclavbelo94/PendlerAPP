@@ -53,5 +53,14 @@
     "sampleNotificationMessage": "Zmiana nocna jutro od 22:00 do 06:00",
     "testNotificationCreated": "Utworzono {{count}} powiadomień testowych",
     "sampleNotificationCreated": "Utworzono przykładowe powiadomienie o zmianie"
+  },
+  "rideshare": {
+    "contactRequestSent": "Prośba o kontakt została wysłana",
+    "contactError": "Błąd przy kontaktowaniu kierowcy",
+    "phoneRequired": "Numer telefonu jest wymagany",
+    "invalidPhone": "Nieprawidłowy numer telefonu",
+    "offerCreated": "Oferta wspólnej jazdy została utworzona",
+    "offerDeleted": "Oferta wspólnej jazdy została usunięta",
+    "offerUpdated": "Oferta wspólnej jazdy została zaktualizowana"
   }
 }

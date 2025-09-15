@@ -53,5 +53,14 @@
     "sampleNotificationMessage": "Nachtschicht morgen von 22:00 bis 06:00",
     "testNotificationCreated": "{{count}} Testbenachrichtigungen erstellt",
     "sampleNotificationCreated": "Beispiel-Schichtbenachrichtigung erstellt"
+  },
+  "rideshare": {
+    "contactRequestSent": "Kontaktanfrage wurde gesendet",
+    "contactError": "Fehler beim Kontaktieren des Fahrers",
+    "phoneRequired": "Telefonnummer ist erforderlich",
+    "invalidPhone": "Ungültige Telefonnummer",
+    "offerCreated": "Mitfahrgelegenheit wurde erstellt",
+    "offerDeleted": "Mitfahrgelegenheit wurde gelöscht",
+    "offerUpdated": "Mitfahrgelegenheit wurde aktualisiert"
   }
 }

@@ -7,10 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MessageCircle, Phone, MapPin, Calendar, Clock, Users } from "lucide-react";
-import { toast } from '@/hooks/use-toast';
 import { useAuth } from "@/hooks/auth";
 import { rideshareService, RideshareOfferWithDriver } from "@/services/rideshareService";
 import { useTranslation } from 'react-i18next';
+import { useRideshareToast } from '@/hooks/useRideshareToast';
 import { formatPhoneNumber, getCountryConfig } from '@/utils/countryUtils';
 
 interface ContactDriverDialogProps {
@@ -22,6 +22,7 @@ interface ContactDriverDialogProps {
 const ContactDriverDialog = ({ open, onOpenChange, selectedOffer }: ContactDriverDialogProps) => {
   const { user } = useAuth();
   const { t, i18n } = useTranslation('travel');
+  const rideshareToast = useRideshareToast();
   const [contactMessage, setContactMessage] = useState('');
   const [contactEmail, setContactEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -30,11 +31,7 @@ const ContactDriverDialog = ({ open, onOpenChange, selectedOffer }: ContactDrive
   const handleContactDriver = async () => {
     if (!user?.id || !selectedOffer?.id || !contactMessage.trim() || !phoneNumber.trim()) {
       if (!phoneNumber.trim()) {
-        toast({
-          title: t('error'),
-          description: t('phoneRequired') || 'Telefonní číslo je povinné',
-          variant: "destructive"
-        });
+        rideshareToast.showPhoneRequired();
         return;
       }
       return;
@@ -44,11 +41,7 @@ const ContactDriverDialog = ({ open, onOpenChange, selectedOffer }: ContactDrive
     const phoneRegex = /^\d{7,15}$/;
     const cleanPhone = phoneNumber.replace(/\D/g, '');
     if (!phoneRegex.test(cleanPhone)) {
-      toast({
-        title: t('error'),
-        description: t('invalidPhone') || 'Neplatné telefonní číslo',
-        variant: "destructive"
-      });
+      rideshareToast.showInvalidPhone();
       return;
     }
 
@@ -61,10 +54,7 @@ const ContactDriverDialog = ({ open, onOpenChange, selectedOffer }: ContactDrive
         countryCode
       );
       
-      toast({
-        title: t('success'),
-        description: t('contactRequestSent') || 'Žádost o kontakt byla odeslána',
-      });
+      rideshareToast.showContactRequestSent();
       
       onOpenChange(false);
       setContactMessage('');
@@ -72,11 +62,7 @@ const ContactDriverDialog = ({ open, onOpenChange, selectedOffer }: ContactDrive
       setPhoneNumber('');
     } catch (error) {
       console.error('Error contacting driver:', error);
-      toast({
-        title: t('error'),
-        description: t('contactError') || 'Chyba při kontaktování řidiče',
-        variant: "destructive"
-      });
+      rideshareToast.showContactError();
     }
   };
 
