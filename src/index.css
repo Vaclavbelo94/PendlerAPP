@@ -209,3 +209,12 @@
 .scrollbar-hide::-webkit-scrollbar {
   display: none;  /* Safari and Chrome */
 }
+
+/* Scroll snap utilities for mobile */
+.scroll-snap-align-center {
+  scroll-snap-align: center;
+}
+
+.scroll-snap-mandatory {
+  scroll-snap-type: x mandatory;
+}

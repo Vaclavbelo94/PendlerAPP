@@ -221,16 +221,84 @@ const NotificationsPage: React.FC = () => {
               </div>
             )}
 
-            {/* Filter Carousel */}
-            <div className="relative">
-              <div 
-                ref={scrollRef}
-                className="flex gap-2 overflow-x-auto scrollbar-hide pb-2"
-                style={{
-                  scrollSnapType: 'x mandatory',
-                  WebkitOverflowScrolling: 'touch'
-                }}
-              >
+            {/* Filter Carousel - Mobile vs Desktop */}
+            {isMobile ? (
+              // Mobile Swipe Carousel
+              <div className="relative -mx-4 px-4">
+                <div 
+                  ref={scrollRef}
+                  className="flex gap-3 overflow-x-auto scrollbar-hide pb-3 px-1"
+                  style={{
+                    scrollSnapType: 'x mandatory',
+                    WebkitOverflowScrolling: 'touch',
+                    scrollbarWidth: 'none',
+                    msOverflowStyle: 'none'
+                  }}
+                >
+                  {filterButtons.map(({ key, labelKey, icon }) => {
+                    const count = key === 'all' 
+                      ? notifications.length 
+                      : notifications.filter(n => {
+                          const type = n.type.toLowerCase();
+                          switch (key) {
+                            case 'shift': return type.includes('shift') || type.includes('overtime');
+                            case 'rideshare': return type.includes('rideshare') || type.includes('travel');
+                            case 'system': return type.includes('system') || type.includes('maintenance') || type.includes('update');
+                            case 'admin': return type.includes('admin') || type.includes('warning') || type.includes('critical');
+                            default: return false;
+                          }
+                        }).length;
+
+                    return (
+                      <Button
+                        key={key}
+                        variant={selectedFilter === key ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handleFilterSelect(key)}
+                        className={cn(
+                          "flex items-center gap-2 whitespace-nowrap flex-shrink-0",
+                          "min-w-[130px] justify-center px-4 py-2 h-10",
+                          "scroll-snap-align-center transition-all duration-200",
+                          selectedFilter === key && "shadow-md scale-105"
+                        )}
+                        style={{ scrollSnapAlign: 'center' }}
+                      >
+                        {icon}
+                        <span className="font-medium">{t(labelKey)}</span>
+                        {count > 0 && (
+                          <Badge 
+                            variant={selectedFilter === key ? "secondary" : "default"} 
+                            className="ml-1 text-xs font-semibold"
+                          >
+                            {count}
+                          </Badge>
+                        )}
+                      </Button>
+                    );
+                  })}
+                </div>
+                
+                {/* Mobile Scroll Indicators */}
+                <div className="flex justify-center mt-3 gap-1.5">
+                  {filterButtons.map((_, index) => {
+                    const isActive = filterButtons[index].key === selectedFilter;
+                    return (
+                      <div
+                        key={index}
+                        className={cn(
+                          "h-2 w-2 rounded-full transition-all duration-200",
+                          isActive 
+                            ? "bg-primary scale-125" 
+                            : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
+                        )}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              // Desktop Filter Grid
+              <div className="flex flex-wrap gap-2">
                 {filterButtons.map(({ key, labelKey, icon }) => {
                   const count = key === 'all' 
                     ? notifications.length 
@@ -251,18 +319,14 @@ const NotificationsPage: React.FC = () => {
                       variant={selectedFilter === key ? "default" : "outline"}
                       size="sm"
                       onClick={() => handleFilterSelect(key)}
-                      className={cn(
-                        "flex items-center gap-2 whitespace-nowrap flex-shrink-0",
-                        "scroll-snap-align: center",
-                        isMobile && "min-w-[110px] justify-center"
-                      )}
+                      className="flex items-center gap-2"
                     >
                       {icon}
                       {t(labelKey)}
                       {count > 0 && (
                         <Badge 
                           variant={selectedFilter === key ? "secondary" : "default"} 
-                          className="ml-1 text-xs"
+                          className="ml-1"
                         >
                           {count}
                         </Badge>
@@ -271,25 +335,7 @@ const NotificationsPage: React.FC = () => {
                   );
                 })}
               </div>
-              
-              {/* Scroll indicators for mobile */}
-              {isMobile && (
-                <div className="flex justify-center mt-2 gap-1">
-                  {filterButtons.map((_, index) => {
-                    const isActive = filterButtons[index].key === selectedFilter;
-                    return (
-                      <div
-                        key={index}
-                        className={cn(
-                          "h-1.5 w-1.5 rounded-full transition-colors",
-                          isActive ? "bg-primary" : "bg-muted-foreground/30"
-                        )}
-                      />
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+            )}
           </div>
 
           <Separator className="mb-6" />
