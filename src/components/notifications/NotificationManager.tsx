@@ -2,11 +2,15 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '@/hooks/auth';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useRideshareNotifications } from '@/hooks/useRideshareNotifications';
 import { supabase } from '@/integrations/supabase/client';
 
 export const NotificationManager: React.FC = () => {
   const { user } = useAuth();
   const { addNotification, preferences } = useNotifications();
+  
+  // Initialize rideshare notifications
+  useRideshareNotifications();
 
   // Check for upcoming shifts and send notifications
   useEffect(() => {

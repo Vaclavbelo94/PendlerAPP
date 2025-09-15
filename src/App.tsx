@@ -48,6 +48,7 @@ import DHLRecruitment from "./pages/DHLRecruitment";
 import ForgotPassword from "./pages/ForgotPassword";
 import NotificationsPage from "./pages/NotificationsPage";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
+import { NotificationManager } from "./components/notifications/NotificationManager";
 import WelcomeScreen from "./components/welcome/WelcomeScreen";
 import "./i18n/config";
 
@@ -106,7 +107,8 @@ function App() {
                          <Route path="/dhl-time-tracking" element={<DHLTimeTrackingPage />} />
                          <Route path="/dhl-recruitment" element={<DHLRecruitment />} />
                       </Routes>
-                   </Suspense>
+                    </Suspense>
+                    <NotificationManager />
                     <Toaster />
                     <SonnerToaster position="top-right" />
                   </CompanyModuleProvider>
