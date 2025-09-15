@@ -32,9 +32,29 @@ export const useTestAllNotifications = () => {
     console.log('Creating test rideshare contact for user:', user.id);
     
     try {
+      // First, get a real offer_id from the database
+      const { data: offers, error: offersError } = await supabase
+        .from('rideshare_offers')
+        .select('id, user_id')
+        .eq('is_active', true)
+        .neq('user_id', user.id) // Exclude own offers
+        .limit(1);
+
+      if (offersError) {
+        console.error('Error fetching offers:', offersError);
+        return;
+      }
+
+      if (!offers || offers.length === 0) {
+        console.log('No active offers found to test with');
+        return;
+      }
+
+      const testOffer = offers[0];
+
       // Create a mock rideshare contact that will trigger the real-time listener
       const { data, error } = await supabase.from('rideshare_contacts').insert({
-        offer_id: 'test-offer-' + Date.now(),
+        offer_id: testOffer.id,
         requester_user_id: user.id,
         requester_email: user.email || 'test@example.com',
         message: 'Test žádost o kontakt - chci se zúčastnit vaší spolujízdy z Praha do Brno.',

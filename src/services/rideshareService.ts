@@ -166,33 +166,53 @@ export const rideshareService = {
         throw new Error('User must be authenticated');
       }
 
-      // First get the offer to find the driver
+      // Validate offer_id is a valid UUID
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(offerId)) {
+        console.error('Invalid offer ID format:', offerId);
+        throw new Error('Invalid offer ID format');
+      }
+
+      // First get the offer to validate it exists and is active
       const { data: offer, error: offerError } = await supabase
         .from('rideshare_offers')
-        .select('user_id')
+        .select('user_id, is_active')
         .eq('id', offerId)
         .single();
 
       if (offerError || !offer) {
-        throw new Error('Offer not found');
+        console.error('Offer not found:', offerError);
+        throw new Error('Offer not found or no longer available');
       }
+
+      if (!offer.is_active) {
+        throw new Error('This offer is no longer active');
+      }
+
+      if (offer.user_id === user.id) {
+        throw new Error('Cannot contact your own offer');
+      }
+
+      const contactData = {
+        offer_id: offerId,
+        requester_user_id: user.id,
+        requester_email: email || user.email,
+        requester_phone: phoneNumber,
+        message: message,
+        status: 'pending'
+      };
+
+      console.log('Creating rideshare contact with data:', contactData);
 
       const { data, error } = await supabase
         .from('rideshare_contacts')
-        .insert({
-          offer_id: offerId,
-          requester_user_id: user.id,
-          requester_email: email || user.email,
-          requester_phone: phoneNumber,
-          message: message,
-          status: 'pending'
-        })
+        .insert(contactData)
         .select()
         .single();
 
       if (error) {
         console.error('Error contacting driver:', error);
-        throw new Error('Failed to send contact request');
+        throw new Error(`Failed to send contact request: ${error.message}`);
       }
 
       return data;
