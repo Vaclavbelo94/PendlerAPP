@@ -206,77 +206,129 @@ const NotificationsPage: React.FC = () => {
                 <Bell className="h-8 w-8 text-primary" />
                 <div>
                   <h1 className="text-3xl font-bold text-foreground">
-                    {t('status.notifications')}
+                    Oznámení
                   </h1>
                   <p className="text-muted-foreground">
                     {notifications.length > 0 
-                      ? `${notifications.length} ${t('status.notifications').toLowerCase()}, ${unreadCount} ${t('status.unread').toLowerCase()}`
-                      : t('status.emptyDescription')
+                      ? `${notifications.length} ${notifications.length === 1 ? 'oznámení' : 'oznámení'}, ${unreadCount} ${unreadCount === 1 ? 'nepřečtené' : 'nepřečtených'}`
+                      : 'Nemáte žádná nová oznámení'
                     }
                   </p>
                 </div>
               </div>
 
-              {/* Header Actions */}
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => createSampleShiftNotification()}
-                  disabled={isCreating}
-                  className="hidden sm:flex"
-                >
-                  <Bell className="h-4 w-4 mr-2" />
-                  Test oznámení
-                </Button>
+              {/* Header Actions - Desktop only */}
+              {!isMobile && (
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => createSampleShiftNotification()}
+                    disabled={isCreating}
+                  >
+                    <Bell className="h-4 w-4 mr-2" />
+                    Test oznámení
+                  </Button>
 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={refresh}
-                  disabled={loading}
-                  className="hidden sm:flex"
-                >
-                  <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
-                  {t('actions.refresh')}
-                </Button>
-
-                {unreadCount > 0 && (
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={markAllAsRead}
-                    className="hidden sm:flex"
+                    onClick={refresh}
+                    disabled={loading}
                   >
-                    <CheckCheck className="h-4 w-4 mr-2" />
-                    {t('actions.markAllAsRead')}
+                    <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
+                    {t('actions.refresh')}
                   </Button>
-                )}
 
-                {notifications.length > 0 && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={clearNotifications}
-                    className="text-destructive hover:text-destructive hidden sm:flex"
-                  >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    {t('actions.deleteAll')}
-                  </Button>
-                )}
-              </div>
+                  {unreadCount > 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={markAllAsRead}
+                    >
+                      <CheckCheck className="h-4 w-4 mr-2" />
+                      {t('actions.markAllAsRead')}
+                    </Button>
+                  )}
+
+                  {notifications.length > 0 && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={clearNotifications}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      {t('actions.deleteAll')}
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Mobile Actions */}
             {isMobile && (
-              <div className="flex flex-col gap-2 mb-4">
+              <div className="space-y-3 mb-6">
                 {/* Test button always visible on mobile */}
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => createSampleShiftNotification()}
                   disabled={isCreating}
-                  className="w-full"
+                  className="w-full justify-start"
+                >
+                  <Bell className="h-4 w-4 mr-2" />
+                  Test oznámení
+                </Button>
+
+                {notifications.length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={refresh}
+                      disabled={loading}
+                      className="flex-1"
+                    >
+                      <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
+                      {t('actions.refresh')}
+                    </Button>
+
+                    {unreadCount > 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={markAllAsRead}
+                        className="flex-1"
+                      >
+                        <CheckCheck className="h-4 w-4 mr-2" />
+                        {t('actions.markAllAsRead')}
+                      </Button>
+                    )}
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={clearNotifications}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Mobile Actions */}
+            {isMobile && (
+              <div className="space-y-3 mb-6">
+                {/* Test button always visible on mobile */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => createSampleShiftNotification()}
+                  disabled={isCreating}
+                  className="w-full justify-start"
                 >
                   <Bell className="h-4 w-4 mr-2" />
                   Test oznámení
@@ -323,11 +375,11 @@ const NotificationsPage: React.FC = () => {
             {/* Filter Carousel - Mobile vs Desktop */}
             {isMobile ? (
               // Mobile Carousel with Navigation Arrows and Swipe Support
-              <div className="relative">
+              <div className="relative mb-6">
                 <div 
                   ref={carouselRef}
                   className={cn(
-                    "flex items-center justify-between bg-muted/30 rounded-lg p-3",
+                    "flex items-center justify-between bg-muted/30 rounded-lg p-4",
                     "select-none touch-pan-y", // Prevent text selection and enable vertical scroll
                     isSwipeTransition && "transition-all duration-300"
                   )}
@@ -345,13 +397,23 @@ const NotificationsPage: React.FC = () => {
                   </Button>
 
                   <div className={cn(
-                    "flex-1 flex items-center justify-center min-w-0 overflow-hidden",
+                    "flex-1 flex items-center justify-center min-w-0 overflow-hidden px-4",
                     isSwipeTransition && "animate-scale-in"
                   )}>
-                    <div className="flex items-center gap-2 text-center">
+                    <div className="flex items-center gap-3 text-center">
                       {filterButtons[currentFilterIndex]?.icon}
-                      <span className="font-medium truncate">
-                        {t(filterButtons[currentFilterIndex]?.labelKey)}
+                      <span className="font-medium truncate text-base">
+                        {(() => {
+                          const currentFilter = filterButtons[currentFilterIndex]?.key;
+                          switch (currentFilter) {
+                            case 'all': return 'Všechna oznámení';
+                            case 'shift': return 'Směny a přesčasy';
+                            case 'rideshare': return 'Spolujízdy a cesty';
+                            case 'system': return 'Systémová oznámení';
+                            case 'admin': return 'Správa a upozornění';
+                            default: return 'Všechna oznámení';
+                          }
+                        })()}
                       </span>
                       {(() => {
                         const currentFilter = filterButtons[currentFilterIndex]?.key;
@@ -369,7 +431,7 @@ const NotificationsPage: React.FC = () => {
                             }).length;
                         
                         return count > 0 ? (
-                          <Badge variant="secondary" className="ml-1 text-xs">
+                          <Badge variant="secondary" className="ml-2 text-xs font-medium">
                             {count}
                           </Badge>
                         ) : null;
@@ -388,8 +450,8 @@ const NotificationsPage: React.FC = () => {
                 </div>
 
                 {/* Progress Dots with Swipe Hint */}
-                <div className="flex flex-col items-center gap-2 mt-3">
-                  <div className="flex justify-center gap-1.5">
+                <div className="flex flex-col items-center gap-3 mt-4">
+                  <div className="flex justify-center gap-2">
                     {filterButtons.map((_, index) => (
                       <button
                         key={index}
@@ -398,7 +460,7 @@ const NotificationsPage: React.FC = () => {
                           setSelectedFilter(filterButtons[index].key);
                         }}
                         className={cn(
-                          "h-2 w-2 rounded-full transition-all duration-200",
+                          "h-2.5 w-2.5 rounded-full transition-all duration-200",
                           index === currentFilterIndex 
                             ? "bg-primary scale-125" 
                             : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
@@ -409,14 +471,13 @@ const NotificationsPage: React.FC = () => {
                   
                   {/* Swipe Hint Text */}
                   <p className="text-xs text-muted-foreground text-center opacity-70">
-                    {t('filters.swipeHint')}
+                    Potáhněte pro přepnutí kategorií
                   </p>
                 </div>
               </div>
             ) : (
-              // Desktop Filter Grid
-              <div className="flex flex-wrap gap-2">
-                {filterButtons.map(({ key, labelKey, icon }) => {
+              <div className="flex flex-wrap gap-2 mb-6">
+                {filterButtons.map(({ key, icon }) => {
                   const count = key === 'all' 
                     ? notifications.length 
                     : notifications.filter(n => {
@@ -454,6 +515,17 @@ const NotificationsPage: React.FC = () => {
                         }
                       }).length;
 
+                  const labelText = (() => {
+                    switch (key) {
+                      case 'all': return 'Všechna oznámení';
+                      case 'shift': return 'Směny a přesčasy';
+                      case 'rideshare': return 'Spolujízdy a cesty';
+                      case 'system': return 'Systémová oznámení';
+                      case 'admin': return 'Správa a upozornění';
+                      default: return 'Všechna oznámení';
+                    }
+                  })();
+
                   return (
                     <Button
                       key={key}
@@ -463,7 +535,7 @@ const NotificationsPage: React.FC = () => {
                       className="flex items-center gap-2"
                     >
                       {icon}
-                      {t(labelKey)}
+                      {labelText}
                       {count > 0 && (
                         <Badge 
                           variant={selectedFilter === key ? "secondary" : "default"} 
@@ -493,11 +565,19 @@ const NotificationsPage: React.FC = () => {
             ) : filteredNotifications.length === 0 ? (
               <div className="text-center py-12">
                 <Bell className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-semibold mb-2">{t('status.empty')}</h3>
+                <h3 className="text-lg font-semibold mb-2">Žádná oznámení</h3>
                 <p className="text-muted-foreground mb-4">
                   {selectedFilter === 'all' 
-                    ? t('status.emptyDescription')
-                    : `Žádná oznámení v kategorii "${t(`categories.${selectedFilter}`)}"` 
+                    ? 'Nemáte žádná nová oznámení.'
+                    : `Žádná oznámení v kategorii "${(() => {
+                        switch (selectedFilter) {
+                          case 'shift': return 'Směny a přesčasy';
+                          case 'rideshare': return 'Spolujízdy a cesty';
+                          case 'system': return 'Systémová oznámení';
+                          case 'admin': return 'Správa a upozornění';
+                          default: return 'Všechna oznámení';
+                        }
+                      })()}"`
                   }
                 </p>
                 {selectedFilter !== 'all' && (
@@ -505,7 +585,7 @@ const NotificationsPage: React.FC = () => {
                     variant="outline"
                     onClick={() => handleFilterSelect('all')}
                   >
-                    {t('categories.all')}
+                    Všechna oznámení
                   </Button>
                 )}
               </div>
