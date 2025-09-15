@@ -319,59 +319,6 @@ const NotificationsPage: React.FC = () => {
               </div>
             )}
 
-            {/* Mobile Actions */}
-            {isMobile && (
-              <div className="space-y-3 mb-6">
-                {/* Test button always visible on mobile */}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => createSampleShiftNotification()}
-                  disabled={isCreating}
-                  className="w-full justify-start"
-                >
-                  <Bell className="h-4 w-4 mr-2" />
-                  Test oznámení
-                </Button>
-
-                {notifications.length > 0 && (
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={refresh}
-                      disabled={loading}
-                      className="flex-1"
-                    >
-                      <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
-                      {t('actions.refresh')}
-                    </Button>
-
-                    {unreadCount > 0 && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={markAllAsRead}
-                        className="flex-1"
-                      >
-                        <CheckCheck className="h-4 w-4 mr-2" />
-                        {t('actions.markAllAsRead')}
-                      </Button>
-                    )}
-
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={clearNotifications}
-                      className="text-destructive hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                )}
-              </div>
-            )}
-
             {/* Filter Carousel - Mobile vs Desktop */}
             {isMobile ? (
               // Mobile Carousel with Navigation Arrows and Swipe Support
