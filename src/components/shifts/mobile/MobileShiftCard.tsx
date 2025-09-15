@@ -76,37 +76,43 @@ const MobileShiftCard: React.FC<MobileShiftCardProps> = ({
         <div className="flex items-center justify-between">
           <div className="flex-1 min-w-0">
             {/* Date and day - kompaktní */}
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-medium text-foreground truncate">
-                {dayAbbrev} {dateString}
-              </span>
-              {isToday && (
-                <Badge variant="outline" className="text-xs px-1 py-0">
-                  {t('today', 'Dnes')}
-                </Badge>
+            <div className="flex items-center justify-between gap-2 mb-1">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-foreground truncate">
+                  {dayAbbrev} {dateString}
+                </span>
+                {isToday && (
+                  <Badge variant="outline" className="text-xs px-1 py-0">
+                    {t('today', 'Dnes')}
+                  </Badge>
+                )}
+              </div>
+              {/* Shift type moved to right corner */}
+              {shift && (
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <div className={cn(
+                    "w-2 h-2 rounded-full",
+                    getShiftTypeColor(shift.type).split(' ')[0]
+                  )} />
+                  <span className="text-xs font-medium text-foreground">
+                    {getShiftTypeLabel(shift.type)}
+                  </span>
+                </div>
               )}
             </div>
 
             {/* Shift details or free day - kompaktní */}
             {shift ? (
               <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <div className={cn(
-                    "w-2 h-2 rounded-full flex-shrink-0",
-                    getShiftTypeColor(shift.type).split(' ')[0]
-                  )} />
-                  <span className="text-sm font-medium text-foreground truncate">
-                    {getShiftTypeLabel(shift.type)}
-                  </span>
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-muted-foreground">
+                    {formatTime(shift.start_time)} – {formatTime(shift.end_time)}
+                  </div>
                   {isOfficialSchedule && (
-                    <Badge variant="secondary" className="text-xs px-1 py-0 ml-auto">
+                    <Badge variant="secondary" className="text-xs px-1 py-0">
                       {t('mobile.officialSchedule', 'Oficiální')}
                     </Badge>
                   )}
-                </div>
-                
-                <div className="text-xs text-muted-foreground">
-                  {formatTime(shift.start_time)} – {formatTime(shift.end_time)}
                 </div>
 
                 {shift.notes && (
