@@ -76,6 +76,7 @@
   },
   "time": {
     "now": "Jetzt",
+    "tomorrow": "Morgen",
     "minuteAgo": "vor einer Minute",
     "minutesAgo": "vor {{count}} Minuten",
     "hourAgo": "vor einer Stunde",

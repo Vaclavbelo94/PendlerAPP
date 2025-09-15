@@ -75,7 +75,8 @@
     "admin": "Zarządzanie i ostrzeżenia"
   },
   "time": {
-    "now": "Teraz", 
+    "now": "Teraz",
+    "tomorrow": "Jutro", 
     "minuteAgo": "minutę temu",
     "minutesAgo": "{{count}} minut temu",
     "hourAgo": "godzinę temu",

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/auth';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 
 export interface SupabaseNotification {
@@ -20,6 +21,7 @@ export interface SupabaseNotification {
 
 export const useSupabaseNotifications = () => {
   const { user } = useAuth();
+  const { t } = useTranslation('notifications');
   const [notifications, setNotifications] = useState<SupabaseNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -128,7 +130,7 @@ export const useSupabaseNotifications = () => {
         prev.map(notification => ({ ...notification, read: true }))
       );
 
-      toast.success('Všechna oznámení označena jako přečtená');
+      toast.success(t('actions.markAllAsRead'));
     } catch (err) {
       console.error('Error in markAllAsRead:', err);
     }
@@ -170,7 +172,7 @@ export const useSupabaseNotifications = () => {
       }
 
       setNotifications([]);
-      toast.success('Všechna oznámení smazána');
+      toast.success(t('actions.deleteAll'));
     } catch (err) {
       console.error('Error in clearNotifications:', err);
     }
