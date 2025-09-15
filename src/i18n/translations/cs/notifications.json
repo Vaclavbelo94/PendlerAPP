@@ -86,5 +86,15 @@
     "weeksAgo": "před {{count}} týdny",
     "monthAgo": "před měsícem",
     "monthsAgo": "před {{count}} měsíci"
+  },
+  "navigation": {
+    "notifications": "Oznámení",
+    "notificationsDesc": "Zobrazit všechna oznámení a zprávy"
+  },
+  "filters": {
+    "filterBy": "Filtrovat podle",
+    "showAll": "Zobrazit vše",
+    "noResults": "Žádné výsledky",
+    "noResultsDescription": "Pro tento filtr nebyly nalezeny žádné výsledky."
   }
 }

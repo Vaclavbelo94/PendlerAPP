@@ -46,6 +46,7 @@ import DHLAnalyticsPage from "./pages/dhl/DHLAnalyticsPage";
 import DHLTimeTrackingPage from "./pages/dhl/DHLTimeTrackingPage";
 import DHLRecruitment from "./pages/DHLRecruitment";
 import ForgotPassword from "./pages/ForgotPassword";
+import NotificationsPage from "./pages/NotificationsPage";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import WelcomeScreen from "./components/welcome/WelcomeScreen";
 import "./i18n/config";
@@ -77,6 +78,7 @@ function App() {
                          <Route path="/register" element={<Register />} />
                         <Route path="/dashboard" element={<Dashboard />} />
                         <Route path="/shifts" element={<Shifts />} />
+                        <Route path="/notifications" element={<NotificationsPage />} />
                         <Route path="/overtime" element={<Overtime />} />
                         <Route path="/travel" element={<TravelPlanning />} />
                         <Route path="/translator" element={<Translator />} />
