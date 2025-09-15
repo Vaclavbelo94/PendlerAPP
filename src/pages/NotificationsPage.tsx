@@ -268,39 +268,55 @@ const NotificationsPage: React.FC = () => {
             </div>
 
             {/* Mobile Actions */}
-            {isMobile && notifications.length > 0 && (
-              <div className="flex items-center gap-2 mb-4">
+            {isMobile && (
+              <div className="flex flex-col gap-2 mb-4">
+                {/* Test button always visible on mobile */}
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
-                  onClick={refresh}
-                  disabled={loading}
-                  className="flex-1"
+                  onClick={() => createSampleShiftNotification()}
+                  disabled={isCreating}
+                  className="w-full"
                 >
-                  <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
-                  {t('actions.refresh')}
+                  <Bell className="h-4 w-4 mr-2" />
+                  Test oznámení
                 </Button>
 
-                {unreadCount > 0 && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={markAllAsRead}
-                    className="flex-1"
-                  >
-                    <CheckCheck className="h-4 w-4 mr-2" />
-                    {t('actions.markAllAsRead')}
-                  </Button>
+                {notifications.length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={refresh}
+                      disabled={loading}
+                      className="flex-1"
+                    >
+                      <RefreshCw className={cn("h-4 w-4 mr-2", loading && "animate-spin")} />
+                      {t('actions.refresh')}
+                    </Button>
+
+                    {unreadCount > 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={markAllAsRead}
+                        className="flex-1"
+                      >
+                        <CheckCheck className="h-4 w-4 mr-2" />
+                        {t('actions.markAllAsRead')}
+                      </Button>
+                    )}
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={clearNotifications}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 )}
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={clearNotifications}
-                  className="text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
               </div>
             )}
 
