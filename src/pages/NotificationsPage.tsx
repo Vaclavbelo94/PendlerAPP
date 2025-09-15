@@ -320,12 +320,12 @@ const NotificationsPage: React.FC = () => {
                   onTouchEnd={handleTouchEnd}
                 >
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="icon"
                     onClick={handlePreviousFilter}
-                    className="h-8 w-8 flex-shrink-0 z-10"
+                    className="h-10 w-10 flex-shrink-0 z-10 bg-background border-2 shadow-sm"
                   >
-                    <ChevronLeft className="h-4 w-4" />
+                    <ChevronLeft className="h-5 w-5" />
                   </Button>
 
                   <div className={cn(
@@ -362,12 +362,12 @@ const NotificationsPage: React.FC = () => {
                   </div>
 
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="icon"
                     onClick={handleNextFilter}
-                    className="h-8 w-8 flex-shrink-0 z-10"
+                    className="h-10 w-10 flex-shrink-0 z-10 bg-background border-2 shadow-sm"
                   >
-                    <ChevronRight className="h-4 w-4" />
+                    <ChevronRight className="h-5 w-5" />
                   </Button>
                 </div>
 
