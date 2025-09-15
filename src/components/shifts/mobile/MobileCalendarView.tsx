@@ -55,6 +55,16 @@ const MobileCalendarView: React.FC<MobileCalendarViewProps> = ({
     });
   };
 
+  const getShiftTypeLabel = (type: string) => {
+    switch (type) {
+      case 'morning': return 'Ranní';
+      case 'afternoon': return 'Odpolední'; 
+      case 'night': return 'Noční';
+      case 'custom': return 'Vlastní';
+      default: return type;
+    }
+  };
+
   const getShiftTypeColor = (shiftType: string) => {
     switch (shiftType) {
       case 'morning': return 'bg-blue-500';
@@ -98,14 +108,21 @@ const MobileCalendarView: React.FC<MobileCalendarViewProps> = ({
                 !isDayToday && !isSelected && "hover:bg-accent/50"
               )}
             >
-              <span className="text-xs">
-                {format(day, 'd')}
-              </span>
+              <div className="flex items-center justify-between w-full px-1">
+                <span className="text-xs font-medium">
+                  {format(day, 'd')}
+                </span>
+                {shift && (
+                  <span className="text-xs text-right leading-none">
+                    {getShiftTypeLabel(shift.type)}
+                  </span>
+                )}
+              </div>
               
-              {/* Shift indicator */}
+              {/* Shift indicator dot */}
               {shift && (
                 <div className={cn(
-                  "w-1.5 h-1.5 rounded-full mt-0.5",
+                  "w-1 h-1 rounded-full mt-0.5",
                   getShiftTypeColor(shift.type)
                 )} />
               )}
