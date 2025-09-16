@@ -52,7 +52,7 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
 
     try {
       const { rideshareContactService } = await import('@/services/rideshareContactService');
-      const result = await rideshareContactService.updateContactStatus(contactId, 'approved');
+      const result = await rideshareContactService.updateContactStatus(contactId, 'accepted');
       
       console.log('Successfully approved contact:', result);
       toast.success('Žádost byla schválena');

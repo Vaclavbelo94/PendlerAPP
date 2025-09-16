@@ -144,7 +144,7 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
       // Use enhanced service to update contact status and seats
       const updatedContact = await rideshareContactService.updateContactStatus(
         notification.metadata.contact_id,
-        'approved'
+        'accepted'
       );
       
       console.log('✅ Step 1 completed - Contact updated:', updatedContact);

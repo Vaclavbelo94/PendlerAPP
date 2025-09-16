@@ -5,7 +5,7 @@ export interface RideshareContact {
   offer_id: string;
   requester_email: string;
   requester_user_id: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'accepted' | 'rejected';
   message?: string;
   phone_number?: string;
   country_code?: string;
@@ -19,7 +19,7 @@ class RideshareContactService {
    */
   async updateContactStatus(
     contactId: string, 
-    status: 'approved' | 'rejected'
+    status: 'accepted' | 'rejected'
   ): Promise<RideshareContact> {
     console.log('🔧 updateContactStatus called with:', { contactId, status });
     
@@ -48,8 +48,8 @@ class RideshareContactService {
 
       console.log('✅ Contact updated successfully:', data);
 
-      // If approved, decrease available seats
-      if (status === 'approved' && data) {
+      // If accepted, decrease available seats
+      if (status === 'accepted' && data) {
         const offer = (data as any).rideshare_offers;
         console.log('🎯 Processing seat update for offer:', offer);
         
