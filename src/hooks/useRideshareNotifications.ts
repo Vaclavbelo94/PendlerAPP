@@ -219,11 +219,25 @@ export const useRideshareNotifications = () => {
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('📡 Rideshare contacts channel status:', status);
+      });
+
+    // Test the connection immediately
+    console.log('🧪 Testing real-time connection...');
+    setTimeout(async () => {
+      try {
+        const testResult = await supabase.from('rideshare_contacts').select('count').limit(1);
+        console.log('🧪 Database connection test:', testResult);
+      } catch (error) {
+        console.error('❌ Database connection test failed:', error);
+      }
+    }, 1000);
 
     return () => {
+      console.log('🧹 Cleaning up rideshare notification channels');
       supabase.removeChannel(offersChannel);
-      supabase.removeChannel(requestsChannel);
+      supabase.removeChannel(requestsChannel);  
       supabase.removeChannel(contactsChannel);
     };
   }, [addNotification, t]);
