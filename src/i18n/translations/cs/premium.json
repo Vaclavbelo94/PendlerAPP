@@ -25,7 +25,7 @@
     "selectSubtitle": "Ušetřete s ročním předplatným",
     "perYear": "/rok",
     "perMonth": "/měsíc",
-    "yearlyEquivalent": "Odpovídá {{amount}} {{currency}}/měsíc"
+    "yearlyEquivalent": "Odpovídá {amount} {currency}/měsíc"
   },
   "premiumUser": {
     "title": "Jste Premium uživatel",

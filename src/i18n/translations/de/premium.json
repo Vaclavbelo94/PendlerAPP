@@ -25,7 +25,7 @@
     "selectSubtitle": "Sparen Sie mit dem Jahresabonnement",
     "perYear": "/Jahr",
     "perMonth": "/Monat",
-    "yearlyEquivalent": "Entspricht {{amount}} {{currency}}/Monat"
+    "yearlyEquivalent": "Entspricht {amount} {currency}/Monat"
   },
   "premiumUser": {
     "title": "Sie sind Premium-Benutzer",

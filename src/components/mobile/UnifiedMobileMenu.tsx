@@ -132,11 +132,11 @@ export const UnifiedMobileMenu: React.FC<UnifiedMobileMenuProps> = ({
             )}
           </div>
 
-          {/* Mobile Language Switcher */}
+          {/* Mobile Language Switcher - now moved to navbar */}
           <div className="px-4 py-4 border-t sm:hidden">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">{t('language')}</span>
-              <LanguageSwitcherCompact />
+              <span className="text-xs text-muted-foreground">{t('languageNowInNavbar', 'Jazyk je nyní v navigaci')}</span>
             </div>
           </div>
         </div>

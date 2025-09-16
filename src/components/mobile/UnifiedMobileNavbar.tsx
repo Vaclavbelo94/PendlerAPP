@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/auth';
 import { UnifiedMobileMenu } from './UnifiedMobileMenu';
+import LanguageSwitcherCompact from '@/components/ui/LanguageSwitcherCompact';
 
 interface UnifiedMobileNavbarProps {
   rightContent?: React.ReactNode;
@@ -34,6 +35,11 @@ export const UnifiedMobileNavbar: React.FC<UnifiedMobileNavbarProps> = ({
 
           {/* Right Side */}
           <div className="flex items-center space-x-2">
+            {/* Language Switcher */}
+            <div className="hidden sm:block">
+              <LanguageSwitcherCompact />
+            </div>
+            
             {/* Custom Right Content - this includes NotificationIndicator */}
             {rightContent}
             

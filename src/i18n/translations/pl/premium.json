@@ -25,7 +25,7 @@
     "selectSubtitle": "Zaoszczędź z roczną subskrypcją",
     "perYear": "/rok",
     "perMonth": "/miesiąc",
-    "yearlyEquivalent": "Odpowiada {{amount}} {{currency}}/miesiąc"
+    "yearlyEquivalent": "Odpowiada {amount} {currency}/miesiąc"
   },
   "premiumUser": {
     "title": "Jesteś użytkownikiem Premium",
