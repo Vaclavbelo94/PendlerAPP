@@ -26,8 +26,8 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
     destination_address: '',
     departure_date: null as Date | null,
     departure_time: '',
-    seats_available: 1,
-    price_per_person: 0,
+    seats_available: '',
+    price_per_person: '',
     notes: '',
     phone_number: '',
     allow_phone_contact: false
@@ -61,7 +61,8 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
       return;
     }
 
-    if (formData.seats_available < 1 || formData.seats_available > 8) {
+    const seatsNum = parseInt(formData.seats_available);
+    if (!formData.seats_available || isNaN(seatsNum) || seatsNum < 1 || seatsNum > 8) {
       toast.error(t('seatsValidation'));
       return;
     }
@@ -74,8 +75,8 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
         destination_address: formData.destination_address,
         departure_date: formData.departure_date.toISOString().split('T')[0],
         departure_time: formData.departure_time,
-        seats_available: formData.seats_available,
-        price_per_person: formData.price_per_person,
+        seats_available: parseInt(formData.seats_available),
+        price_per_person: parseFloat(formData.price_per_person) || 0,
         currency: countryConfig.currency,
         notes: formData.notes || '',
         phone_number: formData.allow_phone_contact ? formData.phone_number : '',
@@ -89,8 +90,8 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
         destination_address: formData.destination_address.trim(),
         departure_date: formData.departure_date.toISOString().split('T')[0],
         departure_time: formData.departure_time,
-        seats_available: formData.seats_available,
-        price_per_person: Math.max(0, formData.price_per_person),
+        seats_available: parseInt(formData.seats_available),
+        price_per_person: Math.max(0, parseFloat(formData.price_per_person) || 0),
         currency: countryConfig.currency,
         notes: formData.notes || '',
         phone_number: formData.allow_phone_contact ? formData.phone_number : '',
@@ -107,8 +108,8 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
         destination_address: '',
         departure_date: null,
         departure_time: '',
-        seats_available: 1,
-        price_per_person: 0,
+        seats_available: '',
+        price_per_person: '',
         notes: '',
         phone_number: '',
         allow_phone_contact: false
@@ -215,7 +216,8 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
             min="1"
             max="8"
             value={formData.seats_available}
-            onChange={(e) => setFormData({ ...formData, seats_available: parseInt(e.target.value) || 1 })}
+            onChange={(e) => setFormData({ ...formData, seats_available: e.target.value })}
+            placeholder="1"
             required
             className="w-full h-12 text-base"
           />
@@ -232,7 +234,7 @@ const CreateRideOfferForm: React.FC<CreateRideOfferFormProps> = ({ onOfferCreate
             step="0.01"
             min="0"
             value={formData.price_per_person}
-            onChange={(e) => setFormData({ ...formData, price_per_person: parseFloat(e.target.value) || 0 })}
+            onChange={(e) => setFormData({ ...formData, price_per_person: e.target.value })}
             placeholder="0.00"
             className="w-full h-12 text-base"
           />
