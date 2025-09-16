@@ -128,19 +128,32 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
   };
 
   const handleAcceptRequest = async () => {
-    if (!notification.metadata?.contact_id) return;
+    if (!notification.metadata?.contact_id) {
+      console.error('❌ Missing contact_id in metadata:', notification.metadata);
+      toast.error('Chybí ID kontaktu');
+      return;
+    }
+    
+    console.log('🚀 Starting approval process for contact:', notification.metadata.contact_id);
+    console.log('📝 Notification metadata:', notification.metadata);
     
     setIsProcessing(true);
     try {
+      console.log('⏳ Step 1: Updating contact status...');
+      
       // Use enhanced service to update contact status and seats
-      await rideshareContactService.updateContactStatus(
+      const updatedContact = await rideshareContactService.updateContactStatus(
         notification.metadata.contact_id,
         'approved'
       );
+      
+      console.log('✅ Step 1 completed - Contact updated:', updatedContact);
 
+      console.log('⏳ Step 2: Creating notification for requester...');
+      
       // Create notification for requester
       if (notification.metadata.requester_user_id) {
-        await supabase.from('notifications').insert({
+        const notificationResult = await supabase.from('notifications').insert({
           user_id: notification.metadata.requester_user_id,
           title: t('rideshare.requestAccepted'),
           message: t('rideshare.requestAccepted'),
@@ -157,10 +170,21 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
             status: 'approved'
           }
         });
+        
+        if (notificationResult.error) {
+          console.error('❌ Step 2 failed - Notification creation error:', notificationResult.error);
+          throw new Error(`Failed to create notification: ${notificationResult.error.message}`);
+        }
+        
+        console.log('✅ Step 2 completed - Notification created');
+      } else {
+        console.log('ℹ️ Step 2 skipped - No requester_user_id');
       }
 
+      console.log('⏳ Step 3: Updating notification status...');
+      
       // Mark notification as processed
-      await supabase
+      const updateResult = await supabase
         .from('notifications')
         .update({ 
           is_read: true,
@@ -173,11 +197,21 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
         })
         .eq('id', notification.id);
 
+      if (updateResult.error) {
+        console.error('❌ Step 3 failed - Notification update error:', updateResult.error);
+        throw new Error(`Failed to update notification: ${updateResult.error.message}`);
+      }
+      
+      console.log('✅ Step 3 completed - Notification updated');
+      console.log('🎉 All steps completed successfully!');
+
       toast.success(t('rideshare.requestAccepted'));
       if (onMarkAsRead) onMarkAsRead(notification.id);
     } catch (error) {
-      console.error('Error accepting request:', error);
-      toast.error('Chyba při přijímání žádosti');
+      console.error('💥 DETAILED ERROR in handleAcceptRequest:', error);
+      console.error('💥 Error stack:', error.stack);
+      console.error('💥 Error message:', error.message);
+      toast.error(`Chyba při přijímání žádosti: ${error.message}`);
     } finally {
       setIsProcessing(false);
     }

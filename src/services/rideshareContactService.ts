@@ -21,49 +21,67 @@ class RideshareContactService {
     contactId: string, 
     status: 'approved' | 'rejected'
   ): Promise<RideshareContact> {
-    const { data, error } = await supabase
-      .from('rideshare_contacts')
-      .update({ 
-        status,
-        updated_at: new Date().toISOString()
-      })
-      .eq('id', contactId)
-      .select(`
-        *,
-        rideshare_offers (
-          id,
-          seats_available,
-          user_id
-        )
-      `)
-      .single();
+    console.log('🔧 updateContactStatus called with:', { contactId, status });
+    
+    try {
+      const { data, error } = await supabase
+        .from('rideshare_contacts')
+        .update({ 
+          status,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', contactId)
+        .select(`
+          *,
+          rideshare_offers (
+            id,
+            seats_available,
+            user_id
+          )
+        `)
+        .single();
 
-    if (error) {
-      throw new Error(`Failed to update contact status: ${error.message}`);
-    }
+      if (error) {
+        console.error('❌ Database error updating contact:', error);
+        throw new Error(`Failed to update contact status: ${error.message}`);
+      }
 
-    // If approved, decrease available seats
-    if (status === 'approved' && data) {
-      const offer = (data as any).rideshare_offers;
-      if (offer && offer.seats_available > 0) {
-        const newSeatsCount = offer.seats_available - 1;
+      console.log('✅ Contact updated successfully:', data);
+
+      // If approved, decrease available seats
+      if (status === 'approved' && data) {
+        const offer = (data as any).rideshare_offers;
+        console.log('🎯 Processing seat update for offer:', offer);
         
-        const { error: updateError } = await supabase
-          .from('rideshare_offers')
-          .update({ 
-            seats_available: newSeatsCount,
-            is_active: newSeatsCount > 0, // Deactivate if no seats left
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', offer.id);
+        if (offer && offer.seats_available > 0) {
+          const newSeatsCount = offer.seats_available - 1;
+          console.log(`🪑 Updating seats from ${offer.seats_available} to ${newSeatsCount}`);
+          
+          const { error: updateError } = await supabase
+            .from('rideshare_offers')
+            .update({ 
+              seats_available: newSeatsCount,
+              is_active: newSeatsCount > 0, // Deactivate if no seats left
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', offer.id);
 
-        if (updateError) {
-          console.error('Failed to update seat count:', updateError);
+          if (updateError) {
+            console.error('❌ Error updating seat count:', updateError);
+            // Don't throw here, just log the error
+          } else {
+            console.log('✅ Seat count updated successfully');
+          }
+        } else {
+          console.log('ℹ️ No seat update needed:', { offer, seatsAvailable: offer?.seats_available });
         }
       }
-    }
 
-    return data as RideshareContact;
+      return data as RideshareContact;
+    } catch (error) {
+      console.error('💥 CRITICAL ERROR in updateContactStatus:', error);
+      throw error;
+    }
   }
 
   /**
