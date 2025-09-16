@@ -140,8 +140,9 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
   };
 
   // Check if this is a pending rideshare match that can be approved/rejected
-  const canApprove = notification.type === 'rideshare_match' && 
-                    notification.metadata?.status === 'pending';
+  const canApprove = (notification.type === 'rideshare_match' || notification.type === 'rideshare_contact') && 
+                    notification.metadata?.contact_id && 
+                    (notification.metadata?.status === 'pending' || !notification.metadata?.status);
 
   // Check if this shows approval result
   const isApprovalResult = notification.title?.includes('✅') || notification.title?.includes('❌');

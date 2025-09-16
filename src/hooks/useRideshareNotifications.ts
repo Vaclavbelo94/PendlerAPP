@@ -149,16 +149,19 @@ export const useRideshareNotifications = () => {
                   const driverNotification = {
                     user_id: offer.user_id,
                     title: 'Nová žádost o spolujízdu',
-                    message: `Někdo se zajímá o vaši spolujízdu z ${offer.origin_address} do ${offer.destination_address}`,
-                    type: 'rideshare_contact',
+                    message: `Uživatel ${payload.new.requester_email?.split('@')[0] || 'někdo'} žádá o spolujízdu z ${offer.origin_address} do ${offer.destination_address} dne ${offer.departure_date} v ${offer.departure_time}`,
+                    type: 'rideshare_match',
                     category: 'rideshare',
                     metadata: {
                       contact_id: payload.new.id,
                       offer_id: payload.new.offer_id,
                       requester_email: payload.new.requester_email,
+                      requester_name: payload.new.requester_email?.split('@')[0] || 'Uživatel',
                       origin_address: offer.origin_address,
                       destination_address: offer.destination_address,
-                      departure_time: offer.departure_time
+                      departure_date: offer.departure_date,
+                      departure_time: offer.departure_time,
+                      status: 'pending'
                     },
                     related_to: {
                       type: 'rideshare_contact',
@@ -184,15 +187,17 @@ export const useRideshareNotifications = () => {
                   const requesterNotification = {
                     user_id: payload.new.requester_user_id,
                     title: 'Žádost odeslána',
-                    message: `Vaše žádost o spolujízdu byla odeslána`,
-                    type: 'rideshare_request_sent',
+                    message: `Vaše žádost o spolujízdu z ${offer.origin_address} do ${offer.destination_address} čeká na schválení`,
+                    type: 'rideshare_request',
                     category: 'rideshare',
                     metadata: {
                       contact_id: payload.new.id,
                       offer_id: payload.new.offer_id,
                       origin_address: offer.origin_address,
                       destination_address: offer.destination_address,
-                      departure_time: offer.departure_time
+                      departure_date: offer.departure_date,
+                      departure_time: offer.departure_time,
+                      status: 'pending'
                     },
                     related_to: {
                       type: 'rideshare_contact',
