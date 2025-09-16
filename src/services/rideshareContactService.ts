@@ -77,35 +77,42 @@ class RideshareContactService {
         }
       }
 
-      // Update the corresponding notification metadata to reflect the new status
+      // Update ALL notifications with this contact_id to reflect the new status
       console.log('🔔 Updating notification metadata for contact:', contactId);
       
-      // First get the current notification
-      const { data: notification } = await supabase
+      // Update both driver and requester notifications
+      const { data: notifications } = await supabase
         .from('notifications')
-        .select('metadata')
-        .eq('metadata->>contact_id', contactId)
-        .single();
+        .select('id, metadata, user_id')
+        .contains('metadata', { contact_id: contactId });
 
-      if (notification?.metadata && typeof notification.metadata === 'object') {
-        const updatedMetadata = {
-          ...(notification.metadata as Record<string, any>),
-          status
-        };
+      if (notifications && notifications.length > 0) {
+        console.log('📋 Found notifications to update:', notifications.length);
+        
+        for (const notification of notifications) {
+          if (notification.metadata && typeof notification.metadata === 'object') {
+            const updatedMetadata = {
+              ...(notification.metadata as Record<string, any>),
+              status
+            };
 
-        const { error: notificationError } = await supabase
-          .from('notifications')
-          .update({ 
-            metadata: updatedMetadata,
-            updated_at: new Date().toISOString()
-          })
-          .eq('metadata->>contact_id', contactId);
+            const { error: notificationError } = await supabase
+              .from('notifications')
+              .update({ 
+                metadata: updatedMetadata,
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', notification.id);
 
-        if (notificationError) {
-          console.error('❌ Error updating notification metadata:', notificationError);
-        } else {
-          console.log('✅ Notification metadata updated successfully');
+            if (notificationError) {
+              console.error('❌ Error updating notification metadata:', notificationError);
+            } else {
+              console.log('✅ Notification metadata updated for user:', notification.user_id);
+            }
+          }
         }
+      } else {
+        console.log('ℹ️ No notifications found for contact:', contactId);
       }
 
       return data as RideshareContact;
