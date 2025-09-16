@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react'
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { useSupabaseNotifications } from '@/hooks/useSupabaseNotifications';
-import { useTestAllNotifications } from '@/hooks/useTestAllNotifications';
+
 import { MobileNotificationItem } from '@/components/mobile/MobileNotificationItem';
 import { ShiftNotificationItem } from '@/components/notifications/ShiftNotificationItem';
 import { RideshareNotificationItem } from '@/components/notifications/RideshareNotificationItem';
@@ -50,7 +50,7 @@ const NotificationsPage: React.FC = () => {
     refresh
   } = useSupabaseNotifications();
 
-  const { createSampleShiftNotification, createTestRideshareContact, createTestNotificationByType, isCreating } = useTestAllNotifications();
+  
 
   const [selectedFilter, setSelectedFilter] = useState<NotificationFilter>('all');
   const [currentFilterIndex, setCurrentFilterIndex] = useState(0);
@@ -224,56 +224,6 @@ const NotificationsPage: React.FC = () => {
               {!isMobile && (
                 <div className="flex items-center gap-2">
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => createSampleShiftNotification()}
-                    disabled={isCreating}
-                  >
-                    <Bell className="h-4 w-4 mr-2" />
-                    Test Směna
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => createTestRideshareContact()}
-                    disabled={isCreating}
-                  >
-                    <Car className="h-4 w-4 mr-2" />
-                    Test Kontakt
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => createTestNotificationByType('rideshare')}
-                    disabled={isCreating}
-                  >
-                    <Car className="h-4 w-4 mr-2" />
-                    Test Spolujízda
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => createTestNotificationByType('system')}
-                    disabled={isCreating}
-                  >
-                    <Settings className="h-4 w-4 mr-2" />
-                    Test Systém
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => createTestNotificationByType('admin')}
-                    disabled={isCreating}
-                  >
-                    <Shield className="h-4 w-4 mr-2" />
-                    Test Admin
-                  </Button>
-
-                  <Button
                     variant="outline"
                     size="sm"
                     onClick={refresh}
@@ -310,56 +260,9 @@ const NotificationsPage: React.FC = () => {
             </div>
 
             {/* Mobile Actions */}
-            {isMobile && (
+            {isMobile && notifications.length > 0 && (
               <div className="space-y-3 mb-6">
-                {/* Test button always visible on mobile */}
-                <div className="grid grid-cols-2 gap-2 mb-3">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => createSampleShiftNotification()}
-                    disabled={isCreating}
-                    className="justify-start"
-                  >
-                    <Bell className="h-4 w-4 mr-2" />
-                    Test Směna
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => createTestRideshareContact()}
-                    disabled={isCreating}
-                    className="justify-start"
-                  >
-                    <Car className="h-4 w-4 mr-2" />
-                    Test Kontakt
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => createTestNotificationByType('system')}
-                    disabled={isCreating}
-                    className="justify-start"
-                  >
-                    <Settings className="h-4 w-4 mr-2" />
-                    Test Systém
-                  </Button>
-
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => createTestNotificationByType('admin')}
-                    disabled={isCreating}
-                    className="justify-start"
-                  >
-                    <Shield className="h-4 w-4 mr-2" />
-                    Test Admin
-                  </Button>
-                </div>
-
-                {notifications.length > 0 && (
+                {(
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
