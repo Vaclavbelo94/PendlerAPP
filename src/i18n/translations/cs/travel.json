@@ -254,5 +254,7 @@
   "trafficImproving": "Doprava se zlepšuje",
   "stableTraffic": "Stabilní doprava",
   "route": "Trasa",
-  "dateAndTime": "Datum a čas"
+  "dateAndTime": "Datum a čas",
+  "capacityAndPrice": "Kapacita a cena",
+  "contact": "Kontakt"
 }
