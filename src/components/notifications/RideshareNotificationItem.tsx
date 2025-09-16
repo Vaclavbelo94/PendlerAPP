@@ -146,26 +146,6 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
     }
   };
 
-  // Enhanced debug logging for rideshare approval logic
-  console.log('=== RideshareNotificationItem DEBUG START ===');
-  console.log('Notification ID:', notification.id);
-  console.log('Notification type:', notification.type);
-  console.log('Complete metadata:', notification.metadata);
-  console.log('Title:', notification.title);
-  console.log('Message:', notification.message);
-  
-  // Check individual conditions
-  const isContactType = notification.type === 'rideshare_contact';
-  const hasContactId = !!notification.metadata?.contact_id;
-  const status = notification.metadata?.status;
-  
-  console.log('Button display conditions:');
-  console.log('- isContactType:', isContactType, '(expected: rideshare_contact)');
-  console.log('- hasContactId:', hasContactId, '(contact_id:', notification.metadata?.contact_id, ')');
-  console.log('- status:', status);
-  console.log('Should show buttons:', isContactType && hasContactId);
-  console.log('=== RideshareNotificationItem DEBUG END ===');
-
   const handleRejectRequest = async () => {
     if (!notification.metadata?.contact_id) return;
     
@@ -302,20 +282,20 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
                 {formatRelativeTime(notification.created_at)}
               </span>
               
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 {/* Contact request actions for drivers */}
                 {((notification.type === 'rideshare_contact' || notification.type === 'rideshare_match') && 
                   notification.metadata?.contact_id && 
                   (notification.metadata?.status === 'pending' || !notification.metadata?.status)) && (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={handleAcceptRequest}
                       disabled={isProcessing}
-                      className="h-7 px-2 text-xs text-green-700 hover:text-green-800 border-green-200 hover:border-green-300"
+                      className="h-8 px-3 text-xs font-medium text-green-700 hover:text-green-800 border-green-200 hover:border-green-300 hover:bg-green-50 transition-colors"
                     >
-                      <Check className="h-3 w-3 mr-1" />
+                      <Check className="h-3 w-3 mr-1.5" />
                       {t('rideshare.approve')}
                     </Button>
                     <Button
@@ -323,18 +303,11 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
                       size="sm"
                       onClick={handleRejectRequest}
                       disabled={isProcessing}
-                      className="h-7 px-2 text-xs text-red-700 hover:text-red-800 border-red-200 hover:border-red-300"
+                      className="h-8 px-3 text-xs font-medium text-red-700 hover:text-red-800 border-red-200 hover:border-red-300 hover:bg-red-50 transition-colors"
                     >
-                      <X className="h-3 w-3 mr-1" />
+                      <X className="h-3 w-3 mr-1.5" />
                       {t('rideshare.reject')}
                     </Button>
-                  </div>
-                )}
-
-                {/* Debug info for testing */}
-                {(notification.type === 'rideshare_contact' || notification.type === 'rideshare_match') && (
-                  <div className="mt-2 text-xs text-yellow-600 bg-yellow-50 p-1 rounded">
-                    Debug: type={notification.type}, contactId={notification.metadata?.contact_id}, status={notification.metadata?.status}
                   </div>
                 )}
 
