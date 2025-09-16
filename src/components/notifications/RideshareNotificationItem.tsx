@@ -14,12 +14,14 @@ interface RideshareNotificationItemProps {
   notification: SupabaseNotification;
   onMarkAsRead?: (id: string) => void;
   onDelete?: (id: string) => void;
+  onRefresh?: () => void;
 }
 
 export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps> = ({
   notification,
   onMarkAsRead,
-  onDelete
+  onDelete,
+  onRefresh
 }) => {
   const { t, i18n } = useTranslation('notifications');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -207,6 +209,8 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
 
       toast.success(t('rideshare.requestAccepted'));
       if (onMarkAsRead) onMarkAsRead(notification.id);
+      // Refresh notifications to show updated status
+      if (onRefresh) onRefresh();
     } catch (error) {
       console.error('💥 DETAILED ERROR in handleAcceptRequest:', error);
       console.error('💥 Error stack:', error.stack);

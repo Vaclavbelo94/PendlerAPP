@@ -549,12 +549,13 @@ const NotificationsPage: React.FC = () => {
                          notificationType.includes('travel') ||
                          notificationCategory.includes('rideshare')) {
                        return (
-                         <RideshareNotificationItem
-                           key={notification.id}
-                           notification={notification}
-                           onMarkAsRead={markAsRead}
-                           onDelete={deleteNotification}
-                         />
+                          <RideshareNotificationItem
+                            key={notification.id}
+                            notification={notification}
+                            onMarkAsRead={markAsRead}
+                            onDelete={deleteNotification}
+                            onRefresh={refresh}
+                          />
                        );
                      }
                      
