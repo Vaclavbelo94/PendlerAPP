@@ -15,7 +15,7 @@ export interface RideshareContact {
 
 class RideshareContactService {
   /**
-   * Update the status of a rideshare contact
+   * Update the status of a rideshare contact and handle seat updates
    */
   async updateContactStatus(
     contactId: string, 
@@ -28,11 +28,39 @@ class RideshareContactService {
         updated_at: new Date().toISOString()
       })
       .eq('id', contactId)
-      .select()
+      .select(`
+        *,
+        rideshare_offers (
+          id,
+          seats_available,
+          user_id
+        )
+      `)
       .single();
 
     if (error) {
       throw new Error(`Failed to update contact status: ${error.message}`);
+    }
+
+    // If approved, decrease available seats
+    if (status === 'approved' && data) {
+      const offer = (data as any).rideshare_offers;
+      if (offer && offer.seats_available > 0) {
+        const newSeatsCount = offer.seats_available - 1;
+        
+        const { error: updateError } = await supabase
+          .from('rideshare_offers')
+          .update({ 
+            seats_available: newSeatsCount,
+            is_active: newSeatsCount > 0, // Deactivate if no seats left
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', offer.id);
+
+        if (updateError) {
+          console.error('Failed to update seat count:', updateError);
+        }
+      }
     }
 
     return data as RideshareContact;

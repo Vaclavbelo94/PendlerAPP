@@ -65,6 +65,10 @@
   "status": {
     "read": "Přečteno",
     "unread": "Nepřečteno",
+    "pending": "Čekající",
+    "approved": "Schváleno",
+    "rejected": "Zamítnuto",
+    "processed": "Vyřízeno",
     "loading": "Načítání...",
     "empty": "Žádná oznámení",
     "emptyDescription": "Nemáte žádná nová oznámení.",

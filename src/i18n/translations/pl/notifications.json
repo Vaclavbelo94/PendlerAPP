@@ -64,7 +64,11 @@
   },
   "status": {
     "read": "Przeczytane",
-    "unread": "Nieprzeczytane",
+    "unread": "Nieprzeczytane", 
+    "pending": "Oczekujące",
+    "approved": "Zatwierdzone",
+    "rejected": "Odrzucone",
+    "processed": "Przetworzone",
     "loading": "Ładowanie...",
     "empty": "Brak powiadomień",
     "emptyDescription": "Nie masz nowych powiadomień.",

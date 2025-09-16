@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { SupabaseNotification } from '@/hooks/useSupabaseNotifications';
 import { supabase } from '@/integrations/supabase/client';
+import { rideshareContactService } from '@/services/rideshareContactService';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -108,20 +109,18 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
     
     setIsProcessing(true);
     try {
-      // Update contact status to accepted
-      const { error } = await supabase
-        .from('rideshare_contacts')
-        .update({ status: 'accepted' })
-        .eq('id', notification.metadata.contact_id);
-
-      if (error) throw error;
+      // Use enhanced service to update contact status and seats
+      await rideshareContactService.updateContactStatus(
+        notification.metadata.contact_id,
+        'approved'
+      );
 
       // Create notification for requester
       if (notification.metadata.requester_user_id) {
         await supabase.from('notifications').insert({
           user_id: notification.metadata.requester_user_id,
           title: t('rideshare.requestAccepted'),
-          message: `Vaše žádost o spolujízdu byla přijata`,
+          message: t('rideshare.requestAccepted'),
           type: 'rideshare_accepted',
           category: 'rideshare',
           priority: 'high',
@@ -131,12 +130,27 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
             offer_id: notification.metadata.offer_id,
             origin_address: notification.metadata.origin_address,
             destination_address: notification.metadata.destination_address,
-            departure_time: notification.metadata.departure_time
+            departure_time: notification.metadata.departure_time,
+            status: 'approved'
           }
         });
       }
 
-      toast.success('Žádost byla přijata');
+      // Mark notification as processed
+      await supabase
+        .from('notifications')
+        .update({ 
+          is_read: true,
+          updated_at: new Date().toISOString(),
+          metadata: {
+            ...notification.metadata,
+            status: 'processed',
+            processed_at: new Date().toISOString()
+          }
+        })
+        .eq('id', notification.id);
+
+      toast.success(t('rideshare.requestAccepted'));
       if (onMarkAsRead) onMarkAsRead(notification.id);
     } catch (error) {
       console.error('Error accepting request:', error);
@@ -151,20 +165,18 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
     
     setIsProcessing(true);
     try {
-      // Update contact status to rejected
-      const { error } = await supabase
-        .from('rideshare_contacts')
-        .update({ status: 'rejected' })
-        .eq('id', notification.metadata.contact_id);
-
-      if (error) throw error;
+      // Use enhanced service to update contact status
+      await rideshareContactService.updateContactStatus(
+        notification.metadata.contact_id,
+        'rejected'
+      );
 
       // Create notification for requester
       if (notification.metadata.requester_user_id) {
         await supabase.from('notifications').insert({
           user_id: notification.metadata.requester_user_id,
           title: t('rideshare.requestRejected'),
-          message: `Vaše žádost o spolujízdu byla zamítnuta`,
+          message: t('rideshare.requestRejected'),
           type: 'rideshare_rejected',
           category: 'rideshare',
           priority: 'medium',
@@ -174,12 +186,27 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
             offer_id: notification.metadata.offer_id,
             origin_address: notification.metadata.origin_address,
             destination_address: notification.metadata.destination_address,
-            departure_time: notification.metadata.departure_time
+            departure_time: notification.metadata.departure_time,
+            status: 'rejected'
           }
         });
       }
 
-      toast.success('Žádost byla zamítnuta');
+      // Mark notification as processed
+      await supabase
+        .from('notifications')
+        .update({ 
+          is_read: true,
+          updated_at: new Date().toISOString(),
+          metadata: {
+            ...notification.metadata,
+            status: 'processed',
+            processed_at: new Date().toISOString()
+          }
+        })
+        .eq('id', notification.id);
+
+      toast.info(t('rideshare.requestRejected'));
       if (onMarkAsRead) onMarkAsRead(notification.id);
     } catch (error) {
       console.error('Error rejecting request:', error);

@@ -65,6 +65,10 @@
   "status": {
     "read": "Gelesen",
     "unread": "Ungelesen",
+    "pending": "Ausstehend",
+    "approved": "Genehmigt",
+    "rejected": "Abgelehnt",
+    "processed": "Verarbeitet",
     "loading": "Laden...",
     "empty": "Keine Benachrichtigungen",
     "emptyDescription": "Sie haben keine neuen Benachrichtigungen.",
