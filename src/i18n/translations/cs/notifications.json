@@ -27,7 +27,9 @@
     "routeTo": "Do",
     "seatsAvailable": "Míst k dispozici",
     "pricePerPerson": "Cena za osobu",
-    "departureTime": "Čas odjezdu"
+    "departureTime": "Čas odjezdu",
+    "approve": "Schválit",
+    "reject": "Zamítnout"
   },
   "system": {
     "maintenance": "Údržba systému",

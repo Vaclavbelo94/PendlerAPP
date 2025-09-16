@@ -27,7 +27,9 @@
     "routeTo": "Do",
     "seatsAvailable": "Dostępne miejsca",
     "pricePerPerson": "Cena za osobę",
-    "departureTime": "Czas odjazdu"
+    "departureTime": "Czas odjazdu",
+    "approve": "Zatwierdź",
+    "reject": "Odrzuć"
   },
   "system": {
     "maintenance": "Konserwacja systemu",

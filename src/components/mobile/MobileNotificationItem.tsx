@@ -7,6 +7,7 @@ import { cs } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { SupabaseNotification, useSupabaseNotifications } from '@/hooks/useSupabaseNotifications';
 
 interface MobileNotificationItemProps {
@@ -20,6 +21,7 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
 }) => {
   const navigate = useNavigate();
   const { markAsRead, deleteNotification } = useSupabaseNotifications();
+  const { t } = useTranslation('notifications');
 
   const handleClick = async () => {
     if (!notification.read) {
@@ -144,6 +146,14 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
                     notification.metadata?.contact_id && 
                     (notification.metadata?.status === 'pending' || !notification.metadata?.status);
 
+  console.log('MobileNotificationItem - canApprove check:', {
+    notificationType: notification.type,
+    hasContactId: !!notification.metadata?.contact_id,
+    status: notification.metadata?.status,
+    canApprove,
+    notification
+  });
+
   // Check if this shows approval result
   const isApprovalResult = notification.title?.includes('✅') || notification.title?.includes('❌');
 
@@ -191,7 +201,7 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
                 className="flex-1 bg-green-100 hover:bg-green-200 text-green-700 border-green-200"
                 variant="outline"
               >
-                ✅ Schválit
+                ✅ {t('rideshare.approve')}
               </Button>
               <Button
                 onClick={handleReject}
@@ -199,7 +209,7 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
                 className="flex-1 bg-red-100 hover:bg-red-200 text-red-700 border-red-200"
                 variant="outline"
               >
-                ❌ Zamítnout
+                ❌ {t('rideshare.reject')}
               </Button>
             </div>
           )}
