@@ -217,50 +217,7 @@ export const rideshareService = {
 
       console.log('✅ Rideshare contact created successfully:', data);
 
-      // Fallback: Create notifications directly if real-time doesn't work
-      try {
-        // Create notification for the driver
-        if (offer.user_id !== user.id) {
-          await supabase.from('notifications').insert({
-            user_id: offer.user_id,
-            title: 'Nová žádost o spolujízdu',
-            message: `Někdo se zajímá o vaši spolujízdu`,
-            type: 'rideshare_match', // Fixed: using valid type
-            category: 'rideshare',
-            metadata: {
-              contact_id: data.id,
-              offer_id: offerId
-            },
-            related_to: {
-              type: 'rideshare_contact',
-              id: data.id
-            }
-          });
-        }
-
-        // Create confirmation notification for the requester
-        await supabase.from('notifications').insert({
-          user_id: user.id,
-          title: 'Žádost odeslána',
-          message: `Vaše žádost o spolujízdu byla odeslána`,
-          type: 'rideshare_request', // Fixed: using valid type
-          category: 'rideshare',
-          metadata: {
-            contact_id: data.id,
-            offer_id: offerId
-          },
-          related_to: {
-            type: 'rideshare_contact',
-            id: data.id
-          }
-        });
-
-        console.log('✅ Fallback notifications created');
-      } catch (notifError) {
-        console.warn('⚠️ Fallback notification creation failed:', notifError);
-        // Don't throw error here as the main contact was created successfully
-      }
-
+      // Notifications are now handled by database trigger
       return data;
     } catch (error) {
       console.error('Service error in contactDriver:', error);

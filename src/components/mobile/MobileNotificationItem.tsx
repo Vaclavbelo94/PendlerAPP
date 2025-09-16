@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Check, X, AlertTriangle, Info } from 'lucide-react';
+import { Calendar, Check, X, AlertTriangle, Info, Car, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { cs } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
@@ -25,17 +25,43 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
       await markAsRead(notification.id);
     }
     
-    // Navigate to related content if applicable
-    if (notification.related_to) {
-      if (notification.related_to.type === 'rideshare') {
-        navigate('/profile?tab=submissions');
-      } else if (notification.related_to.type === 'shift') {
-        navigate('/shifts');
-      }
+    // Navigate based on notification type and metadata
+    if (notification.type?.includes('rideshare')) {
+      navigate('/rideshare');
+    } else if (notification.type?.includes('shift')) {
+      navigate('/shifts');
     }
     
-    if (onClose) {
-      onClose();
+    onClose?.();
+  };
+
+  const handleApprove = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const contactId = notification.metadata?.contact_id;
+    if (!contactId) return;
+
+    try {
+      const { rideshareContactService } = await import('@/services/rideshareContactService');
+      await rideshareContactService.updateContactStatus(contactId, 'approved');
+      // Remove this notification since it's now handled
+      deleteNotification(notification.id);
+    } catch (error) {
+      console.error('Failed to approve request:', error);
+    }
+  };
+
+  const handleReject = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const contactId = notification.metadata?.contact_id;
+    if (!contactId) return;
+
+    try {
+      const { rideshareContactService } = await import('@/services/rideshareContactService');
+      await rideshareContactService.updateContactStatus(contactId, 'rejected');
+      // Remove this notification since it's now handled
+      deleteNotification(notification.id);
+    } catch (error) {
+      console.error('Failed to reject request:', error);
     }
   };
 
@@ -75,14 +101,25 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
       case 'warning':
         return <AlertTriangle className="h-5 w-5 text-amber-500" />;
       case 'success':
-        return <Check className="h-5 w-5 text-green-500" />;
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
       case 'error':
-        return <X className="h-5 w-5 text-red-500" />;
+        return <XCircle className="h-5 w-5 text-red-500" />;
+      case 'rideshare_match':
+        return <Car className="h-5 w-5 text-blue-500" />;
+      case 'rideshare_request':
+        return <Clock className="h-5 w-5 text-orange-500" />;
       case 'info':
       default:
         return <Info className="h-5 w-5 text-blue-500" />;
     }
   };
+
+  // Check if this is a pending rideshare match that can be approved/rejected
+  const canApprove = notification.type === 'rideshare_match' && 
+                    notification.metadata?.status === 'pending';
+
+  // Check if this shows approval result
+  const isApprovalResult = notification.title?.includes('✅') || notification.title?.includes('❌');
 
   return (
     <motion.div
@@ -119,6 +156,27 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
           <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
             {notification.message}
           </p>
+
+          {canApprove && (
+            <div className="flex gap-2 mt-2">
+              <Button
+                onClick={handleApprove}
+                size="sm"
+                className="flex-1 bg-green-100 hover:bg-green-200 text-green-700 border-green-200"
+                variant="outline"
+              >
+                ✅ Schválit
+              </Button>
+              <Button
+                onClick={handleReject}
+                size="sm"
+                className="flex-1 bg-red-100 hover:bg-red-200 text-red-700 border-red-200"
+                variant="outline"
+              >
+                ❌ Zamítnout
+              </Button>
+            </div>
+          )}
           
           <p className="text-xs text-muted-foreground flex items-center gap-1">
             <Calendar className="h-3 w-3" />
