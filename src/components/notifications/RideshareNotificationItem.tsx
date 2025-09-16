@@ -187,7 +187,7 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
       const updateResult = await supabase
         .from('notifications')
         .update({ 
-          is_read: true,
+          read: true,
           updated_at: new Date().toISOString(),
           metadata: {
             ...notification.metadata,
@@ -253,7 +253,7 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
       await supabase
         .from('notifications')
         .update({ 
-          is_read: true,
+          read: true,
           updated_at: new Date().toISOString(),
           metadata: {
             ...notification.metadata,
