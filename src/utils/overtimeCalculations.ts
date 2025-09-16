@@ -153,14 +153,15 @@ export const calculateShiftStatistics = (shifts: Shift[]): ShiftStatistics => {
     }
   });
   
-  const totalOvertime = totalHours - totalStandardHours;
+  // Calculate total overtime as sum of individual shift overtimes
+  const totalOvertime = Object.values(overtimeByType).reduce((sum, overtime) => sum + overtime, 0);
   const averageHoursPerShift = totalShifts > 0 ? totalHours / totalShifts : 0;
   
   return {
     totalShifts,
     totalHours,
     totalStandardHours,
-    totalOvertime: Math.max(0, totalOvertime),
+    totalOvertime: Math.round(totalOvertime * 10) / 10, // Round to 1 decimal
     averageHoursPerShift,
     overtimeByType
   };

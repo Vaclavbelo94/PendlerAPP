@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import { cs } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import { SupabaseNotification, useSupabaseNotifications } from '@/hooks/useSupabaseNotifications';
 
 interface MobileNotificationItemProps {
@@ -38,30 +39,54 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
   const handleApprove = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const contactId = notification.metadata?.contact_id;
-    if (!contactId) return;
+    
+    console.log('Attempting to approve contact:', contactId, notification);
+    
+    if (!contactId) {
+      console.error('No contact_id in notification metadata:', notification.metadata);
+      toast.error('Chyba: chybí ID kontaktu');
+      return;
+    }
 
     try {
       const { rideshareContactService } = await import('@/services/rideshareContactService');
-      await rideshareContactService.updateContactStatus(contactId, 'approved');
+      const result = await rideshareContactService.updateContactStatus(contactId, 'approved');
+      
+      console.log('Successfully approved contact:', result);
+      toast.success('Žádost byla schválena');
+      
       // Remove this notification since it's now handled
       deleteNotification(notification.id);
     } catch (error) {
       console.error('Failed to approve request:', error);
+      toast.error('Nepodařilo se schválit žádost');
     }
   };
 
   const handleReject = async (e: React.MouseEvent) => {
     e.stopPropagation();
     const contactId = notification.metadata?.contact_id;
-    if (!contactId) return;
+    
+    console.log('Attempting to reject contact:', contactId, notification);
+    
+    if (!contactId) {
+      console.error('No contact_id in notification metadata:', notification.metadata);
+      toast.error('Chyba: chybí ID kontaktu');
+      return;
+    }
 
     try {
       const { rideshareContactService } = await import('@/services/rideshareContactService');
-      await rideshareContactService.updateContactStatus(contactId, 'rejected');
+      const result = await rideshareContactService.updateContactStatus(contactId, 'rejected');
+      
+      console.log('Successfully rejected contact:', result);
+      toast.success('Žádost byla zamítnuta');
+      
       // Remove this notification since it's now handled
       deleteNotification(notification.id);
     } catch (error) {
       console.error('Failed to reject request:', error);
+      toast.error('Nepodařilo se zamítnout žádost');
     }
   };
 

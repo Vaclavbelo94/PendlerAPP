@@ -86,13 +86,20 @@ export const useWorkData = () => {
       // Synchronize with user_travel_preferences
       await syncWithTravelPreferences(data);
       
-      // Debounce success toast to prevent multiple notifications
-      if (toastTimeoutRef.current) {
-        clearTimeout(toastTimeoutRef.current);
+      // Only show toast for manual saves, not during onboarding
+      // Check if this is during onboarding by looking at URL or other context
+      const isOnboarding = window.location.pathname.includes('/onboarding') || 
+                          window.location.pathname.includes('/registration');
+      
+      if (!isOnboarding) {
+        // Debounce success toast to prevent multiple notifications
+        if (toastTimeoutRef.current) {
+          clearTimeout(toastTimeoutRef.current);
+        }
+        toastTimeoutRef.current = setTimeout(() => {
+          toast.success(t('workDataSaved'));
+        }, 500);
       }
-      toastTimeoutRef.current = setTimeout(() => {
-        toast.success(t('workDataSaved'));
-      }, 500);
       
       return true;
     } catch (error) {
