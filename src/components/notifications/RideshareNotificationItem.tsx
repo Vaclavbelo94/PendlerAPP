@@ -62,6 +62,29 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
     }
   };
 
+  const getStatusText = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case 'approved':
+        return t('status.approved');
+      case 'accepted':
+        return t('status.approved');
+      case 'rejected':
+        return t('status.rejected');
+      case 'cancelled':
+        return t('status.rejected');
+      case 'pending':
+        return t('status.pending');
+      case 'processed':
+        return t('status.processed');
+      default:
+        return status || t('status.pending');
+    }
+  };
+
+  const isPendingStatus = (status?: string) => {
+    return !status || status.toLowerCase() === 'pending';
+  };
+
   const formatTime = (timeString: string) => {
     if (!timeString) return '';
     return timeString.substring(0, 5); // HH:MM format
@@ -245,7 +268,7 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
                   className={cn("h-5 text-xs border flex items-center gap-1", getStatusColor(requestStatus))}
                 >
                   {getStatusIcon(requestStatus)}
-                  {requestStatus}
+                  {getStatusText(requestStatus)}
                 </Badge>
               )}
             </div>
@@ -313,7 +336,7 @@ export const RideshareNotificationItem: React.FC<RideshareNotificationItemProps>
                 {/* Contact request actions for drivers */}
                 {((notification.type === 'rideshare_contact' || notification.type === 'rideshare_match') && 
                   notification.metadata?.contact_id && 
-                  (notification.metadata?.status === 'pending' || !notification.metadata?.status)) && (
+                  isPendingStatus(notification.metadata?.status)) && (
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"

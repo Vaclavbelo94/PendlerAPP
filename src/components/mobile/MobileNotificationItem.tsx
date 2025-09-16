@@ -141,43 +141,17 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
     }
   };
 
-  // Enhanced debug logging for rideshare approval logic
-  console.log('=== MobileNotificationItem DEBUG START ===');
-  console.log('Notification ID:', notification.id);
-  console.log('Notification type:', notification.type);
-  console.log('Complete metadata:', notification.metadata);
-  console.log('Title:', notification.title);
-  console.log('Message:', notification.message);
-  console.log('Created at:', notification.created_at);
-  console.log('Read status:', notification.read);
+  const isPendingStatus = (status?: string) => {
+    return !status || status.toLowerCase() === 'pending';
+  };
 
-  // Check individual conditions for canApprove
+  // Enhanced debug logging for rideshare approval logic
   const isRideshareType = notification.type === 'rideshare_match' || notification.type === 'rideshare_contact';
   const hasContactId = !!notification.metadata?.contact_id;
-  const isPending = notification.metadata?.status === 'pending' || !notification.metadata?.status;
+  const isPending = isPendingStatus(notification.metadata?.status);
   
-  console.log('canApprove conditions:');
-  console.log('- isRideshareType:', isRideshareType, '(types: rideshare_match, rideshare_contact)');
-  console.log('- hasContactId:', hasContactId, '(contact_id:', notification.metadata?.contact_id, ')');
-  console.log('- isPending:', isPending, '(status:', notification.metadata?.status, ')');
-
   // Check if this is a pending rideshare match that can be approved/rejected
   const canApprove = isRideshareType && hasContactId && isPending;
-  
-  console.log('Final canApprove result:', canApprove);
-  console.log('=== MobileNotificationItem DEBUG END ===');
-
-  // Add toast for debugging in production
-  if (isRideshareType && !canApprove) {
-    console.warn('Rideshare notification but canApprove is false. Reasons:');
-    if (!hasContactId) console.warn('- Missing contact_id');
-    if (!isPending) console.warn('- Not pending status');
-    
-    // Show debug toast for testing
-    setTimeout(() => {
-      toast.info(`Debug: canApprove=${canApprove}, contactId=${hasContactId}, pending=${isPending}`);
-    }, 1000);
-  }
 
   // Check if this shows approval result
   const isApprovalResult = notification.title?.includes('✅') || notification.title?.includes('❌');
