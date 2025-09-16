@@ -27,5 +27,8 @@
   "viewFaq": "FAQ anzeigen",
   "authRequired": "Anmeldung erforderlich",
   "authRequiredDesc": "Um auf Premium-Funktionen zugreifen zu können, müssen Sie sich zunächst registrieren oder anmelden.",
-  "goToRegistration": "Zur Registrierung"
+  "goToRegistration": "Zur Registrierung",
+  "dhlEmployeePremium": "Als DHL-Mitarbeiter haben Sie Premium kostenlos",
+  "currentPremiumPlan": "Sie haben einen aktiven Premium-Plan",
+  "expiresOn": "Läuft ab am: {date}"
 }

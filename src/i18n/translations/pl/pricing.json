@@ -27,5 +27,8 @@
   "viewFaq": "Zobacz FAQ",
   "authRequired": "Wymagane logowanie",
   "authRequiredDesc": "Aby uzyskać dostęp do funkcji premium, musisz się najpierw zarejestrować lub zalogować.",
-  "goToRegistration": "Przejdź do rejestracji"
+  "goToRegistration": "Przejdź do rejestracji",
+  "dhlEmployeePremium": "Jako pracownik DHL masz Premium za darmo",
+  "currentPremiumPlan": "Masz aktywny plan Premium",
+  "expiresOn": "Wygasa w dniu: {date}"
 }

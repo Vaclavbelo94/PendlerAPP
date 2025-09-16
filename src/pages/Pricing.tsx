@@ -16,7 +16,7 @@ type PaymentPeriod = 'monthly' | 'yearly';
 const Pricing = () => {
   const { t, i18n } = useTranslation(['pricing', 'navigation']);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isPremium, unifiedUser } = useAuth();
   const [selectedPeriod, setSelectedPeriod] = useState<PaymentPeriod>('yearly');
   const [showAuthDialog, setShowAuthDialog] = useState(false);
 
@@ -60,10 +60,38 @@ const Pricing = () => {
   const handleBuyPremium = () => {
     if (!user) {
       setShowAuthDialog(true);
+    } else if (isPremium) {
+      // User already has premium, show current plan info
+      return;
     } else {
       navigate('/premium');
     }
   };
+
+  // Check if user has premium and get expiry info
+  const getPremiumStatusInfo = () => {
+    if (!user) return { hasPremium: false };
+    
+    if (unifiedUser?.isDHLEmployee) {
+      return { 
+        hasPremium: true, 
+        isDHL: true,
+        message: t('pricing:dhlEmployeePremium')
+      };
+    }
+    
+    if (isPremium) {
+      return { 
+        hasPremium: true, 
+        expiryDate: unifiedUser?.premiumExpiry,
+        message: t('pricing:currentPremiumPlan')
+      };
+    }
+    
+    return { hasPremium: false };
+  };
+
+  const premiumStatus = getPremiumStatusInfo();
 
   return (
     <>
@@ -150,8 +178,12 @@ const Pricing = () => {
                       {t('pricing:freeFeature3')}
                     </li>
                   </ul>
-                  <Button variant="outline" className="w-full" disabled>
-                    {t('pricing:currentPlan')}
+                  <Button 
+                    variant={!premiumStatus.hasPremium ? "default" : "outline"} 
+                    className="w-full" 
+                    disabled={!premiumStatus.hasPremium}
+                  >
+                    {!premiumStatus.hasPremium ? t('pricing:currentPlan') : t('pricing:freePlan')}
                   </Button>
                 </CardContent>
               </Card>
@@ -200,10 +232,25 @@ const Pricing = () => {
                     className="w-full" 
                     onClick={handleBuyPremium}
                     size="lg"
+                    variant={premiumStatus.hasPremium ? "outline" : "default"}
+                    disabled={premiumStatus.hasPremium}
                   >
                     <Crown className="h-4 w-4 mr-2" />
-                    {t('pricing:buyPremium')}
+                    {premiumStatus.hasPremium ? t('pricing:currentPlan') : t('pricing:buyPremium')}
                   </Button>
+                  
+                  {premiumStatus.hasPremium && premiumStatus.message && (
+                    <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                      <p className="text-sm text-green-800 dark:text-green-200 text-center">
+                        {premiumStatus.message}
+                      </p>
+                      {premiumStatus.expiryDate && !premiumStatus.isDHL && (
+                        <p className="text-xs text-green-600 dark:text-green-300 text-center mt-1">
+                          {t('pricing:expiresOn', { date: new Date(premiumStatus.expiryDate).toLocaleDateString() })}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </motion.div>

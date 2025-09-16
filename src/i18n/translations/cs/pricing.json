@@ -27,5 +27,8 @@
   "viewFaq": "Zobrazit FAQ",
   "authRequired": "Přihlášení vyžadováno",
   "authRequiredDesc": "Pro přístup k premium funkcím se musíte nejdříve zaregistrovat nebo přihlásit.",
-  "goToRegistration": "Přejít k registraci"
+  "goToRegistration": "Přejít k registraci",
+  "dhlEmployeePremium": "Jako DHL zaměstnanec máte Premium zdarma",
+  "currentPremiumPlan": "Máte aktivní Premium plán",
+  "expiresOn": "Vyprší dne: {date}"
 }
