@@ -149,19 +149,23 @@ const NotificationsPage: React.FC = () => {
 
   const handlePreviousFilter = useCallback(() => {
     setIsSwipeTransition(true);
-    const newIndex = currentFilterIndex > 0 ? currentFilterIndex - 1 : filterButtons.length - 1;
-    setCurrentFilterIndex(newIndex);
-    setSelectedFilter(filterButtons[newIndex].key);
+    setCurrentFilterIndex(prevIndex => {
+      const newIndex = prevIndex > 0 ? prevIndex - 1 : filterButtons.length - 1;
+      setSelectedFilter(filterButtons[newIndex].key);
+      return newIndex;
+    });
     setTimeout(() => setIsSwipeTransition(false), 300);
-  }, [currentFilterIndex, filterButtons]);
+  }, [filterButtons]);
 
   const handleNextFilter = useCallback(() => {
     setIsSwipeTransition(true);
-    const newIndex = currentFilterIndex < filterButtons.length - 1 ? currentFilterIndex + 1 : 0;
-    setCurrentFilterIndex(newIndex);
-    setSelectedFilter(filterButtons[newIndex].key);
+    setCurrentFilterIndex(prevIndex => {
+      const newIndex = prevIndex < filterButtons.length - 1 ? prevIndex + 1 : 0;
+      setSelectedFilter(filterButtons[newIndex].key);
+      return newIndex;
+    });
     setTimeout(() => setIsSwipeTransition(false), 300);
-  }, [currentFilterIndex, filterButtons]);
+  }, [filterButtons]);
 
   // Touch/Swipe handlers
   const touchStartX = useRef(0);
@@ -190,13 +194,13 @@ const NotificationsPage: React.FC = () => {
     }
   }, [handleNextFilter, handlePreviousFilter]);
 
-  // Update filter index when selectedFilter changes programmatically
+  // Update filter index when selectedFilter changes programmatically (only if not from carousel navigation)
   useEffect(() => {
     const newIndex = filterButtons.findIndex(btn => btn.key === selectedFilter);
-    if (newIndex !== -1 && newIndex !== currentFilterIndex) {
+    if (newIndex !== -1 && newIndex !== currentFilterIndex && !isSwipeTransition) {
       setCurrentFilterIndex(newIndex);
     }
-  }, [selectedFilter, filterButtons, currentFilterIndex]);
+  }, [selectedFilter, filterButtons, currentFilterIndex, isSwipeTransition]);
 
   return (
     <Layout navbarRightContent={<NavbarRightContent />}>
