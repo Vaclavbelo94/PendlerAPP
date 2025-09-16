@@ -77,6 +77,37 @@ class RideshareContactService {
         }
       }
 
+      // Update the corresponding notification metadata to reflect the new status
+      console.log('🔔 Updating notification metadata for contact:', contactId);
+      
+      // First get the current notification
+      const { data: notification } = await supabase
+        .from('notifications')
+        .select('metadata')
+        .eq('metadata->>contact_id', contactId)
+        .single();
+
+      if (notification?.metadata && typeof notification.metadata === 'object') {
+        const updatedMetadata = {
+          ...(notification.metadata as Record<string, any>),
+          status
+        };
+
+        const { error: notificationError } = await supabase
+          .from('notifications')
+          .update({ 
+            metadata: updatedMetadata,
+            updated_at: new Date().toISOString()
+          })
+          .eq('metadata->>contact_id', contactId);
+
+        if (notificationError) {
+          console.error('❌ Error updating notification metadata:', notificationError);
+        } else {
+          console.log('✅ Notification metadata updated successfully');
+        }
+      }
+
       return data as RideshareContact;
     } catch (error) {
       console.error('💥 CRITICAL ERROR in updateContactStatus:', error);
