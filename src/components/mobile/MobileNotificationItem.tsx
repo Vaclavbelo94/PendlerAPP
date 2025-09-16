@@ -141,18 +141,43 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
     }
   };
 
-  // Check if this is a pending rideshare match that can be approved/rejected
-  const canApprove = (notification.type === 'rideshare_match' || notification.type === 'rideshare_contact') && 
-                    notification.metadata?.contact_id && 
-                    (notification.metadata?.status === 'pending' || !notification.metadata?.status);
+  // Enhanced debug logging for rideshare approval logic
+  console.log('=== MobileNotificationItem DEBUG START ===');
+  console.log('Notification ID:', notification.id);
+  console.log('Notification type:', notification.type);
+  console.log('Complete metadata:', notification.metadata);
+  console.log('Title:', notification.title);
+  console.log('Message:', notification.message);
+  console.log('Created at:', notification.created_at);
+  console.log('Read status:', notification.read);
 
-  console.log('MobileNotificationItem - canApprove check:', {
-    notificationType: notification.type,
-    hasContactId: !!notification.metadata?.contact_id,
-    status: notification.metadata?.status,
-    canApprove,
-    notification
-  });
+  // Check individual conditions for canApprove
+  const isRideshareType = notification.type === 'rideshare_match' || notification.type === 'rideshare_contact';
+  const hasContactId = !!notification.metadata?.contact_id;
+  const isPending = notification.metadata?.status === 'pending' || !notification.metadata?.status;
+  
+  console.log('canApprove conditions:');
+  console.log('- isRideshareType:', isRideshareType, '(types: rideshare_match, rideshare_contact)');
+  console.log('- hasContactId:', hasContactId, '(contact_id:', notification.metadata?.contact_id, ')');
+  console.log('- isPending:', isPending, '(status:', notification.metadata?.status, ')');
+
+  // Check if this is a pending rideshare match that can be approved/rejected
+  const canApprove = isRideshareType && hasContactId && isPending;
+  
+  console.log('Final canApprove result:', canApprove);
+  console.log('=== MobileNotificationItem DEBUG END ===');
+
+  // Add toast for debugging in production
+  if (isRideshareType && !canApprove) {
+    console.warn('Rideshare notification but canApprove is false. Reasons:');
+    if (!hasContactId) console.warn('- Missing contact_id');
+    if (!isPending) console.warn('- Not pending status');
+    
+    // Show debug toast for testing
+    setTimeout(() => {
+      toast.info(`Debug: canApprove=${canApprove}, contactId=${hasContactId}, pending=${isPending}`);
+    }, 1000);
+  }
 
   // Check if this shows approval result
   const isApprovalResult = notification.title?.includes('✅') || notification.title?.includes('❌');
@@ -210,6 +235,46 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
                 variant="outline"
               >
                 ❌ {t('rideshare.reject')}
+              </Button>
+            </div>
+          )}
+
+          {/* Debug info - remove after fixing */}
+          {isRideshareType && !canApprove && (
+            <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-700">
+              <strong>Debug:</strong> Rideshare notification but no buttons.
+              <br />Contact ID: {notification.metadata?.contact_id || 'missing'}
+              <br />Status: {notification.metadata?.status || 'undefined'}
+              <br />Type: {notification.type}
+            </div>
+          )}
+
+          {/* Force show buttons for testing - remove after fixing */}
+          {isRideshareType && !canApprove && (
+            <div className="flex gap-2 mt-2">
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toast.error('DEBUG: Tlačítko by mělo být skryté - metadata nejsou správná');
+                  console.log('Force button clicked - metadata:', notification.metadata);
+                }}
+                size="sm"
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-200"
+                variant="outline"
+              >
+                🔧 Debug Schválit
+              </Button>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toast.error('DEBUG: Tlačítko by mělo být skryté - metadata nejsou správná');
+                  console.log('Force button clicked - metadata:', notification.metadata);
+                }}
+                size="sm"
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-200"
+                variant="outline"
+              >
+                🔧 Debug Zamítnout
               </Button>
             </div>
           )}
