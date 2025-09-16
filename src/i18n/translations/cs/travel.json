@@ -252,5 +252,7 @@
   "leaveIn": "Vyjet za",
   "waitMinutes": "Počkat minut",
   "trafficImproving": "Doprava se zlepšuje",
-  "stableTraffic": "Stabilní doprava"
+  "stableTraffic": "Stabilní doprava",
+  "route": "Trasa",
+  "dateAndTime": "Datum a čas"
 }

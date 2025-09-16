@@ -253,5 +253,7 @@
   "autoRefresh": "Automatyczne odświeżanie",
   "optimizer": "Optymalizator",
   "liveTrafficShort": "Ruch na żywo",
-  "analytics": "Analityka"
+  "analytics": "Analityka",
+  "route": "Trasa",
+  "dateAndTime": "Data i czas"
 }
