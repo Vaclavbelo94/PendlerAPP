@@ -225,7 +225,7 @@ export const rideshareService = {
             user_id: offer.user_id,
             title: 'Nová žádost o spolujízdu',
             message: `Někdo se zajímá o vaši spolujízdu`,
-            type: 'rideshare_contact',
+            type: 'rideshare_match', // Fixed: using valid type
             category: 'rideshare',
             metadata: {
               contact_id: data.id,
@@ -243,7 +243,7 @@ export const rideshareService = {
           user_id: user.id,
           title: 'Žádost odeslána',
           message: `Vaše žádost o spolujízdu byla odeslána`,
-          type: 'rideshare_request_sent',
+          type: 'rideshare_request', // Fixed: using valid type
           category: 'rideshare',
           metadata: {
             contact_id: data.id,
