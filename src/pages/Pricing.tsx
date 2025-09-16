@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/auth';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 
 type PaymentPeriod = 'monthly' | 'yearly';
 
@@ -100,7 +101,7 @@ const Pricing = () => {
         <meta name="description" content={t('pricing:description')} />
       </Helmet>
       
-      <Layout>
+      <Layout navbarRightContent={<NavbarRightContent />}>
         <div className="container mx-auto px-4 py-8 max-w-4xl">
           {/* Header */}
           <motion.div
