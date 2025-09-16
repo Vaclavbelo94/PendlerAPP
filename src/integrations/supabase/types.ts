@@ -3693,6 +3693,10 @@ export type Database = {
         }
         Returns: string
       }
+      sync_rideshare_notifications: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       validate_promo_code_raw: {
         Args: { promo_code_input: string }
         Returns: {
