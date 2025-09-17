@@ -29,7 +29,7 @@ const A17_COORDINATES = [
   [51.0447, 13.7372]  // Dresden
 ];
 
-// TomTom Configuration
+// TomTom Configuration - Fixed bbox format for D8 border area
 const D8_BORDER_BBOX = "50.68,13.85,50.84,14.10"; // minLat,minLon,maxLat,maxLon
 const D8_FLOW_POINTS = [
   [50.7547, 14.2764], // km 82
@@ -52,7 +52,7 @@ async function fetchTomTomIncidents(): Promise<TrafficEvent[]> {
 
     console.log("📡 Fetching TomTom traffic incidents...");
     
-    const incidentsUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/${D8_BORDER_BBOX}/json?key=${tomtomApiKey}&expandCluster=true`;
+    const incidentsUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/${D8_BORDER_BBOX}/json?key=${tomtomApiKey}&expandCluster=true&language=cs-CZ`;
     
     const response = await fetch(incidentsUrl);
     if (!response.ok) {
@@ -65,7 +65,7 @@ async function fetchTomTomIncidents(): Promise<TrafficEvent[]> {
       for (const incident of data.incidents) {
         const event: TrafficEvent = {
           id: `tomtom-${incident.id}`,
-          source: 'ndic', // Keep as 'ndic' for UI compatibility
+          source: 'ndic', // TomTom data displayed as NDIC for consistent UI
           type: mapTomTomIncidentType(incident.properties?.iconCategory || incident.properties?.incidentCategory),
           title: incident.properties?.description || 'Dopravní událost',
           description: buildTomTomDescription(incident),
