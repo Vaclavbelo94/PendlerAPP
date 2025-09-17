@@ -1,11 +1,12 @@
 import React, { Suspense, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Navigation } from 'lucide-react';
+import { Users, Navigation, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import useEmblaCarousel from 'embla-carousel-react';
 import RidesharingDashboard from '@/components/travel/rideshare/RidesharingDashboard';
 import HomeWorkTrafficMonitor from '@/components/travel/HomeWorkTrafficMonitor';
+import TrafficBorderMonitoring from '@/components/travel/TrafficBorderMonitoring';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const LoadingFallback = () => (
@@ -48,6 +49,12 @@ const ModernTravelMobileCarousel: React.FC<ModernTravelMobileCarouselProps> = ({
       label: t('commuteTraffic'),
       icon: Navigation,
       component: HomeWorkTrafficMonitor
+    },
+    {
+      id: 'traffic-monitoring',
+      label: t('trafficMonitoring'),
+      icon: AlertTriangle,
+      component: TrafficBorderMonitoring
     }
   ];
 

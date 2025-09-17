@@ -255,5 +255,7 @@
   "liveTrafficShort": "Ruch na żywo",
   "analytics": "Analityka",
   "route": "Trasa",
-  "dateAndTime": "Data i czas"
+  "dateAndTime": "Data i czas",
+  "trafficMonitoring": "Monitoring ruchu",
+  "trafficMonitoringDesc": "Monitoring D8/A17"
 }

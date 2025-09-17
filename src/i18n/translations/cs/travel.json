@@ -256,5 +256,7 @@
   "route": "Trasa",
   "dateAndTime": "Datum a čas",
   "capacityAndPrice": "Kapacita a cena",
-  "contact": "Kontakt"
+  "contact": "Kontakt",
+  "trafficMonitoring": "Dopravní monitoring",
+  "trafficMonitoringDesc": "Monitoring D8/A17"
 }
