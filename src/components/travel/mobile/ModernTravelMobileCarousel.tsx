@@ -5,7 +5,7 @@ import { Users, Navigation, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import useEmblaCarousel from 'embla-carousel-react';
 import RidesharingDashboard from '@/components/travel/rideshare/RidesharingDashboard';
-import HomeWorkTrafficMonitor from '@/components/travel/HomeWorkTrafficMonitor';
+
 import TrafficBorderMonitoring from '@/components/travel/TrafficBorderMonitoring';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -43,12 +43,6 @@ const ModernTravelMobileCarousel: React.FC<ModernTravelMobileCarouselProps> = ({
       label: t('ridesharing'),
       icon: Users,
       component: RidesharingDashboard
-    },
-    {
-      id: 'traffic',
-      label: t('commuteTraffic'),
-      icon: Navigation,
-      component: HomeWorkTrafficMonitor
     },
     {
       id: 'traffic-monitoring',
