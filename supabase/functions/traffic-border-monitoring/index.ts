@@ -29,8 +29,8 @@ const A17_COORDINATES = [
   [51.0447, 13.7372]  // Dresden
 ];
 
-// TomTom Configuration - Fixed bbox format for D8 border area
-const D8_BORDER_BBOX = "50.68,13.85,50.84,14.10"; // minLat,minLon,maxLat,maxLon
+// TomTom Configuration - Updated bbox for better D8 border coverage
+const D8_BORDER_BBOX = "50.75,13.95,50.85,14.05"; // Narrower bbox focusing on border area
 const D8_FLOW_POINTS = [
   [50.7547, 14.2764], // km 82
   [50.7681, 14.2356], // km 84
@@ -47,42 +47,110 @@ async function fetchTomTomIncidents(): Promise<TrafficEvent[]> {
     const tomtomApiKey = Deno.env.get('TOMTOM_API_KEY');
     if (!tomtomApiKey) {
       console.error("❌ TomTom API key not configured");
+      // Add fallback event to show TomTom is not available
+      events.push({
+        id: 'tomtom-fallback-config',
+        source: 'ndic',
+        type: 'warning',
+        title: 'TomTom data nedostupná',
+        description: 'TomTom API klíč není nakonfigurován',
+        location: 'D8 hranice',
+        timestamp: new Date().toISOString(),
+        severity: 'low',
+        icon: '⚠️'
+      });
       return events;
     }
 
     console.log("📡 Fetching TomTom traffic incidents...");
+    console.log(`🔑 TomTom API Key configured: ${tomtomApiKey.substring(0, 8)}...`);
+    console.log(`📍 TomTom bbox: ${D8_BORDER_BBOX}`);
     
     const incidentsUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/${D8_BORDER_BBOX}/json?key=${tomtomApiKey}&expandCluster=true&language=cs-CZ`;
+    console.log(`🌐 TomTom URL: ${incidentsUrl.replace(tomtomApiKey, '***')}`);
     
     const response = await fetch(incidentsUrl);
+    console.log(`📡 TomTom response status: ${response.status}`);
+    
     if (!response.ok) {
-      throw new Error(`TomTom API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error(`❌ TomTom API error ${response.status}: ${errorText}`);
+      
+      // Add fallback event to show TomTom API error
+      events.push({
+        id: 'tomtom-fallback-error',
+        source: 'ndic',
+        type: 'warning',
+        title: 'TomTom API chyba',
+        description: `HTTP ${response.status}: Nepodařilo se načíst data z TomTom`,
+        location: 'D8 hranice',
+        timestamp: new Date().toISOString(),
+        severity: 'low',
+        icon: '⚠️'
+      });
+      return events;
     }
     
     const data = await response.json();
+    console.log(`📊 TomTom raw data:`, JSON.stringify(data, null, 2));
     
-    if (data.incidents) {
+    if (data.incidents && Array.isArray(data.incidents)) {
+      console.log(`📋 TomTom incidents found: ${data.incidents.length}`);
+      
       for (const incident of data.incidents) {
+        console.log(`🔍 Processing incident:`, JSON.stringify(incident, null, 2));
+        
         const event: TrafficEvent = {
           id: `tomtom-${incident.id}`,
           source: 'ndic', // TomTom data displayed as NDIC for consistent UI
           type: mapTomTomIncidentType(incident.properties?.iconCategory || incident.properties?.incidentCategory),
           title: incident.properties?.description || 'Dopravní událost',
           description: buildTomTomDescription(incident),
-          location: `D8 ${incident.properties?.from || incident.properties?.to || ''}`,
+          location: `D8 ${incident.properties?.from || incident.properties?.to || 'hranice'}`,
           coordinates: extractTomTomCoordinates(incident.geometry),
           timestamp: incident.properties?.startTime || new Date().toISOString(),
           severity: mapTomTomSeverity(incident.properties?.magnitude),
           icon: getIncidentIcon(mapTomTomIncidentType(incident.properties?.iconCategory || incident.properties?.incidentCategory))
         };
         events.push(event);
+        console.log(`✅ Added TomTom event: ${event.title}`);
       }
+    } else {
+      console.log(`ℹ️ No TomTom incidents in response or invalid format`);
+      
+      // If no incidents but API call succeeded, add informative event
+      events.push({
+        id: 'tomtom-no-incidents',
+        source: 'ndic',
+        type: 'warning',
+        title: 'D8 - Bez událostí',
+        description: 'TomTom hlásí žádné aktuální dopravní události na D8',
+        location: 'D8 hranice',
+        timestamp: new Date().toISOString(),
+        severity: 'low',
+        icon: '✅'
+      });
     }
     
     console.log(`✅ TomTom: Found ${events.length} incidents`);
     
   } catch (error) {
-    console.error("❌ TomTom API error:", error);
+    console.error("❌ TomTom API critical error:", error);
+    console.error("❌ Error details:", error.message);
+    console.error("❌ Error stack:", error.stack);
+    
+    // Add fallback event for critical errors
+    events.push({
+      id: 'tomtom-fallback-critical',
+      source: 'ndic',
+      type: 'warning',
+      title: 'TomTom nedostupné',
+      description: `Chyba při načítání dat: ${error.message}`,
+      location: 'D8 hranice',
+      timestamp: new Date().toISOString(),
+      severity: 'low',
+      icon: '⚠️'
+    });
   }
   
   return events;
@@ -92,21 +160,31 @@ async function fetchTomTomFlow(): Promise<any> {
   try {
     const tomtomApiKey = Deno.env.get('TOMTOM_API_KEY');
     if (!tomtomApiKey) {
-      console.error("❌ TomTom API key not configured");
+      console.error("❌ TomTom API key not configured for flow data");
       return null;
     }
 
     console.log("🌊 Fetching TomTom flow data...");
+    console.log(`🔑 Using TomTom API Key: ${tomtomApiKey.substring(0, 8)}...`);
     
-    const flowPromises = D8_FLOW_POINTS.map(async (point) => {
+    const flowPromises = D8_FLOW_POINTS.map(async (point, index) => {
       const url = `https://api.tomtom.com/traffic/services/4/flowSegmentData/relative/10/json?key=${tomtomApiKey}&point=${point[0]},${point[1]}`;
+      console.log(`📍 Fetching flow for point ${index + 1}: ${point[0]},${point[1]}`);
+      
       try {
         const response = await fetch(url);
+        console.log(`📡 Flow point ${index + 1} response: ${response.status}`);
+        
         if (response.ok) {
-          return await response.json();
+          const data = await response.json();
+          console.log(`✅ Flow point ${index + 1} data:`, JSON.stringify(data, null, 2));
+          return data;
+        } else {
+          const errorText = await response.text();
+          console.error(`❌ Flow point ${index + 1} error ${response.status}: ${errorText}`);
         }
       } catch (error) {
-        console.error(`Flow data error for point ${point}:`, error);
+        console.error(`❌ Flow data error for point ${index + 1} (${point}):`, error);
       }
       return null;
     });
@@ -114,24 +192,31 @@ async function fetchTomTomFlow(): Promise<any> {
     const flowResults = await Promise.all(flowPromises);
     const validFlows = flowResults.filter(f => f && f.flowSegmentData);
     
+    console.log(`📊 Valid flow results: ${validFlows.length}/${flowResults.length}`);
+    
     if (validFlows.length > 0) {
       const avgCurrentSpeed = validFlows.reduce((sum, f) => sum + (f.flowSegmentData.currentSpeed || 0), 0) / validFlows.length;
       const avgFreeFlowSpeed = validFlows.reduce((sum, f) => sum + (f.flowSegmentData.freeFlowSpeed || 0), 0) / validFlows.length;
       const avgRelative = avgFreeFlowSpeed > 0 ? avgCurrentSpeed / avgFreeFlowSpeed : 1;
       const avgConfidence = validFlows.reduce((sum, f) => sum + (f.flowSegmentData.confidence || 0), 0) / validFlows.length;
       
-      console.log(`🌊 Flow summary: avg speed ${avgCurrentSpeed.toFixed(1)} km/h, relative ${(avgRelative * 100).toFixed(1)}%`);
+      console.log(`🌊 Flow summary: avg speed ${avgCurrentSpeed.toFixed(1)} km/h, relative ${(avgRelative * 100).toFixed(1)}%, confidence ${avgConfidence.toFixed(2)}`);
       
       return {
         avgRelative,
         avgCurrentSpeed,
         avgFreeFlowSpeed,
-        confidence: avgConfidence
+        confidence: avgConfidence,
+        validPoints: validFlows.length,
+        totalPoints: flowResults.length
       };
+    } else {
+      console.log("⚠️ No valid flow data received from any points");
     }
     
   } catch (error) {
-    console.error("❌ TomTom Flow API error:", error);
+    console.error("❌ TomTom Flow API critical error:", error);
+    console.error("❌ Flow error details:", error.message);
   }
   
   return null;
