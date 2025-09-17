@@ -29,8 +29,8 @@ const A17_COORDINATES = [
   [51.0447, 13.7372]  // Dresden
 ];
 
-// TomTom Configuration - Updated bbox for better D8 border coverage
-const D8_BORDER_BBOX = "50.75,13.95,50.85,14.05"; // Narrower bbox focusing on border area
+// TomTom Configuration - Corrected bbox for D8 km 82-92
+const D8_BORDER_BBOX = "13.97,50.75,14.28,50.84"; // minLon,minLat,maxLon,maxLat format
 const D8_FLOW_POINTS = [
   [50.7547, 14.2764], // km 82
   [50.7681, 14.2356], // km 84
@@ -66,10 +66,16 @@ async function fetchTomTomIncidents(): Promise<TrafficEvent[]> {
     console.log(`🔑 TomTom API Key configured: ${tomtomApiKey.substring(0, 8)}...`);
     console.log(`📍 TomTom bbox: ${D8_BORDER_BBOX}`);
     
-    const incidentsUrl = `https://api.tomtom.com/traffic/services/4/incidentDetails/s3/${D8_BORDER_BBOX}/json?key=${tomtomApiKey}&expandCluster=true&language=cs-CZ`;
+    // Use correct TomTom Traffic Incidents API v5 endpoint
+    const incidentsUrl = `https://api.tomtom.com/traffic/services/5/incidentDetails?bbox=${D8_BORDER_BBOX}&fields=incidents&language=cs-CZ&categoryFilter=0,1,2,3,4,5,6,7,8,9,10,11,14&timeValidityFilter=present&key=${tomtomApiKey}`;
     console.log(`🌐 TomTom URL: ${incidentsUrl.replace(tomtomApiKey, '***')}`);
     
-    const response = await fetch(incidentsUrl);
+    const response = await fetch(incidentsUrl, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
     console.log(`📡 TomTom response status: ${response.status}`);
     
     if (!response.ok) {
@@ -168,11 +174,16 @@ async function fetchTomTomFlow(): Promise<any> {
     console.log(`🔑 Using TomTom API Key: ${tomtomApiKey.substring(0, 8)}...`);
     
     const flowPromises = D8_FLOW_POINTS.map(async (point, index) => {
-      const url = `https://api.tomtom.com/traffic/services/4/flowSegmentData/relative/10/json?key=${tomtomApiKey}&point=${point[0]},${point[1]}`;
+      const url = `https://api.tomtom.com/traffic/services/4/flowSegmentData/absolute/10/json?point=${point[0]},${point[1]}&unit=KMPH&openLr=false&key=${tomtomApiKey}`;
       console.log(`📍 Fetching flow for point ${index + 1}: ${point[0]},${point[1]}`);
       
       try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
         console.log(`📡 Flow point ${index + 1} response: ${response.status}`);
         
         if (response.ok) {
