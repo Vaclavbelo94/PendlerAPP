@@ -66,14 +66,13 @@ async function fetchTomTomIncidents(): Promise<TrafficEvent[]> {
     console.log(`🔑 TomTom API Key configured: ${tomtomApiKey.substring(0, 8)}...`);
     console.log(`📍 TomTom bbox: ${D8_BORDER_BBOX}`);
     
-    // Use correct TomTom Traffic Incidents API v5 endpoint
-    const incidentsUrl = `https://api.tomtom.com/traffic/services/5/incidentDetails?bbox=${D8_BORDER_BBOX}&fields=incidents&language=cs-CZ&categoryFilter=0,1,2,3,4,5,6,7,8,9,10,11,14&timeValidityFilter=present&key=${tomtomApiKey}`;
+    // Use correct TomTom Traffic Incidents API v5 endpoint with proper field formatting
+    const incidentsUrl = `https://api.tomtom.com/traffic/services/5/incidentDetails?key=${tomtomApiKey}&bbox=${D8_BORDER_BBOX}&fields={incidents{type,geometry{type,coordinates},properties{iconCategory,incidentCategory,description,startTime,endTime,from,to,roadNumbers,magnitude}}}&language=cs-CZ&timeValidityFilter=present`;
     console.log(`🌐 TomTom URL: ${incidentsUrl.replace(tomtomApiKey, '***')}`);
     
     const response = await fetch(incidentsUrl, {
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Accept': 'application/json'
       }
     });
     console.log(`📡 TomTom response status: ${response.status}`);
