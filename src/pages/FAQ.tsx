@@ -108,7 +108,7 @@ const FAQ = () => {
             <div className="flex justify-center mb-4">
               <HelpCircle className="h-12 w-12 text-primary" />
             </div>
-            <h1 className="text-4xl font-bold mb-4">{t('faq:title')}</h1>
+            <h1 className="text-4xl font-bold mb-4">{t('faq:title')} - Nová verze</h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               {t('faq:subtitle')}
             </p>
