@@ -25,11 +25,6 @@ interface TrafficEvent {
 interface TrafficData {
   events: TrafficEvent[];
   route: {
-    d8: {
-      start: [number, number];
-      end: [number, number];
-      name: string;
-    };
     a17: {
       coordinates: [number, number][];
       name: string;
@@ -118,10 +113,10 @@ const TrafficBorderMonitoring: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-foreground">
-            Dopravní monitoring D8/A17
+            Dopravní monitoring A17
           </h2>
           <p className="text-muted-foreground text-sm">
-            Aktuální situace na trase do Německa
+            Aktuální situace na německé dálnici A17
           </p>
         </div>
         <Button
@@ -160,8 +155,8 @@ const TrafficBorderMonitoring: React.FC = () => {
                   <MapPin className="h-5 w-5 text-green-600" />
                 </div>
                 <div>
-                  <div className="text-sm font-medium">D8 km 82-92</div>
-                  <div className="text-xs text-muted-foreground">+ navazující A17</div>
+                  <div className="text-sm font-medium">A17 Drážďany</div>
+                  <div className="text-xs text-muted-foreground">Německá dálnice</div>
                 </div>
               </div>
             </CardContent>
@@ -195,7 +190,7 @@ const TrafficBorderMonitoring: React.FC = () => {
               <div className="text-6xl mb-4">✅</div>
               <h3 className="text-lg font-medium mb-2">Žádné dopravní události</h3>
               <p className="text-muted-foreground">
-                Na sledované trase D8/A17 nejsou aktuálně hlášeny žádné dopravní problémy.
+                Na sledované německé dálnici A17 nejsou aktuálně hlášeny žádné dopravní problémy.
               </p>
             </CardContent>
           </Card>
@@ -261,15 +256,9 @@ const TrafficBorderMonitoring: React.FC = () => {
           <CardContent>
             <div className="space-y-2">
               <div className="flex items-center justify-between p-2 bg-muted/50 rounded">
-                <span className="font-medium">🇨🇿 {trafficData.route.d8.name}</span>
-                <span className="text-sm text-muted-foreground">
-                  Směr hranice s Německem
-                </span>
-              </div>
-              <div className="flex items-center justify-between p-2 bg-muted/50 rounded">
                 <span className="font-medium">🇩🇪 {trafficData.route.a17.name}</span>
                 <span className="text-sm text-muted-foreground">
-                  Pokračování do Drážďan
+                  Drážďany ← → Česká hranice
                 </span>
               </div>
             </div>
