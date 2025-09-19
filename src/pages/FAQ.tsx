@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { HelpCircle, ChevronDown } from 'lucide-react';
 import Layout from '@/components/layouts/Layout';
+import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Accordion,
@@ -30,6 +31,10 @@ const FAQ = () => {
         {
           question: t('faq:general3Q'),
           answer: t('faq:general3A')
+        },
+        {
+          question: t('faq:general4Q'),
+          answer: t('faq:general4A')
         }
       ]
     },
@@ -68,6 +73,44 @@ const FAQ = () => {
         {
           question: t('faq:technical3Q'),
           answer: t('faq:technical3A')
+        },
+        {
+          question: t('faq:technical4Q'),
+          answer: t('faq:technical4A')
+        }
+      ]
+    },
+    {
+      title: t('faq:workTitle'),
+      items: [
+        {
+          question: t('faq:work1Q'),
+          answer: t('faq:work1A')
+        },
+        {
+          question: t('faq:work2Q'),
+          answer: t('faq:work2A')
+        },
+        {
+          question: t('faq:work3Q'),
+          answer: t('faq:work3A')
+        }
+      ]
+    },
+    {
+      title: t('faq:hrTitle'),
+      items: [
+        {
+          question: t('faq:hr1Q'),
+          answer: t('faq:hr1A')
+        },
+        {
+          question: t('faq:hr2Q'),
+          answer: t('faq:hr2A')
+        },
+        {
+          question: t('faq:hr3Q'),
+          answer: t('faq:hr3A')
         }
       ]
     },
@@ -97,7 +140,7 @@ const FAQ = () => {
         <meta name="description" content={t('faq:description')} />
       </Helmet>
       
-      <Layout>
+      <Layout navbarRightContent={<NavbarRightContent />}>
         <div className="container mx-auto px-4 py-8 max-w-4xl">
           {/* Header */}
           <motion.div
@@ -108,7 +151,7 @@ const FAQ = () => {
             <div className="flex justify-center mb-4">
               <HelpCircle className="h-12 w-12 text-primary" />
             </div>
-            <h1 className="text-4xl font-bold mb-4">{t('faq:title')} - Nová verze</h1>
+            <h1 className="text-4xl font-bold mb-4">{t('faq:title')}</h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               {t('faq:subtitle')}
             </p>
