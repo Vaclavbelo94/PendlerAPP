@@ -1,39 +1,79 @@
 {
   "title": "Häufig gestellte Fragen",
-  "subtitle": "Finden Sie Antworten auf die häufigsten Fragen",
-  "description": "Vollständige Liste der häufig gestellten Fragen und Antworten",
+  "subtitle": "Finden Sie Antworten auf die häufigsten Fragen zu unserer App und unseren Diensten",
+  "description": "Häufig gestellte Fragen und Antworten für Pendler, die in Deutschland arbeiten",
+  
   "generalTitle": "Allgemeine Fragen",
-  "general1Q": "Was ist DHL Helper?",
-  "general1A": "DHL Helper ist eine Anwendung für DHL Mitarbeiter und Lieferanten, die Tools für Schichtmanagement, Übersetzung, Steuerberatung und vieles mehr bietet.",
-  "general2Q": "Ist die Anwendung kostenlos?",
-  "general2A": "Die Anwendung bietet grundlegende Funktionen kostenlos. Für erweiterte Funktionen ist ein Premium-Abonnement verfügbar.",
-  "general3Q": "Wie kann ich die Anwendung nutzen?",
-  "general3A": "Registrieren Sie sich einfach mit Ihrer E-Mail oder Ihrem Firmenaccount und Sie können sofort die grundlegenden Funktionen nutzen.",
-  "premiumTitle": "Premium-Abonnement",
-  "premium1Q": "Was beinhaltet das Premium-Abonnement?",
-  "premium1A": "Premium beinhaltet erweiterte AI-Übersetzung, Schichtmanagement, Fahrzeugverwaltung, Steuerberatung, Reiseplanung und prioritären Support.",
-  "premium2Q": "Was kostet Premium?",
-  "premium2A": "Premium kostet 12 EUR monatlich oder 120 EUR jährlich (mit 12% Rabatt).",
-  "premium3Q": "Kann ich das Premium-Abonnement jederzeit kündigen?",
-  "premium3A": "Ja, Sie können das Premium-Abonnement jederzeit ohne zusätzliche Gebühren kündigen.",
-  "premium4Q": "Bieten Sie Firmenrabatte an?",
-  "premium4A": "Ja, für größere Teams und Unternehmen bieten wir spezielle Firmentarife. Kontaktieren Sie uns für weitere Informationen.",
+  "general1Q": "Wofür ist die PendlerApp gedacht?",
+  "general1A": "PendlerApp ist ein umfassendes Tool für Pendler, die in Deutschland arbeiten. Es hilft bei der HR-Kommunikation, Reiseplanung, Schichtverfolgung, Steuerberatung und vielen anderen Funktionen, die für effizientes Arbeiten im Ausland benötigt werden.",
+  
+  "general2Q": "Ist die App kostenlos?",
+  "general2A": "Die grundlegenden Funktionen der App sind kostenlos. Für erweiterte Funktionen wie Steuerberatung, detaillierte Schichtverfolgung oder prioritären Support bieten wir eine Premium-Version zu einem erschwinglichen Preis an.",
+  
+  "general3Q": "In welchen Sprachen ist die App verfügbar?",
+  "general3A": "Die App ist vollständig in Tschechisch, Deutsch und Polnisch lokalisiert. Sie können die Sprache jederzeit in den App-Einstellungen ändern.",
+  
+  "general4Q": "Wie oft wird die App aktualisiert?",
+  "general4A": "Wir aktualisieren die App regelmäßig mit neuen Funktionen und Verbesserungen basierend auf Benutzerfeedback. Wichtige Updates veröffentlichen wir durchschnittlich einmal im Monat.",
+  
+  "premiumTitle": "Premium-Funktionen",
+  "premium1Q": "Was sind die Vorteile der Premium-Version?",
+  "premium1A": "Die Premium-Version umfasst erweiterte Steuerberatung, detaillierte Schicht- und Überstundenverfolgung, prioritären Kundensupport, Offline-Modus und Zugang zu allen zukünftigen Funktionen.",
+  
+  "premium2Q": "Was kostet die Premium-Version?",
+  "premium2A": "Die Premium-Version kostet 9,99 € monatlich oder 89,99 € jährlich (das bedeutet 2 Monate kostenlos). Der Preis ist in allen Ländern gleich und umfasst alle Premium-Funktionen.",
+  
+  "premium3Q": "Kann ich Premium jederzeit kündigen?",
+  "premium3A": "Ja, Sie können Ihr Premium-Abonnement jederzeit ohne Angabe von Gründen kündigen. Ihre Premium-Funktionen bleiben bis zum Ende der aktuellen Abrechnungsperiode aktiv.",
+  
+  "premium4Q": "Gibt es eine Probezeit für Premium?",
+  "premium4A": "Ja, wir bieten eine 7-tägige kostenlose Testversion der Premium-Funktionen an. Während dieser Zeit können Sie alle erweiterten Funktionen kostenlos ausprobieren.",
+  
   "technicalTitle": "Technische Fragen",
-  "technical1Q": "Auf welchen Geräten funktioniert die Anwendung?",
-  "technical1A": "Die Anwendung funktioniert auf allen modernen Webbrowsern, Mobilgeräten und Tablets.",
-  "technical2Q": "Sind meine Daten sicher?",
-  "technical2A": "Ja, wir verwenden modernste Verschlüsselung und Sicherheitsprotokolle zum Schutz Ihrer Daten.",
-  "technical3Q": "Was tun, wenn die Anwendung nicht funktioniert?",
-  "technical3A": "Versuchen Sie, die Seite zu aktualisieren oder den Browser-Cache zu leeren. Wenn das Problem weiterhin besteht, kontaktieren Sie unseren Support.",
-  "dhlTitle": "DHL-spezifische Fragen",
-  "dhl1Q": "Muss ich DHL-Mitarbeiter sein?",
-  "dhl1A": "Nein, die Anwendung ist für DHL-Mitarbeiter sowie externe Lieferanten und Partner verfügbar.",
-  "dhl2Q": "Wie verbinde ich mich mit DHL-Systemen?",
-  "dhl2A": "Die Anwendung kann sich über APIs mit einigen DHL-Systemen verbinden. Weitere Informationen erhalten Sie von Ihrem DHL-Administrator.",
-  "dhl3Q": "Unterstützt die Anwendung verschiedene DHL-Divisionen?",
-  "dhl3A": "Ja, die Anwendung unterstützt verschiedene DHL-Divisionen und kann an spezifische Bedürfnisse einzelner Teams angepasst werden.",
-  "stillNeedHelp": "Brauchen Sie noch Hilfe?",
+  "technical1Q": "Funktioniert die App offline?",
+  "technical1A": "Die grundlegenden Funktionen der App erfordern eine Internetverbindung. Premium-Benutzer haben Zugang zu einem Offline-Modus für einige Funktionen wie Übersetzung oder Anzeige gespeicherter Schichten.",
+  
+  "technical2Q": "Auf welchen Geräten funktioniert die App?",
+  "technical2A": "Die App ist webbasiert und funktioniert auf allen modernen Geräten mit Internetbrowser - Mobiltelefone, Tablets und Computer. Sie ist hauptsächlich für mobile Geräte optimiert.",
+  
+  "technical3Q": "Sind meine Daten sicher?",
+  "technical3A": "Ja, alle Daten sind verschlüsselt und auf sicheren Servern in der EU gespeichert. Wir erfüllen alle DSGVO-Anforderungen und teilen Ihre persönlichen Informationen niemals mit Dritten.",
+  
+  "technical4Q": "Wie kann ich meine Daten exportieren?",
+  "technical4A": "In den App-Einstellungen finden Sie die Möglichkeit, alle Ihre Daten im PDF- oder Excel-Format zu exportieren. Diese Funktion ist für alle Benutzer kostenlos verfügbar.",
+  
+  "workTitle": "Arbeit und Schichten",
+  "work1Q": "Wie verfolge ich Schichten und Überstunden?",
+  "work1A": "Im Bereich Schichten können Sie einfach Arbeitsbeginn und -ende erfassen. Die App berechnet automatisch Überstunden und erstellt Übersichten für Ihre Bedürfnisse.",
+  
+  "work2Q": "Kann ich meinen Zeitplan mit Kollegen teilen?",
+  "work2A": "Ja, Premium-Benutzer können ihre Zeitpläne mit Kollegen oder Vorgesetzten über einen sicheren Link oder Export in den Kalender teilen.",
+  
+  "work3Q": "Wie funktioniert die Verfolgung von Reisekosten?",
+  "work3A": "Im Bereich Reisen können Sie alle Reisekosten einschließlich Kraftstoff, Unterkunft und Verpflegung erfassen. Die App erstellt eine Übersicht für Steuerzwecke.",
+  
+  "hrTitle": "HR-Kommunikation",
+  "hr1Q": "Wie funktioniert die Kommunikation mit der Personalabteilung?",
+  "hr1A": "Unsere HR-Kommunikationsfunktion hilft Ihnen bei der Übersetzung wichtiger Dokumente, Formulare und Kommunikation mit deutschen Personalabteilungen. Sie umfasst auch Musterphrasen und Dokumente.",
+  
+  "hr2Q": "Sind die Übersetzungen verifiziert?",
+  "hr2A": "Ja, alle Übersetzungen werden von Muttersprachlern und Arbeitsrechtsexperten überprüft. Premium-Benutzer haben Zugang zu verifizierten Übersetzungen offizieller Dokumente.",
+  
+  "hr3Q": "Kann ich eigene Phrasen zur Übersetzung hinzufügen?",
+  "hr3A": "Ja, Sie können Ihr eigenes Wörterbuch häufig verwendeter Phrasen und Dokumente erstellen, das die App für zukünftige Verwendung speichert.",
+  
+  "dhlTitle": "DHL-Mitarbeiter",
+  "dhl1Q": "Habe ich als DHL-Mitarbeiter spezielle Funktionen?",
+  "dhl1A": "Ja, DHL-Mitarbeiter haben Zugang zu spezialisierten Funktionen einschließlich DHL-Dokumenten, spezifischer Zeiterfassung, internen Reiserichtlinien und DHL-Analytik.",
+  
+  "dhl2Q": "Wie melde ich mich als DHL-Mitarbeiter an?",
+  "dhl2A": "Wählen Sie bei der Registrierung die Option 'DHL-Mitarbeiter' und geben Sie Ihre Firmen-E-Mail ein. Ihr Konto wird innerhalb von 24 Stunden verifiziert.",
+  
+  "dhl3Q": "Sind DHL-Funktionen kostenlos?",
+  "dhl3A": "Grundlegende DHL-Funktionen sind für alle verifizierten DHL-Mitarbeiter kostenlos. Einige erweiterte Analysefunktionen erfordern ein Premium-Abonnement.",
+  
+  "stillNeedHelp": "Benötigen Sie noch Hilfe?",
   "contactPrompt": "Wenn Sie keine Antwort auf Ihre Frage gefunden haben, zögern Sie nicht, uns zu kontaktieren.",
-  "emailSupport": "E-Mail-Support",
+  "emailSupport": "E-Mail schreiben",
   "contactForm": "Kontaktformular"
 }

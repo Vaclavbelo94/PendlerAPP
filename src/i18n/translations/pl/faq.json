@@ -1,39 +1,79 @@
 {
-  "title": "Często zadawane pytania",
-  "subtitle": "Znajdź odpowiedzi na najczęstsze pytania",
-  "description": "Kompletna lista często zadawanych pytań i odpowiedzi",
+  "title": "Najczęściej zadawane pytania",
+  "subtitle": "Znajdź odpowiedzi na najczęstsze pytania dotyczące naszej aplikacji i usług",
+  "description": "Najczęściej zadawane pytania i odpowiedzi dla dojeżdżających pracujących w Niemczech",
+  
   "generalTitle": "Pytania ogólne",
-  "general1Q": "Co to jest DHL Helper?",
-  "general1A": "DHL Helper to aplikacja dla pracowników i dostawców DHL, oferująca narzędzia do zarządzania zmianami, tłumaczenia, doradztwa podatkowego i wiele więcej.",
+  "general1Q": "Do czego służy PendlerApp?",
+  "general1A": "PendlerApp to kompleksowe narzędzie dla dojeżdżających pracujących w Niemczech. Pomaga w komunikacji z HR, planowaniu podróży, śledzeniu zmian, doradztwie podatkowym i wielu innych funkcjach potrzebnych do efektywnej pracy za granicą.",
+  
   "general2Q": "Czy aplikacja jest darmowa?",
-  "general2A": "Aplikacja oferuje podstawowe funkcje za darmo. Dla zaawansowanych funkcji dostępna jest subskrypcja Premium.",
-  "general3Q": "Jak mogę zacząć korzystać z aplikacji?",
-  "general3A": "Po prostu zarejestruj się używając swojego e-maila lub konta firmowego i możesz natychmiast zacząć korzystać z podstawowych funkcji.",
-  "premiumTitle": "Subskrypcja Premium",
-  "premium1Q": "Co zawiera subskrypcja Premium?",
-  "premium1A": "Premium zawiera zaawansowane tłumaczenie AI, zarządzanie zmianami, pojazdami, doradztwo podatkowe, planowanie podróży i priorytetowe wsparcie.",
-  "premium2Q": "Ile kosztuje Premium?",
-  "premium2A": "Premium kosztuje 49 PLN miesięcznie lub 490 PLN rocznie (z 12% rabatem).",
-  "premium3Q": "Czy mogę anulować subskrypcję Premium w dowolnym momencie?",
-  "premium3A": "Tak, możesz anulować subskrypcję Premium w dowolnym momencie bez dodatkowych opłat.",
-  "premium4Q": "Czy oferujecie zniżki firmowe?",
-  "premium4A": "Tak, dla większych zespołów i firm oferujemy specjalne taryfy korporacyjne. Skontaktuj się z nami po więcej informacji.",
+  "general2A": "Podstawowe funkcje aplikacji są darmowe. Dla zaawansowanych funkcji takich jak doradztwo podatkowe, szczegółowe śledzenie zmian czy priorytetowe wsparcie oferujemy wersję Premium w przystępnej cenie.",
+  
+  "general3Q": "W jakich językach dostępna jest aplikacja?",
+  "general3A": "Aplikacja jest w pełni zlokalizowana w języku czeskim, niemieckim i polskim. Możesz zmienić język w dowolnym momencie w ustawieniach aplikacji.",
+  
+  "general4Q": "Jak często aplikacja jest aktualizowana?",
+  "general4A": "Regularnie aktualizujemy aplikację o nowe funkcje i ulepszenia na podstawie opinii użytkowników. Ważne aktualizacje wydajemy średnio raz w miesiącu.",
+  
+  "premiumTitle": "Funkcje Premium",
+  "premium1Q": "Jakie są korzyści wersji Premium?",
+  "premium1A": "Wersja Premium obejmuje zaawansowane doradztwo podatkowe, szczegółowe śledzenie zmian i nadgodzin, priorytetowe wsparcie klienta, tryb offline i dostęp do wszystkich przyszłych funkcji.",
+  
+  "premium2Q": "Ile kosztuje wersja Premium?",
+  "premium2A": "Wersja Premium kosztuje 9,99 € miesięcznie lub 89,99 € rocznie (co oznacza 2 miesiące za darmo). Cena jest taka sama we wszystkich krajach i obejmuje wszystkie funkcje Premium.",
+  
+  "premium3Q": "Czy mogę anulować Premium w dowolnym momencie?",
+  "premium3A": "Tak, możesz anulować subskrypcję Premium w dowolnym momencie bez podania przyczyny. Twoje funkcje Premium pozostaną aktywne do końca bieżącego okresu rozliczeniowego.",
+  
+  "premium4Q": "Czy istnieje okres próbny dla Premium?",
+  "premium4A": "Tak, oferujemy 7-dniową bezpłatną wersję próbną funkcji Premium. W tym czasie możesz wypróbować wszystkie zaawansowane funkcje bez opłat.",
+  
   "technicalTitle": "Pytania techniczne",
-  "technical1Q": "Na jakich urządzeniach działa aplikacja?",
-  "technical1A": "Aplikacja działa na wszystkich nowoczesnych przeglądarkach internetowych, urządzeniach mobilnych i tabletach.",
-  "technical2Q": "Czy moje dane są bezpieczne?",
-  "technical2A": "Tak, używamy najnowocześniejszego szyfrowania i protokołów bezpieczeństwa do ochrony Twoich danych.",
-  "technical3Q": "Co robić, gdy aplikacja nie działa?",
-  "technical3A": "Spróbuj odświeżyć stronę lub wyczyścić pamięć podręczną przeglądarki. Jeśli problem się utrzymuje, skontaktuj się z naszym wsparciem.",
-  "dhlTitle": "Pytania specyficzne dla DHL",
-  "dhl1Q": "Czy muszę być pracownikiem DHL?",
-  "dhl1A": "Nie, aplikacja jest dostępna dla pracowników DHL oraz zewnętrznych dostawców i partnerów.",
-  "dhl2Q": "Jak połączyć się z systemami DHL?",
-  "dhl2A": "Aplikacja może łączyć się z niektórymi systemami DHL przez API. Więcej informacji uzyskasz od administratora DHL.",
-  "dhl3Q": "Czy aplikacja obsługuje różne dywizje DHL?",
-  "dhl3A": "Tak, aplikacja obsługuje różne dywizje DHL i może być dostosowana do specyficznych potrzeb poszczególnych zespołów.",
+  "technical1Q": "Czy aplikacja działa offline?",
+  "technical1A": "Podstawowe funkcje aplikacji wymagają połączenia z internetem. Użytkownicy Premium mają dostęp do trybu offline dla niektórych funkcji, takich jak tłumaczenie czy przeglądanie zapisanych zmian.",
+  
+  "technical2Q": "Na jakich urządzeniach aplikacja działa?",
+  "technical2A": "Aplikacja jest webowa i działa na wszystkich nowoczesnych urządzeniach z przeglądarką internetową - telefony komórkowe, tablety i komputery. Jest głównie zoptymalizowana pod urządzenia mobilne.",
+  
+  "technical3Q": "Czy moje dane są bezpieczne?",
+  "technical3A": "Tak, wszystkie dane są szyfrowane i przechowywane na bezpiecznych serwerach w UE. Przestrzegamy wszystkich wymogów RODO i nigdy nie udostępniamy Twoich danych osobowych stronom trzecim.",
+  
+  "technical4Q": "Jak mogę wyeksportować swoje dane?",
+  "technical4A": "W ustawieniach aplikacji znajdziesz możliwość eksportu wszystkich swoich danych w formacie PDF lub Excel. Ta funkcja jest dostępna bezpłatnie dla wszystkich użytkowników.",
+  
+  "workTitle": "Praca i zmiany",
+  "work1Q": "Jak śledzić zmiany i nadgodziny?",
+  "work1A": "W sekcji Zmiany możesz łatwo rejestrować początek i koniec czasu pracy. Aplikacja automatycznie oblicza nadgodziny i tworzy zestawienia dla Twoich potrzeb.",
+  
+  "work2Q": "Czy mogę udostępnić swój harmonogram współpracownikom?",
+  "work2A": "Tak, użytkownicy Premium mogą udostępniać swoje harmonogramy współpracownikom lub przełożonym poprzez bezpieczny link lub eksport do kalendarza.",
+  
+  "work3Q": "Jak działa śledzenie kosztów podróży?",
+  "work3A": "W sekcji Podróże możesz rejestrować wszystkie koszty podróży, w tym paliwo, zakwaterowanie i wyżywienie. Aplikacja tworzy zestawienie do celów podatkowych.",
+  
+  "hrTitle": "Komunikacja z HR",
+  "hr1Q": "Jak działa komunikacja z działem HR?",
+  "hr1A": "Nasza funkcja Komunikacji z HR pomaga w tłumaczeniu ważnych dokumentów, formularzy i komunikacji z niemieckimi działami HR. Zawiera również wzorcowe zwroty i dokumenty.",
+  
+  "hr2Q": "Czy tłumaczenia są zweryfikowane?",
+  "hr2A": "Tak, wszystkie tłumaczenia są sprawdzane przez native speakerów i ekspertów prawa pracy. Użytkownicy Premium mają dostęp do zweryfikowanych tłumaczeń oficjalnych dokumentów.",
+  
+  "hr3Q": "Czy mogę dodać własne zwroty do tłumaczenia?",
+  "hr3A": "Tak, możesz stworzyć własny słownik często używanych zwrotów i dokumentów, które aplikacja zapamięta do przyszłego użycia.",
+  
+  "dhlTitle": "Pracownicy DHL",
+  "dhl1Q": "Czy jako pracownik DHL mam specjalne funkcje?",
+  "dhl1A": "Tak, pracownicy DHL mają dostęp do specjalistycznych funkcji, w tym dokumentów DHL, specyficznego śledzenia czasu, wewnętrznych wytycznych podróży i analityki DHL.",
+  
+  "dhl2Q": "Jak zalogować się jako pracownik DHL?",
+  "dhl2A": "Przy rejestracji wybierz opcję 'Pracownik DHL' i podaj swój firmowy email. Twoje konto zostanie zweryfikowane w ciągu 24 godzin.",
+  
+  "dhl3Q": "Czy funkcje DHL są darmowe?",
+  "dhl3A": "Podstawowe funkcje DHL są darmowe dla wszystkich zweryfikowanych pracowników DHL. Niektóre zaawansowane funkcje analityczne wymagają subskrypcji Premium.",
+  
   "stillNeedHelp": "Nadal potrzebujesz pomocy?",
   "contactPrompt": "Jeśli nie znalazłeś odpowiedzi na swoje pytanie, nie wahaj się z nami skontaktować.",
-  "emailSupport": "Wsparcie e-mailowe",
+  "emailSupport": "Napisz email",
   "contactForm": "Formularz kontaktowy"
 }

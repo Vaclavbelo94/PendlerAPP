@@ -1,39 +1,79 @@
 {
   "title": "Často kladené otázky",
-  "subtitle": "Najděte odpovědi na nejčastější otázky",
-  "description": "Kompletní seznam často kladených otázek a odpovědí",
+  "subtitle": "Najděte odpovědi na nejčastější otázky o naší aplikaci a službách",
+  "description": "Často kladené otázky a odpovědi pro pendlery pracující v Německu",
+  
   "generalTitle": "Obecné otázky",
-  "general1Q": "Co je DHL Helper?",
-  "general1A": "DHL Helper je aplikace určená pro zaměstnance a dodavatele DHL, která nabízí nástroje pro správu směn, překládání, daňové poradenství a mnoho dalšího.",
+  "general1Q": "K čemu slouží PendlerApp?",
+  "general1A": "PendlerApp je komplexní nástroj pro pendlery pracující v Německu. Pomáhá s komunikací s HR, plánováním cest, sledováním směn, daňovým poradenstvím a mnoha dalšími funkcemi potřebnými pro efektivní práci v zahraničí.",
+  
   "general2Q": "Je aplikace zdarma?",
-  "general2A": "Aplikace nabízí základní funkce zdarma. Pro pokročilé funkce je k dispozici Premium předplatné.",
-  "general3Q": "Jak mohu začít používat aplikaci?",
-  "general3A": "Jednoduše se zaregistrujte pomocí svého e-mailu nebo firemního účtu a můžete začít používat základní funkce okamžitě.",
-  "premiumTitle": "Premium předplatné",
-  "premium1Q": "Co zahrnuje Premium předplatné?",
-  "premium1A": "Premium zahrnuje pokročilý AI překladač, správu směn, vozidel, daňové poradenství, cestovní plánování a prioritní podporu.",
-  "premium2Q": "Kolik stojí Premium?",
-  "premium2A": "Premium stojí 299 CZK měsíčně nebo 2990 CZK ročně (s 12% slevou).",
-  "premium3Q": "Mohu zrušit Premium předplatné kdykoli?",
-  "premium3A": "Ano, Premium předplatné můžete zrušit kdykoli bez dodatečných poplatků.",
-  "premium4Q": "Nabízíte firemní slevy?",
-  "premium4A": "Ano, pro větší týmy a společnosti nabízíme speciální firemní tarify. Kontaktujte nás pro více informací.",
+  "general2A": "Základní funkce aplikace jsou zdarma. Pro pokročilé funkce jako daňové poradenství, podrobné sledování směn nebo prioritní podporu nabízíme Premium verzi za dostupnou cenu.",
+  
+  "general3Q": "V jakých jazycích je aplikace dostupná?",
+  "general3A": "Aplikace je plně lokalizována do češtiny, němčiny a polštiny. Můžete kdykoli změnit jazyk v nastavení aplikace.",
+  
+  "general4Q": "Jak často se aplikace aktualizuje?",
+  "general4A": "Aplikaci pravidelně aktualizujeme s novými funkcemi a vylepšeními na základě zpětné vazby od uživatelů. Důležité aktualizace vydáváme průměrně jednou za měsíc.",
+  
+  "premiumTitle": "Premium funkce",
+  "premium1Q": "Jaké jsou výhody Premium verze?",
+  "premium1A": "Premium verze zahrnuje pokročilé daňové poradenství, detailní sledování směn a přesčasů, prioritní zákaznickou podporu, offline režim a přístup k všem budoucím funkcím.",
+  
+  "premium2Q": "Kolik stojí Premium verze?",
+  "premium2A": "Premium verze stojí 9,99 € měsíčně nebo 89,99 € ročně (což znamená 2 měsíce zdarma). Cena je stejná ve všech zemích a zahrnuje všechny Premium funkce.",
+  
+  "premium3Q": "Mohu Premium kdykoliv zrušit?",
+  "premium3A": "Ano, Premium předplatné můžete kdykoliv zrušit bez udání důvodu. Vaše Premium funkce zůstanou aktivní až do konce aktuálního fakturačního období.",
+  
+  "premium4Q": "Existuje zkušební období pro Premium?",
+  "premium4A": "Ano, nabízíme 7denní bezplatnou zkušební verzi Premium funkcí. Během tohoto období můžete vyzkoušet všechny pokročilé funkce bez poplatku.",
+  
   "technicalTitle": "Technické otázky",
-  "technical1Q": "Na jakých zařízeních aplikace funguje?",
-  "technical1A": "Aplikace funguje na všech moderních webových prohlížečích, mobilních zařízeních a tabletech.",
-  "technical2Q": "Jsou moje data v bezpečí?",
-  "technical2A": "Ano, používáme nejmodernější šifrování a bezpečnostní protokoly pro ochranu vašich dat.",
-  "technical3Q": "Co dělat, když aplikace nefunguje?",
-  "technical3A": "Zkuste obnovit stránku nebo vymazat cache prohlížeče. Pokud problém přetrvává, kontaktujte naši podporu.",
-  "dhlTitle": "DHL specifické otázky",
-  "dhl1Q": "Musím být zaměstnancem DHL?",
-  "dhl1A": "Ne, aplikace je dostupná pro zaměstnance DHL i externí dodavatele a partnery.",
-  "dhl2Q": "Jak se propojuji s DHL systémy?",
-  "dhl2A": "Aplikace se může propojit s některými DHL systémy prostřednictvím API. Více informací získáte od vašeho DHL administrátora.",
-  "dhl3Q": "Podporuje aplikace různé DHL divize?",
-  "dhl3A": "Ano, aplikace podporuje různé DHL divize a může být přizpůsobena specifickým potřebám jednotlivých týmů.",
+  "technical1Q": "Funguje aplikace offline?",
+  "technical1A": "Základní funkce aplikace vyžadují internetové připojení. Premium uživatelé mají přístup k offline režimu pro některé funkce jako překlad nebo zobrazení uložených směn.",
+  
+  "technical2Q": "Na jakých zařízeních aplikace funguje?",
+  "technical2A": "Aplikace je webová a funguje na všech moderních zařízeních s internetovým prohlížečem - mobilní telefony, tablety i počítače. Optimalizována je především pro mobilní zařízení.",
+  
+  "technical3Q": "Jsou moje data v bezpečí?",
+  "technical3A": "Ano, všechna data jsou šifrována a uložena na zabezpečených serverech v EU. Dodržujeme všechny požadavky GDPR a vaše osobní informace nikdy nesdílíme s třetími stranami.",
+  
+  "technical4Q": "Jak mohu exportovat svá data?",
+  "technical4A": "V nastavení aplikace najdete možnost exportu všech svých dat ve formátu PDF nebo Excel. Tato funkce je dostupná všem uživatelům zdarma.",
+  
+  "workTitle": "Práce a směny",
+  "work1Q": "Jak sledovat směny a přesčasy?",
+  "work1A": "V sekci Směny můžete jednoduše zaznamenávat začátek a konec pracovní doby. Aplikace automaticky počítá přesčasy a vytváří přehledy pro vaše potřeby.",
+  
+  "work2Q": "Mohu sdílet svůj rozvrh s kolegy?",
+  "work2A": "Ano, Premium uživatelé mohou sdílet své rozvrhy s kolegy nebo nadřízenými prostřednictvím bezpečného odkazu nebo exportu do kalendáře.",
+  
+  "work3Q": "Jak funguje sledování cestovních nákladů?",
+  "work3A": "V sekci Cestování můžete zaznamenávat všechny cestovní náklady včetně pohonných hmot, ubytování a stravování. Aplikace vytvoří přehled pro daňové účely.",
+  
+  "hrTitle": "Komunikace s HR",
+  "hr1Q": "Jak funguje komunikace s HR oddělením?",
+  "hr1A": "Naše funkce Komunikace s HR vám pomůže s překladem důležitých dokumentů, formulářů a komunikace s německými HR odděleními. Zahrnuje i vzorové fráze a dokumenty.",
+  
+  "hr2Q": "Jsou překlady ověřené?",
+  "hr2A": "Ano, všechny překlady jsou kontrolovány rodilými mluvčími a odborníky na pracovní právo. Premium uživatelé mají přístup k ověřeným překladům oficiálních dokumentů.",
+  
+  "hr3Q": "Mohu přidat vlastní fráze k překladu?",
+  "hr3A": "Ano, můžete si vytvořit vlastní slovník často používaných frází a dokumentů, které aplikace zapamatuje pro budoucí použití.",
+  
+  "dhlTitle": "DHL zaměstnanci",
+  "dhl1Q": "Mám speciální funkce jako DHL zaměstnanec?",
+  "dhl1A": "Ano, DHL zaměstnanci mají přístup ke specializovaným funkcím včetně DHL dokumentů, specifického sledování času, interních cestovních směrnic a DHL analytiky.",
+  
+  "dhl2Q": "Jak se přihlásím jako DHL zaměstnanec?",
+  "dhl2A": "Při registraci vyberte možnost 'DHL zaměstnanec' a zadejte svůj firemní email. Váš účet bude ověřen do 24 hodin.",
+  
+  "dhl3Q": "Jsou DHL funkce zdarma?",
+  "dhl3A": "Základní DHL funkce jsou zdarma pro všechny ověřené DHL zaměstnance. Některé pokročilé analytické funkce vyžadují Premium předplatné.",
+  
   "stillNeedHelp": "Stále potřebujete pomoc?",
   "contactPrompt": "Pokud jste nenašli odpověď na svou otázku, neváhejte nás kontaktovat.",
-  "emailSupport": "E-mailová podpora",
+  "emailSupport": "Napsat email",
   "contactForm": "Kontaktní formulář"
 }

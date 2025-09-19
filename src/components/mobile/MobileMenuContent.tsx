@@ -7,7 +7,6 @@ import {
   Home,
   BarChart3,
   Calendar,
-  Bell,
   Car,
   User,
   Settings,
@@ -42,7 +41,6 @@ export const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
       items: [
         { id: 'dashboard', icon: BarChart3, label: t('dashboard'), route: '/dashboard' },
         { id: 'shifts', icon: Calendar, label: t('shifts'), route: '/shifts' },
-        { id: 'notifications', icon: Bell, label: t('notifications'), route: '/notifications' },
         { id: 'travel', icon: Car, label: t('travel'), route: '/travel' },
         { id: 'profile', icon: User, label: t('profile'), route: '/profile' },
         { id: 'settings', icon: Settings, label: t('settings'), route: '/settings' },

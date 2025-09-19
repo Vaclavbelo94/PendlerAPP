@@ -138,9 +138,9 @@ const FAQ = () => {
                           <AccordionTrigger className="text-left hover:no-underline py-4">
                             <span className="font-medium">{item.question}</span>
                           </AccordionTrigger>
-                          <AccordionContent className="text-muted-foreground pb-4">
-                            {item.answer}
-                          </AccordionContent>
+          <AccordionContent className="text-muted-foreground pb-4">
+            <div dangerouslySetInnerHTML={{ __html: item.answer }} />
+          </AccordionContent>
                         </AccordionItem>
                       ))}
                     </Accordion>
