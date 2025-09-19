@@ -104,6 +104,11 @@ import toastCs from './translations/cs/toast.json';
 import toastDe from './translations/de/toast.json';
 import toastPl from './translations/pl/toast.json';
 
+// Import FAQ translations
+import faqCs from './translations/cs/faq.json';
+import faqDe from './translations/de/faq.json';
+import faqPl from './translations/pl/faq.json';
+
 const resources = {
   cs: {
     common: commonCs,
@@ -129,6 +134,7 @@ const resources = {
     pricing: pricingCs,
     contact: contactCs,
     toast: toastCs,
+    faq: faqCs,
   },
   de: {
     common: commonDe,
@@ -154,6 +160,7 @@ const resources = {
     pricing: pricingDe,
     contact: contactDe,
     toast: toastDe,
+    faq: faqDe,
   },
   pl: {
     common: commonPl,
@@ -179,6 +186,7 @@ const resources = {
     pricing: pricingPl,
     contact: contactPl,
     toast: toastPl,
+    faq: faqPl,
   },
 };
 

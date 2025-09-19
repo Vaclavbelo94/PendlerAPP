@@ -11,6 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 
 const FAQ = () => {
   const { t } = useTranslation(['faq', 'navigation']);
@@ -139,7 +140,7 @@ const FAQ = () => {
         <meta name="description" content={t('faq:description')} />
       </Helmet>
       
-      <Layout>
+      <Layout navbarRightContent={<NavbarRightContent />}>
         <div className="container mx-auto px-4 py-8 max-w-4xl">
           {/* Header */}
           <motion.div
