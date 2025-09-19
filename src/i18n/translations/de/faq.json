@@ -16,9 +16,6 @@
   "general4Q": "Wie oft wird die App aktualisiert?",
   "general4A": "Wir aktualisieren die App regelmäßig mit neuen Funktionen und Verbesserungen basierend auf Benutzerfeedback. Wichtige Updates veröffentlichen wir durchschnittlich einmal im Monat.",
   
-  "general4Q": "Wie oft wird die App aktualisiert?",
-  "general4A": "Wir aktualisieren die App regelmäßig mit neuen Funktionen und Verbesserungen basierend auf Nutzerfeedback. Wichtige Updates veröffentlichen wir durchschnittlich einmal pro Monat.",
-  
   "premiumTitle": "Premium-Funktionen",
   "premium1Q": "Was sind die Vorteile der Premium-Version?",
   "premium1A": "Die Premium-Version umfasst erweiterte Steuerberatung, detaillierte Schicht- und Überstundenverfolgung, prioritären Kundensupport, Offline-Modus und Zugang zu allen zukünftigen Funktionen.",
@@ -31,9 +28,6 @@
   
   "premium4Q": "Gibt es eine Probezeit für Premium?",
   "premium4A": "Ja, wir bieten eine 7-tägige kostenlose Testversion der Premium-Funktionen an. Während dieser Zeit können Sie alle erweiterten Funktionen kostenlos ausprobieren.",
-  
-  "premium4Q": "Gibt es eine Testphase für Premium?",
-  "premium4A": "Ja, wir bieten eine 7-tägige kostenlose Testversion der Premium-Funktionen. Während dieser Zeit können Sie alle erweiterten Funktionen ohne Gebühren testen.",
   
   "technicalTitle": "Technische Fragen",
   "technical1Q": "Funktioniert die App offline?",
@@ -67,29 +61,6 @@
   
   "hr3Q": "Kann ich eigene Phrasen zur Übersetzung hinzufügen?",
   "hr3A": "Ja, Sie können Ihr eigenes Wörterbuch häufig verwendeter Phrasen und Dokumente erstellen, das die App für zukünftige Verwendung speichert.",
-  
-  "technical4Q": "Wie kann ich meine Daten exportieren?",
-  "technical4A": "In den App-Einstellungen finden Sie die Möglichkeit, alle Ihre Daten im PDF- oder Excel-Format zu exportieren. Diese Funktion ist für alle Nutzer kostenlos verfügbar.",
-  
-  "workTitle": "Arbeit und Schichten",
-  "work1Q": "Wie kann ich Schichten und Überstunden verfolgen?",
-  "work1A": "Im Bereich Schichten können Sie einfach Arbeitsbeginn und -ende erfassen. Die App berechnet automatisch Überstunden und erstellt Übersichten für Ihre Bedürfnisse.",
-  
-  "work2Q": "Kann ich meinen Schichtplan mit Kollegen teilen?",
-  "work2A": "Ja, Premium-Nutzer können ihre Schichtpläne mit Kollegen oder Vorgesetzten über einen sicheren Link oder durch Export in den Kalender teilen.",
-  
-  "work3Q": "Wie funktioniert die Reisekostenverfolgung?",
-  "work3A": "Im Bereich Reisen können Sie alle Reisekosten einschließlich Kraftstoff, Unterkunft und Verpflegung erfassen. Die App erstellt eine Übersicht für Steuerzwecke.",
-  
-  "hrTitle": "HR-Kommunikation",
-  "hr1Q": "Wie funktioniert die Kommunikation mit der HR-Abteilung?",
-  "hr1A": "Unsere HR-Kommunikationsfunktion hilft Ihnen bei der Übersetzung wichtiger Dokumente, Formulare und der Kommunikation mit deutschen HR-Abteilungen. Enthält auch Musterphrases und Dokumente.",
-  
-  "hr2Q": "Sind die Übersetzungen geprüft?",
-  "hr2A": "Ja, alle Übersetzungen werden von Muttersprachlern und Arbeitsrechtsexperten überprüft. Premium-Nutzer haben Zugang zu verifizierten Übersetzungen offizieller Dokumente.",
-  
-  "hr3Q": "Kann ich eigene Phrasen zur Übersetzung hinzufügen?",
-  "hr3A": "Ja, Sie können Ihr eigenes Wörterbuch häufig verwendeter Phrasen und Dokumente erstellen, das die App für zukünftige Nutzung speichert.",
   
   "dhlTitle": "DHL-Mitarbeiter",
   "dhl1Q": "Habe ich als DHL-Mitarbeiter spezielle Funktionen?",

@@ -27,7 +27,7 @@
   "premium3A": "Tak, możesz anulować subskrypcję Premium w dowolnym momencie bez podania przyczyny. Twoje funkcje Premium pozostaną aktywne do końca bieżącego okresu rozliczeniowego.",
   
   "premium4Q": "Czy istnieje okres próbny dla Premium?",
-  "premium4A": "Tak, oferujemy 7-dniowy bezpłatny okres próbny funkcji Premium. W tym czasie możesz przetestować wszystkie zaawansowane funkcje bez opłat.",
+  "premium4A": "Tak, oferujemy 7-dniową bezpłatną wersję próbną funkcji Premium. W tym czasie możesz wypróbować wszystkie zaawansowane funkcje bez opłat.",
   
   "technicalTitle": "Pytania techniczne",
   "technical1Q": "Czy aplikacja działa offline?",
@@ -46,21 +46,21 @@
   "work1Q": "Jak śledzić zmiany i nadgodziny?",
   "work1A": "W sekcji Zmiany możesz łatwo rejestrować początek i koniec czasu pracy. Aplikacja automatycznie oblicza nadgodziny i tworzy zestawienia dla Twoich potrzeb.",
   
-  "work2Q": "Czy mogę dzielić się harmonogramem z kolegami?",
-  "work2A": "Tak, użytkownicy Premium mogą dzielić się swoimi harmonogramami z kolegami lub przełożonymi poprzez bezpieczny link lub eksport do kalendarza.",
+  "work2Q": "Czy mogę udostępnić swój harmonogram współpracownikom?",
+  "work2A": "Tak, użytkownicy Premium mogą udostępniać swoje harmonogramy współpracownikom lub przełożonym poprzez bezpieczny link lub eksport do kalendarza.",
   
   "work3Q": "Jak działa śledzenie kosztów podróży?",
   "work3A": "W sekcji Podróże możesz rejestrować wszystkie koszty podróży, w tym paliwo, zakwaterowanie i wyżywienie. Aplikacja tworzy zestawienie do celów podatkowych.",
   
   "hrTitle": "Komunikacja z HR",
   "hr1Q": "Jak działa komunikacja z działem HR?",
-  "hr1A": "Nasza funkcja Komunikacji z HR pomaga w tłumaczeniu ważnych dokumentów, formularzy i komunikacji z niemieckimi działami HR. Zawiera także przykładowe zwroty i dokumenty.",
+  "hr1A": "Nasza funkcja Komunikacji z HR pomaga w tłumaczeniu ważnych dokumentów, formularzy i komunikacji z niemieckimi działami HR. Zawiera również wzorcowe zwroty i dokumenty.",
   
   "hr2Q": "Czy tłumaczenia są zweryfikowane?",
   "hr2A": "Tak, wszystkie tłumaczenia są sprawdzane przez native speakerów i ekspertów prawa pracy. Użytkownicy Premium mają dostęp do zweryfikowanych tłumaczeń oficjalnych dokumentów.",
   
   "hr3Q": "Czy mogę dodać własne zwroty do tłumaczenia?",
-  "hr3A": "Tak, możesz stworzyć własny słownik często używanych zwrotów i dokumentów, które aplikacja zapamięta do przyszłego użytku.",
+  "hr3A": "Tak, możesz stworzyć własny słownik często używanych zwrotów i dokumentów, które aplikacja zapamięta do przyszłego użycia.",
   
   "dhlTitle": "Pracownicy DHL",
   "dhl1Q": "Czy jako pracownik DHL mam specjalne funkcje?",
