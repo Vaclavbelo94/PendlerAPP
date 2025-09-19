@@ -28,5 +28,10 @@
   "dhlTravel": "DHL Cestování",
   "dhlAnalytics": "DHL Analytika",
   "dhlTimeTracking": "DHL Sledování času",
-  "overtime": "Přesčasy"
+  "overtime": "Přesčasy",
+  "categories": {
+    "premium": "Premium funkce",
+    "apps": "Aplikace",
+    "general": "Obecné"
+  }
 }

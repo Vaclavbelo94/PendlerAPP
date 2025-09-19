@@ -26,5 +26,10 @@
   "dhlTravel": "DHL Podróże",
   "dhlAnalytics": "DHL Analityka",
   "dhlTimeTracking": "DHL Śledzenie czasu",
-  "overtime": "Nadgodziny"
+  "overtime": "Nadgodziny",
+  "categories": {
+    "premium": "Funkcje Premium",
+    "apps": "Aplikacje",
+    "general": "Ogólne"
+  }
 }

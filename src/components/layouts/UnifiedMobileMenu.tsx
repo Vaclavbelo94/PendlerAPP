@@ -1,12 +1,11 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { X, LogOut, LogIn, UserPlus } from 'lucide-react';
+import { LogOut, LogIn, UserPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
 import { useAuth } from '@/hooks/auth';
-import { useMobileMenuData } from '@/hooks/useMobileMenuData';
 import LanguageSwitcherCompact from '@/components/ui/LanguageSwitcherCompact';
 import { MobileMenuHeader } from '../mobile/MobileMenuHeader';
 import { MobileMenuContent } from '../mobile/MobileMenuContent';
@@ -25,7 +24,6 @@ export const UnifiedMobileMenu: React.FC<UnifiedMobileMenuProps> = ({
 }) => {
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
-  const { menuSections, isLoading, userInfo } = useMobileMenuData();
   const { t } = useTranslation('navigation');
 
   // Disable body scroll when menu is open and handle escape key
@@ -84,15 +82,13 @@ export const UnifiedMobileMenu: React.FC<UnifiedMobileMenuProps> = ({
         {/* Header */}
         <MobileMenuHeader
           user={user}
-          userInfo={userInfo}
+          userInfo={null}
           onClose={onClose}
         />
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto">
           <MobileMenuContent
-            menuSections={menuSections}
-            isLoading={isLoading}
             onNavigate={handleNavigation}
           />
 
@@ -139,7 +135,7 @@ export const UnifiedMobileMenu: React.FC<UnifiedMobileMenuProps> = ({
         </div>
 
         {/* Footer */}
-        <MobileMenuFooter userInfo={userInfo} />
+        <MobileMenuFooter userInfo={null} />
       </div>
     </>
   );

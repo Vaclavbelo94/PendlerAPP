@@ -26,5 +26,10 @@
   "dhlTravel": "DHL Reisen",
   "dhlAnalytics": "DHL Analytik",
   "dhlTimeTracking": "DHL Zeiterfassung",
-  "overtime": "Überstunden"
+  "overtime": "Überstunden",
+  "categories": {
+    "premium": "Premium-Funktionen",
+    "apps": "Anwendungen",
+    "general": "Allgemein"
+  }
 }

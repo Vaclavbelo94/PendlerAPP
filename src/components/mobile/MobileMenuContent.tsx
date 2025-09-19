@@ -1,88 +1,101 @@
 import React from 'react';
-import * as Icons from 'lucide-react';
-import { MenuSection } from '@/hooks/useMobileMenuData';
+import { useTranslation } from 'react-i18next';
+import { 
+  Globe, 
+  FileText, 
+  Scale, 
+  Home,
+  BarChart3,
+  Calendar,
+  Bell,
+  Car,
+  User,
+  Settings,
+  House,
+  CreditCard,
+  Mail,
+  HelpCircle,
+  ChevronRight
+} from 'lucide-react';
 
 interface MobileMenuContentProps {
-  menuSections: MenuSection[];
-  isLoading: boolean;
   onNavigate: (href: string) => void;
 }
 
 export const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
-  menuSections,
-  isLoading,
   onNavigate
 }) => {
-  const getIcon = (iconName: string) => {
-    const IconComponent = (Icons as any)[iconName];
-    return IconComponent ? IconComponent : Icons.Circle;
-  };
+  const { t } = useTranslation('navigation');
 
-  // Group items into pairs for 2x2 grid
-  const getGroupedItems = (items: any[]) => {
-    const pairs = [];
-    for (let i = 0; i < items.length; i += 2) {
-      pairs.push(items.slice(i, i + 2));
+  // Define menu structure with categories
+  const menuCategories = [
+    {
+      title: t('categories.premium'),
+      items: [
+        { id: 'translator', icon: Globe, label: t('translator'), route: '/translator' },
+        { id: 'taxAdvisor', icon: FileText, label: t('taxAdvisor'), route: '/tax-advisor' },
+        { id: 'laws', icon: Scale, label: t('laws'), route: '/laws' },
+      ]
+    },
+    {
+      title: t('categories.apps'),
+      items: [
+        { id: 'dashboard', icon: BarChart3, label: t('dashboard'), route: '/dashboard' },
+        { id: 'shifts', icon: Calendar, label: t('shifts'), route: '/shifts' },
+        { id: 'notifications', icon: Bell, label: t('notifications'), route: '/notifications' },
+        { id: 'travel', icon: Car, label: t('travel'), route: '/travel' },
+        { id: 'profile', icon: User, label: t('profile'), route: '/profile' },
+        { id: 'settings', icon: Settings, label: t('settings'), route: '/settings' },
+      ]
+    },
+    {
+      title: t('categories.general'),
+      items: [
+        { id: 'home', icon: House, label: t('home'), route: '/' },
+        { id: 'pricing', icon: CreditCard, label: t('pricing'), route: '/pricing' },
+        { id: 'contact', icon: Mail, label: t('contact'), route: '/contact' },
+        { id: 'faq', icon: HelpCircle, label: t('faq'), route: '/faq' },
+      ]
     }
-    return pairs;
-  };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-32">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
+  ];
 
   return (
-    <div className="p-4 space-y-6">
-      {menuSections.map((section, sectionIndex) => (
-        <div key={sectionIndex}>
-          <h3 className="text-sm font-medium text-muted-foreground mb-3">
-            {section.title}
-          </h3>
+    <div className="py-2">
+      {menuCategories.map((category, categoryIndex) => (
+        <div key={categoryIndex} className="mb-6">
+          {/* Category Header */}
+          <div className="px-4 py-2">
+            <h3 className="text-base font-semibold text-foreground">
+              {category.title}
+            </h3>
+          </div>
           
-          {/* 2x2 Grid Layout */}
-          <div className="space-y-3">
-            {getGroupedItems(section.items).map((pair, pairIndex) => (
-              <div key={pairIndex} className="grid grid-cols-2 gap-3">
-                {pair.map((item) => {
-                  const IconComponent = getIcon(item.icon);
-                  
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => onNavigate(item.route)}
-                      className="p-4 rounded-lg border bg-card hover:bg-accent hover:text-accent-foreground transition-colors text-left group"
-                    >
-                      <div className="flex flex-col items-center text-center space-y-2">
-                        <div className="p-3 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                          <IconComponent className="h-6 w-6 text-primary" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-sm leading-tight">{item.title}</h4>
-                          {item.description && (
-                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                              {item.description}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
+          {/* Category Items */}
+          <div className="px-2">
+            {category.items.map((item) => {
+              const IconComponent = item.icon;
+              
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => onNavigate(item.route)}
+                  className="w-full flex items-center justify-between px-3 py-3 mx-1 rounded-lg hover:bg-accent/50 transition-colors group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex-shrink-0">
+                      <IconComponent className="h-5 w-5 text-red-500" />
+                    </div>
+                    <span className="text-sm font-medium text-foreground">
+                      {item.label}
+                    </span>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                </button>
+              );
+            })}
           </div>
         </div>
       ))}
-
-      {menuSections.length === 0 && (
-        <div className="text-center text-muted-foreground py-8">
-          <p>Žádné menu položky nejsou dostupné</p>
-        </div>
-      )}
     </div>
   );
 };
