@@ -200,6 +200,9 @@ export const useOptimizedAuth = (): AuthContextType => {
         return { error: error.message };
       }
       
+      // Set fresh login flag for post-login loading animation
+      sessionStorage.setItem('freshLogin', 'true');
+      
       return { error: null };
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Sign in failed';
@@ -210,6 +213,9 @@ export const useOptimizedAuth = (): AuthContextType => {
   const signInWithGoogle = useCallback(async () => {
     try {
       roleManager.clearCache();
+      
+      // Set fresh login flag for post-login loading animation
+      sessionStorage.setItem('freshLogin', 'true');
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',

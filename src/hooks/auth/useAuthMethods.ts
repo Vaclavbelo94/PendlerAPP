@@ -49,6 +49,9 @@ export const useAuthMethods = () => {
       // Don't redirect immediately - let the component handle success state
       console.log('Sign in successful for:', data.user?.email);
       
+      // Set fresh login flag for post-login loading animation
+      sessionStorage.setItem('freshLogin', 'true');
+      
       return { error: null };
     } catch (err: any) {
       console.error('Sign in exception:', err);
@@ -75,6 +78,9 @@ export const useAuthMethods = () => {
       const redirectUrl = `${currentOrigin}${currentPath}`;
       
       console.log('Google OAuth redirect URL:', redirectUrl);
+      
+      // Set fresh login flag for post-login loading animation
+      sessionStorage.setItem('freshLogin', 'true');
       
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',

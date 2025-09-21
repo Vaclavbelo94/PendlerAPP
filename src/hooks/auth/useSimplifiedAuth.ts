@@ -171,6 +171,10 @@ export const useSimplifiedAuth = () => {
 
       if (data.user) {
         console.log('Sign in successful:', data.user.email);
+        
+        // Set fresh login flag for post-login loading animation
+        sessionStorage.setItem('freshLogin', 'true');
+        
         return { error: null };
       }
 
@@ -207,6 +211,9 @@ export const useSimplifiedAuth = () => {
   const signInWithGoogle = async () => {
     try {
       console.log('Starting Google sign in...');
+      
+      // Set fresh login flag for post-login loading animation
+      sessionStorage.setItem('freshLogin', 'true');
       
       const redirectUrl = `${window.location.origin}/`;
       
