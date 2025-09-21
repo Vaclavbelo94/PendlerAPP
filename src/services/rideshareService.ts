@@ -477,5 +477,190 @@ export const rideshareService = {
       console.error('Service error in getUserRideshareOffers:', error);
       throw error;
     }
+  },
+
+  // Admin functions
+  async getAllRideshareOffers(): Promise<RideshareOfferWithDriver[]> {
+    try {
+      const { data: offers, error: offersError } = await supabase
+        .from('rideshare_offers')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (offersError) {
+        console.error('Error loading all offers:', offersError);
+        throw new Error('Failed to load offers');
+      }
+
+      if (!offers || offers.length === 0) {
+        return [];
+      }
+
+      // Get all unique user IDs
+      const userIds = [...new Set(offers.map(offer => offer.user_id))];
+
+      // Get profiles and extended profiles for these users
+      const [{ data: profiles, error: profilesError }, { data: extendedProfiles, error: extendedError }] = await Promise.all([
+        supabase
+          .from('profiles')
+          .select('id, username, phone_number')
+          .in('id', userIds),
+        supabase
+          .from('user_extended_profiles')
+          .select('user_id, display_name')
+          .in('user_id', userIds)
+      ]);
+
+      if (profilesError) {
+        console.error('Error loading profiles:', profilesError);
+        throw new Error('Failed to load driver profiles');
+      }
+
+      if (extendedError) {
+        console.warn('Error loading extended profiles:', extendedError);
+      }
+
+      // Create maps for profiles and extended profiles
+      const profilesMap = new Map();
+      profiles?.forEach(profile => {
+        profilesMap.set(profile.id, profile);
+      });
+
+      const extendedProfilesMap = new Map();
+      extendedProfiles?.forEach(profile => {
+        extendedProfilesMap.set(profile.user_id, profile);
+      });
+
+      // Combine offers with profile data
+      return offers.map(offer => {
+        const profile = profilesMap.get(offer.user_id);
+        const extendedProfile = extendedProfilesMap.get(offer.user_id);
+        const displayName = extendedProfile?.display_name || profile?.username || '';
+        
+        return {
+          ...offer,
+          driver: {
+            username: displayName,
+            phone_number: offer.phone_number || profile?.phone_number,
+            rating: offer.rating,
+            completed_rides: offer.completed_rides
+          }
+        };
+      });
+    } catch (error) {
+      console.error('Service error in getAllRideshareOffers:', error);
+      throw error;
+    }
+  },
+
+  async getAllRideshareContacts() {
+    try {
+      const { data, error } = await supabase
+        .from('rideshare_contacts')
+        .select(`
+          *,
+          rideshare_offers!inner(
+            origin_address,
+            destination_address,
+            departure_date,
+            departure_time,
+            seats_available,
+            price_per_person,
+            currency,
+            user_id
+          ),
+          profiles!rideshare_contacts_requester_user_id_fkey(
+            username
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading all contacts:', error);
+        throw new Error('Failed to load contact requests');
+      }
+
+      return data || [];
+    } catch (error) {
+      console.error('Service error in getAllRideshareContacts:', error);
+      throw error;
+    }
+  },
+
+  async adminUpdateOfferStatus(offerId: string, isActive: boolean) {
+    try {
+      const { error } = await supabase
+        .from('rideshare_offers')
+        .update({ is_active: isActive })
+        .eq('id', offerId);
+
+      if (error) {
+        console.error('Error updating offer status:', error);
+        throw new Error('Failed to update offer status');
+      }
+    } catch (error) {
+      console.error('Service error in adminUpdateOfferStatus:', error);
+      throw error;
+    }
+  },
+
+  async adminDeleteOffer(offerId: string) {
+    try {
+      const { error } = await supabase
+        .from('rideshare_offers')
+        .delete()
+        .eq('id', offerId);
+
+      if (error) {
+        console.error('Error deleting offer:', error);
+        throw new Error('Failed to delete offer');
+      }
+    } catch (error) {
+      console.error('Service error in adminDeleteOffer:', error);
+      throw error;
+    }
+  },
+
+  async adminUpdateContactStatus(contactId: string, status: string) {
+    try {
+      const { error } = await supabase
+        .from('rideshare_contacts')
+        .update({ status })
+        .eq('id', contactId);
+
+      if (error) {
+        console.error('Error updating contact status:', error);
+        throw new Error('Failed to update contact status');
+      }
+    } catch (error) {
+      console.error('Service error in adminUpdateContactStatus:', error);
+      throw error;
+    }
+  },
+
+  async getRideshareStatistics() {
+    try {
+      const [
+        { count: totalOffers },
+        { count: activeOffers },
+        { count: totalContacts },
+        { count: pendingContacts }
+      ] = await Promise.all([
+        supabase.from('rideshare_offers').select('*', { count: 'exact', head: true }),
+        supabase.from('rideshare_offers').select('*', { count: 'exact', head: true }).eq('is_active', true),
+        supabase.from('rideshare_contacts').select('*', { count: 'exact', head: true }),
+        supabase.from('rideshare_contacts').select('*', { count: 'exact', head: true }).eq('status', 'pending')
+      ]);
+
+      return {
+        totalOffers: totalOffers || 0,
+        activeOffers: activeOffers || 0,
+        totalContacts: totalContacts || 0,
+        pendingContacts: pendingContacts || 0
+      };
+    } catch (error) {
+      console.error('Service error in getRideshareStatistics:', error);
+      throw error;
+    }
   }
 };

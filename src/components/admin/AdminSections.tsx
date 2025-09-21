@@ -3,7 +3,7 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserAdminPanel } from './UserAdminPanel';
 import { PremiumFeaturesPanel } from './PremiumFeaturesPanel';
-
+import { RideshareAdminPanel } from './rideshare/RideshareAdminPanel';
 import { PasswordResetPanel } from './PasswordResetPanel';
 import { AdManagementPanel } from './AdManagementPanel';
 import SecurityDashboard from './security/SecurityDashboard';
@@ -15,10 +15,11 @@ import PerformanceDashboard from './analytics/PerformanceDashboard';
 const AdminSections = () => {
   return (
     <Tabs defaultValue="users" className="space-y-6">
-      <TabsList className="grid grid-cols-10 w-full">
+      <TabsList className="grid grid-cols-11 w-full">
         <TabsTrigger value="security">Bezpečnost</TabsTrigger>
         <TabsTrigger value="users">Uživatelé</TabsTrigger>
         <TabsTrigger value="premium">Premium</TabsTrigger>
+        <TabsTrigger value="rideshare">Spolujízdy</TabsTrigger>
         <TabsTrigger value="promos">Promo kódy</TabsTrigger>
         <TabsTrigger value="ads">Reklamy</TabsTrigger>
         <TabsTrigger value="passwords">Hesla</TabsTrigger>
@@ -34,6 +35,10 @@ const AdminSections = () => {
 
       <TabsContent value="premium">
         <PremiumFeaturesPanel />
+      </TabsContent>
+
+      <TabsContent value="rideshare">
+        <RideshareAdminPanel />
       </TabsContent>
 
       <TabsContent value="promos">
