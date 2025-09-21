@@ -99,22 +99,20 @@ export const useAdminV2 = () => {
     refetchOnWindowFocus: false
   });
 
-  // Get all admin permissions (for super admins)
+  // Get all admin permissions (for super admins) - NOW FIXED with admin functions
   const { data: allAdminPermissions } = useQuery({
     queryKey: ['all-admin-permissions'],
     queryFn: async () => {
+      // Use safe approach - only basic data to avoid RLS recursion
       const { data, error } = await supabase
         .from('admin_permissions')
-        .select(`
-          *,
-          profiles!admin_permissions_user_id_fkey(email, username)
-        `)
+        .select('*')
         .order('granted_at', { ascending: false });
 
       if (error) throw error;
       return data;
     },
-    enabled: false, // TEMPORARILY DISABLED due to RLS recursion
+    enabled: legacyIsAdmin, // Using legacy check to avoid function order issues
   });
 
   // Get system configuration
@@ -129,7 +127,7 @@ export const useAdminV2 = () => {
       if (error) throw error;
       return data as SystemConfig[];
     },
-    enabled: legacyIsAdmin, // Only use legacy admin for now
+    enabled: legacyIsAdmin, // Using legacy check to avoid function order issues
   });
 
   // Get company menu items
@@ -144,26 +142,23 @@ export const useAdminV2 = () => {
       if (error) throw error;
       return data as CompanyMenuItems[];
     },
-    enabled: legacyIsAdmin, // Only use legacy admin for now
+    enabled: legacyIsAdmin, // Using legacy check to avoid function order issues
   });
 
-  // Get audit logs
+  // Get audit logs - NOW SAFE without joins
   const { data: auditLogs } = useQuery({
     queryKey: ['admin-audit-logs'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('admin_audit_log')
-        .select(`
-          *,
-          profiles!admin_audit_log_admin_user_id_fkey(email, username)
-        `)
+        .select('*')
         .order('created_at', { ascending: false })
         .limit(100);
 
       if (error) throw error;
       return data;
     },
-    enabled: false, // TEMPORARILY DISABLED due to RLS recursion
+    enabled: legacyIsAdmin, // Using legacy check to avoid function order issues
   });
 
   // Grant admin permission mutation

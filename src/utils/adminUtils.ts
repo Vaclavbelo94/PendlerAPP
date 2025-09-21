@@ -23,7 +23,9 @@ export const isAdminUser = (email: string | undefined): boolean => {
   
   const adminEmails = [
     'admin@pendlerapp.com',
-    'uzivatel@pendlerapp.com'
+    'admin_dhl@pendlerapp.com',
+    'uzivatel@pendlerapp.com',
+    'vaclavbelo94@gmail.com'
   ];
   
   return adminEmails.includes(email.toLowerCase());
