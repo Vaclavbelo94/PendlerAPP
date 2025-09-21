@@ -1,0 +1,16 @@
+{
+  "title": "Willkommen zurück!",
+  "subtitle": "Wir bereiten Ihr Dashboard vor...",
+  "steps": {
+    "authenticating": "Authentifizierung läuft...",
+    "loadingProfile": "Profil wird geladen...",
+    "checkingCompany": "Firmendaten werden überprüft...",
+    "preparingDashboard": "Dashboard wird vorbereitet...",
+    "almostReady": "Fast fertig..."
+  },
+  "company": {
+    "adecco": "Adecco Daten werden geladen...",
+    "randstad": "Randstad Daten werden geladen...",
+    "dhl": "DHL Daten werden geladen..."
+  }
+}

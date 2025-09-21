@@ -1,0 +1,16 @@
+{
+  "title": "Witamy ponownie!",
+  "subtitle": "Przygotowujemy Twój dashboard...",
+  "steps": {
+    "authenticating": "Uwierzytelnianie...",
+    "loadingProfile": "Ładowanie profilu...",
+    "checkingCompany": "Sprawdzanie danych firmy...",
+    "preparingDashboard": "Przygotowywanie dashboardu...",
+    "almostReady": "Prawie gotowe..."
+  },
+  "company": {
+    "adecco": "Ładowanie danych Adecco...",
+    "randstad": "Ładowanie danych Randstad...",
+    "dhl": "Ładowanie danych DHL..."
+  }
+}

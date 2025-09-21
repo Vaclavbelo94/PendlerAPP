@@ -1,0 +1,16 @@
+{
+  "title": "Vítejte zpět!",
+  "subtitle": "Připravujeme váš dashboard...",
+  "steps": {
+    "authenticating": "Ověřuji přihlášení...",
+    "loadingProfile": "Načítám profil...",
+    "checkingCompany": "Kontroluji firemní data...",
+    "preparingDashboard": "Připravuji dashboard...",
+    "almostReady": "Téměř hotovo..."
+  },
+  "company": {
+    "adecco": "Načítám Adecco data...",
+    "randstad": "Načítám Randstad data...",
+    "dhl": "Načítám DHL data..."
+  }
+}

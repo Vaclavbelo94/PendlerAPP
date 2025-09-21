@@ -109,6 +109,11 @@ import faqCs from './translations/cs/faq.json';
 import faqDe from './translations/de/faq.json';
 import faqPl from './translations/pl/faq.json';
 
+// Import PostLogin translations
+import postLoginCs from './translations/cs/postLogin.json';
+import postLoginDe from './translations/de/postLogin.json';
+import postLoginPl from './translations/pl/postLogin.json';
+
 const resources = {
   cs: {
     common: commonCs,
@@ -135,6 +140,7 @@ const resources = {
     contact: contactCs,
     toast: toastCs,
     faq: faqCs,
+    postLogin: postLoginCs,
   },
   de: {
     common: commonDe,
@@ -161,6 +167,7 @@ const resources = {
     contact: contactDe,
     toast: toastDe,
     faq: faqDe,
+    postLogin: postLoginDe,
   },
   pl: {
     common: commonPl,
@@ -187,6 +194,7 @@ const resources = {
     contact: contactPl,
     toast: toastPl,
     faq: faqPl,
+    postLogin: postLoginPl,
   },
 };
 
