@@ -11,6 +11,7 @@ import DashboardHero from './DashboardHero';
 import DashboardCards from './DashboardCards';
 import DashboardStats from './DashboardStats';
 import DashboardDHLSection from './DashboardDHLSection';
+import MobileDashboard from '../mobile/MobileDashboard';
 import { useOptimizedOnboarding } from '@/hooks/useOptimizedOnboarding';
 import { useOptimizedDHLData } from '@/hooks/dhl/useOptimizedDHLData';
 import { useDHLAutoSetup } from '@/hooks/useDHLAutoSetup';
@@ -65,14 +66,18 @@ const ModernDashboard: React.FC = () => {
             </motion.div>
           )}
 
-          {/* Main Dashboard Cards - 2x2 Grid */}
+          {/* Main Dashboard Cards - Responsive Layout */}
           {!shouldShowOnboarding && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <DashboardCards isDHLUser={!!unifiedUser?.isDHLEmployee} />
+              {isMobile ? (
+                <MobileDashboard isDHLUser={!!unifiedUser?.isDHLEmployee} />
+              ) : (
+                <DashboardCards isDHLUser={!!unifiedUser?.isDHLEmployee} />
+              )}
             </motion.div>
           )}
 
