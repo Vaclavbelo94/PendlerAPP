@@ -52,43 +52,52 @@ export const AdminProvider: React.FC<AdminProviderProps> = ({ children }) => {
     
     setIsLoading(true);
     try {
-      // Parallel queries for better performance
-      const [
-        usersResult,
-        vehiclesResult,
-        shiftsResult,
-        userStatsResult
-      ] = await Promise.all([
-        supabase.from('profiles').select('id, is_premium, created_at'),
-        supabase.from('vehicles').select('id'),
-        supabase.from('shifts').select('id'),
-        supabase.from('user_statistics').select('user_id, last_login')
-      ]);
+      // Use security definer function to avoid RLS recursion
+      const { data: adminStats, error } = await supabase.rpc('get_admin_statistics');
+      
+      if (error) {
+        throw error;
+      }
 
-      const users = usersResult.data || [];
-      const totalUsers = users.length;
-      const premiumUsers = users.filter(u => u.is_premium).length;
+      const stats = (adminStats || {}) as Record<string, any>;
       
-      // Active users (logged in within last 30 days)
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      
-      const userStatsMap = new Map(
-        (userStatsResult.data || []).map(stat => [stat.user_id, stat.last_login])
-      );
-      
-      const activeUsers = users.filter(user => {
-        const lastLogin = userStatsMap.get(user.id);
-        return lastLogin && new Date(lastLogin) > thirtyDaysAgo;
-      }).length;
+      // Calculate active users from user_statistics if available
+      let activeUsers = 0;
+      try {
+        const { data: userStatsResult } = await supabase
+          .from('user_statistics')
+          .select('user_id, last_login');
+          
+        if (userStatsResult) {
+          const thirtyDaysAgo = new Date();
+          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+          
+          activeUsers = userStatsResult.filter(stat => 
+            stat.last_login && new Date(stat.last_login) > thirtyDaysAgo
+          ).length;
+        }
+      } catch (userStatsError) {
+        console.warn('Could not load user statistics:', userStatsError);
+      }
+
+      // Get vehicle count separately (not in security definer function yet)
+      let totalVehicles = 0;
+      try {
+        const { count } = await supabase
+          .from('vehicles')
+          .select('*', { count: 'exact', head: true });
+        totalVehicles = count || 0;
+      } catch (vehicleError) {
+        console.warn('Could not load vehicle count:', vehicleError);
+      }
 
       setStats({
-        totalUsers,
-        premiumUsers,
+        totalUsers: Number(stats.total_users) || 0,
+        premiumUsers: Number(stats.premium_users) || 0,
         activeUsers,
         systemHealth: 99.8,
-        totalVehicles: vehiclesResult.data?.length || 0,
-        totalShifts: shiftsResult.data?.length || 0
+        totalVehicles,
+        totalShifts: Number(stats.active_shifts) || 0
       });
     } catch (error) {
       console.error('Chyba při načítání admin statistik:', error);

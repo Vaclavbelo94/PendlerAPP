@@ -3638,6 +3638,14 @@ export type Database = {
         }
         Returns: string
       }
+      get_admin_statistics: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
+      }
+      get_company_stats: {
+        Args: { target_company?: Database["public"]["Enums"]["company_type"] }
+        Returns: Json
+      }
       get_current_user_admin_status: {
         Args: Record<PropertyKey, never>
         Returns: boolean
@@ -3659,6 +3667,10 @@ export type Database = {
           updated_at: string
           user_id: string
         }[]
+      }
+      get_user_permission_level: {
+        Args: { check_user_id?: string }
+        Returns: string
       }
       has_admin_permission: {
         Args: {
