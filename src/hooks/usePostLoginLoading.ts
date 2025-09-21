@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/auth';
 import { useCompany } from '@/hooks/useCompany';
+import { useOptimizedDHLData } from '@/hooks/dhl/useOptimizedDHLData';
+import { useOptimizedOnboarding } from '@/hooks/useOptimizedOnboarding';
 
 interface LoadingState {
   isLoading: boolean;
@@ -17,12 +19,20 @@ const LOADING_STEPS = [
   'almostReady'
 ];
 
-const MIN_LOADING_TIME = 2500; // 2.5 seconds minimum
-const STEP_DURATION = 500; // 0.5 seconds per step
+const MIN_LOADING_TIME = 3000; // 3 seconds minimum to ensure all data loads
+const STEP_DURATION = 600; // 0.6 seconds per step
 
 export const usePostLoginLoading = () => {
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, isLoading: authLoading, unifiedUser } = useAuth();
   const { company } = useCompany();
+  
+  // Get DHL data if user is DHL employee
+  const { userAssignment, isLoading: dhlLoading } = useOptimizedDHLData(
+    unifiedUser?.isDHLEmployee ? user?.id : null
+  );
+  
+  // Get onboarding data
+  const { showOnboarding, isNewUser } = useOptimizedOnboarding(userAssignment);
   
   const [loadingState, setLoadingState] = useState<LoadingState>({
     isLoading: true,
@@ -58,18 +68,29 @@ export const usePostLoginLoading = () => {
       const elapsed = Date.now() - startTime;
       const minTimeReached = elapsed >= MIN_LOADING_TIME;
       
-      // Check actual loading states
-      const authReady = !authLoading && user;
+      // Check actual loading states - wait for ALL data to be ready
+      const authReady = !authLoading && user && unifiedUser;
       const companyReady = company !== null;
-      const allDataReady = authReady && companyReady;
+      
+      // For DHL users, wait for DHL data to be loaded
+      const dhlDataReady = !unifiedUser?.isDHLEmployee || !dhlLoading;
+      
+      // Additional check - make sure onboarding data is available for DHL users
+      const onboardingDataReady = !unifiedUser?.isDHLEmployee || (
+        typeof showOnboarding === 'boolean' && typeof isNewUser === 'boolean'
+      );
+      
+      const allDataReady = authReady && companyReady && dhlDataReady && onboardingDataReady;
 
       // Calculate progress based on time and actual loading
       let calculatedProgress = Math.min((elapsed / MIN_LOADING_TIME) * 100, 100);
       
       // Adjust progress based on actual data loading
-      if (authReady) calculatedProgress = Math.max(calculatedProgress, 40);
-      if (companyReady) calculatedProgress = Math.max(calculatedProgress, 70);
-      if (allDataReady) calculatedProgress = Math.max(calculatedProgress, 90);
+      if (authReady) calculatedProgress = Math.max(calculatedProgress, 25);
+      if (companyReady) calculatedProgress = Math.max(calculatedProgress, 45);
+      if (dhlDataReady) calculatedProgress = Math.max(calculatedProgress, 65);
+      if (onboardingDataReady) calculatedProgress = Math.max(calculatedProgress, 85);
+      if (allDataReady) calculatedProgress = Math.max(calculatedProgress, 95);
 
       // Update step based on progress
       const newStepIndex = Math.floor((calculatedProgress / 100) * LOADING_STEPS.length);
@@ -104,7 +125,18 @@ export const usePostLoginLoading = () => {
     return () => {
       if (progressTimer) clearTimeout(progressTimer);
     };
-  }, [startTime, authLoading, user, company, isFreshLogin, markLoginProcessed]);
+  }, [
+    startTime, 
+    authLoading, 
+    user, 
+    unifiedUser, 
+    company, 
+    dhlLoading, 
+    showOnboarding, 
+    isNewUser,
+    isFreshLogin, 
+    markLoginProcessed
+  ]);
 
   return {
     ...loadingState,
