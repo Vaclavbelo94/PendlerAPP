@@ -28,7 +28,7 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       title: t('dashboard:shiftManagement'),
       description: t('dashboard:manageShifts'),
       icon: Calendar,
-      gradient: 'from-blue-500 to-blue-600',
+      color: 'hsl(var(--chart-1))',
       path: '/shifts',
       isPrimary: true
     },
@@ -37,7 +37,7 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       title: t('dashboard:taxAdvisor'),
       description: t('dashboard:optimizeYourTaxes'),
       icon: Calculator,
-      gradient: 'from-emerald-500 to-emerald-600',
+      color: 'hsl(var(--chart-2))',
       path: '/tax-advisor',
       isPrimary: true
     },
@@ -46,7 +46,7 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       title: t('dashboard:vehicleManagement'),
       description: t('dashboard:manageYourVehicles'),
       icon: Car,
-      gradient: 'from-violet-500 to-violet-600',
+      color: 'hsl(var(--chart-3))',
       path: '/vehicle',
       isPrimary: false
     },
@@ -55,62 +55,84 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
       title: t('dashboard:travelPlanning'),
       description: t('dashboard:travelDescription'),
       icon: Map,
-      gradient: 'from-teal-500 to-teal-600',
+      color: 'hsl(var(--chart-4))',
       path: '/travel',
       isPrimary: false
     }
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Primary Actions - Large Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="space-y-8">
+      {/* Primary Actions Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {mainWidgets.filter(w => w.isPrimary).map((widget, index) => (
           <motion.div
             key={widget.id}
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.5 }}
-            className="h-full"
+            transition={{ delay: index * 0.15, duration: 0.6, ease: "easeOut" }}
           >
-            <Card 
-              className="group relative overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-xl hover:scale-[1.02] bg-card/50 backdrop-blur-sm border-border/50 h-[200px]"
+            <div 
+              className="group relative overflow-hidden rounded-2xl cursor-pointer transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl"
               onClick={() => navigate(widget.path)}
+              style={{
+                background: `linear-gradient(135deg, ${widget.color}15 0%, ${widget.color}08 100%)`,
+                border: `1px solid ${widget.color}20`
+              }}
             >
-              {/* Gradient Background */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${widget.gradient} opacity-5 group-hover:opacity-10 transition-opacity`} />
+              {/* Animated background pattern */}
+              <div 
+                className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity duration-500"
+                style={{
+                  background: `radial-gradient(circle at 70% 30%, ${widget.color}30 0%, transparent 50%)`
+                }}
+              />
               
-              <CardContent className="relative p-8 flex flex-col justify-between h-full">
+              {/* Content */}
+              <div className="relative p-8 h-48 flex flex-col justify-between">
+                {/* Header */}
                 <div className="flex items-start justify-between">
-                  <div className={`p-4 rounded-2xl bg-gradient-to-br ${widget.gradient} shadow-lg`}>
-                    <widget.icon className="h-8 w-8 text-white" />
+                  <div 
+                    className="p-4 rounded-2xl shadow-lg backdrop-blur-sm border border-white/10 group-hover:scale-110 transition-transform duration-300"
+                    style={{ backgroundColor: widget.color }}
+                  >
+                    <widget.icon className="h-7 w-7 text-white" />
                   </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
+                  
+                  <div className="flex items-center space-x-2">
+                    <Badge 
+                      className="text-xs px-2 py-1 border-0 font-medium"
+                      style={{ 
+                        backgroundColor: `${widget.color}20`,
+                        color: widget.color
+                      }}
+                    >
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      {t('dashboard:popular')}
+                    </Badge>
+                    <ArrowRight 
+                      className="h-5 w-5 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" 
+                      style={{ color: widget.color }}
+                    />
+                  </div>
                 </div>
                 
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
-                      {widget.title}
-                    </h3>
-                    {widget.isPrimary && (
-                      <Badge variant="secondary" className="text-xs">
-                        <Sparkles className="h-3 w-3 mr-1" />
-                        {t('dashboard:popular')}
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground">
+                {/* Bottom section */}
+                <div className="space-y-3">
+                  <h3 className="text-xl font-bold text-foreground leading-tight">
+                    {widget.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     {widget.description}
                   </p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </motion.div>
         ))}
       </div>
 
-      {/* Secondary Actions - Compact Cards */}
+      {/* Secondary Actions Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {mainWidgets.filter(w => !w.isPrimary).map((widget, index) => (
           <motion.div
@@ -118,31 +140,46 @@ const DashboardCards: React.FC<DashboardCardsProps> = ({ isDHLUser }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: (index + 2) * 0.1, duration: 0.5 }}
-            className="h-full"
           >
-            <Card 
-              className="group relative overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-[1.01] bg-card/30 backdrop-blur-sm border-border/30 h-[140px]"
+            <div 
+              className="group relative overflow-hidden rounded-xl cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-lg bg-card/60 backdrop-blur-sm border border-border/50 p-6 h-28"
               onClick={() => navigate(widget.path)}
             >
-              <div className={`absolute inset-0 bg-gradient-to-br ${widget.gradient} opacity-3 group-hover:opacity-5 transition-opacity`} />
+              {/* Subtle hover background */}
+              <div 
+                className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity duration-300"
+                style={{ backgroundColor: widget.color }}
+              />
               
-              <CardContent className="relative p-6 flex items-center gap-4 h-full">
-                <div className={`p-3 rounded-xl bg-gradient-to-br ${widget.gradient} shadow-md`}>
-                  <widget.icon className="h-6 w-6 text-white" />
+              <div className="relative flex items-center gap-4 h-full">
+                {/* Icon */}
+                <div 
+                  className="p-3 rounded-xl shadow-md"
+                  style={{ backgroundColor: `${widget.color}15` }}
+                >
+                  <widget.icon 
+                    className="h-5 w-5" 
+                    style={{ color: widget.color }}
+                  />
                 </div>
                 
+                {/* Content */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                  <h3 className="text-base font-semibold text-foreground mb-1">
                     {widget.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
+                  <p className="text-xs text-muted-foreground line-clamp-2">
                     {widget.description}
                   </p>
                 </div>
                 
-                <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 flex-shrink-0" />
-              </CardContent>
-            </Card>
+                {/* Arrow */}
+                <ArrowRight 
+                  className="h-4 w-4 opacity-50 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300 flex-shrink-0"
+                  style={{ color: widget.color }}
+                />
+              </div>
+            </div>
           </motion.div>
         ))}
       </div>
