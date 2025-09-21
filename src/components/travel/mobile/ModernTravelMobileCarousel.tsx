@@ -1,13 +1,15 @@
-import React, { Suspense, useEffect, useCallback } from 'react';
+import React, { Suspense, useEffect, useCallback, useMemo, memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Users, Navigation, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import useEmblaCarousel from 'embla-carousel-react';
-import RidesharingDashboard from '@/components/travel/rideshare/RidesharingDashboard';
-
-import TrafficBorderMonitoring from '@/components/travel/TrafficBorderMonitoring';
+import { LazyLoadWrapper } from '@/components/common/LazyLoadWrapper';
 import { Skeleton } from '@/components/ui/skeleton';
+
+// Lazy load heavy components
+const RidesharingDashboard = React.lazy(() => import('@/components/travel/rideshare/RidesharingDashboard'));
+const TrafficBorderMonitoring = React.lazy(() => import('@/components/travel/TrafficBorderMonitoring'));
 
 const LoadingFallback = () => (
   <div className="space-y-4">
@@ -22,7 +24,7 @@ interface ModernTravelMobileCarouselProps {
   onTabChange: (tab: string) => void;
 }
 
-const ModernTravelMobileCarousel: React.FC<ModernTravelMobileCarouselProps> = ({
+const ModernTravelMobileCarousel: React.FC<ModernTravelMobileCarouselProps> = memo(({
   activeTab,
   onTabChange
 }) => {
@@ -37,7 +39,7 @@ const ModernTravelMobileCarousel: React.FC<ModernTravelMobileCarouselProps> = ({
     loop: false
   });
 
-  const tabs = [
+  const tabs = useMemo(() => [
     {
       id: 'ridesharing',
       label: t('ridesharing'),
@@ -50,7 +52,7 @@ const ModernTravelMobileCarousel: React.FC<ModernTravelMobileCarouselProps> = ({
       icon: AlertTriangle,
       component: TrafficBorderMonitoring
     }
-  ];
+  ], [t]);
 
   // Synchronize carousel with activeTab
   const scrollTo = useCallback((index: number) => {
@@ -114,11 +116,19 @@ const ModernTravelMobileCarousel: React.FC<ModernTravelMobileCarouselProps> = ({
         <div className="flex">
           {tabs.map((tab) => {
             const Component = tab.component;
+            const isActive = tab.id === activeTab;
+            
             return (
               <div key={tab.id} className="flex-[0_0_100%] min-w-0">
-                <Suspense fallback={<LoadingFallback />}>
-                  <Component />
-                </Suspense>
+                {isActive ? (
+                  <LazyLoadWrapper fallback={<LoadingFallback />}>
+                    <Component />
+                  </LazyLoadWrapper>
+                ) : (
+                  <div className="p-4">
+                    <LoadingFallback />
+                  </div>
+                )}
               </div>
             );
           })}
@@ -128,6 +138,6 @@ const ModernTravelMobileCarousel: React.FC<ModernTravelMobileCarouselProps> = ({
       {/* Carousel Indicators - Removed duplicate navigation */}
     </div>
   );
-};
+});
 
 export default ModernTravelMobileCarousel;

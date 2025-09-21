@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useSupabaseNotifications } from './useSupabaseNotifications';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
@@ -6,8 +6,23 @@ import { useTranslation } from 'react-i18next';
 export const useRideshareNotifications = () => {
   const { addNotification } = useSupabaseNotifications();
   const { t } = useTranslation('notifications');
+  const channelsRef = useRef<any[]>([]);
+  const initialized = useRef(false);
+
+  const cleanup = useCallback(() => {
+    if (channelsRef.current.length > 0) {
+      console.log('🧹 Cleaning up rideshare notification channels');
+      channelsRef.current.forEach(channel => {
+        supabase.removeChannel(channel);
+      });
+      channelsRef.current = [];
+    }
+  }, []);
 
   useEffect(() => {
+    if (initialized.current) return;
+    initialized.current = true;
+    
     console.log('🔔 useRideshareNotifications: Setting up real-time listeners');
     
     // Subscribe to rideshare offers changes
@@ -228,24 +243,11 @@ export const useRideshareNotifications = () => {
         console.log('📡 Rideshare contacts channel status:', status);
       });
 
-    // Test the connection immediately
-    console.log('🧪 Testing real-time connection...');
-    setTimeout(async () => {
-      try {
-        const testResult = await supabase.from('rideshare_contacts').select('count').limit(1);
-        console.log('🧪 Database connection test:', testResult);
-      } catch (error) {
-        console.error('❌ Database connection test failed:', error);
-      }
-    }, 1000);
+    // Store channels for cleanup
+    channelsRef.current = [offersChannel, requestsChannel, contactsChannel];
 
-    return () => {
-      console.log('🧹 Cleaning up rideshare notification channels');
-      supabase.removeChannel(offersChannel);
-      supabase.removeChannel(requestsChannel);  
-      supabase.removeChannel(contactsChannel);
-    };
-  }, [addNotification, t]);
+    return cleanup;
+  }, [cleanup]);
 
   // Function to create test rideshare notifications
   const createTestRideshareNotification = async () => {
