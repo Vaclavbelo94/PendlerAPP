@@ -122,6 +122,12 @@ import uiPl from './translations/pl/ui.json';
 // Import Legal translations
 import legalCs from './translations/cs/legal.json';
 import legalDe from './translations/de/legal.json';
+import legalPl from './translations/pl/legal.json';
+
+// Import DHL Employee translations
+import dhlEmployeeCs from './translations/cs/dhl-employee.json';
+import dhlEmployeeDe from './translations/de/dhl-employee.json';
+import dhlEmployeePl from './translations/pl/dhl-employee.json';
 
 // Import DHL Admin translations
 import dhlAdminCs from './translations/cs/dhl-admin.json';
@@ -163,6 +169,7 @@ const resources = {
     ui: uiCs,
     legal: legalCs,
     dhlAdmin: dhlAdminCs,
+    dhlEmployee: dhlEmployeeCs,
     travelMissing: travelMissingCs,
   },
   de: {
@@ -194,6 +201,7 @@ const resources = {
     ui: uiDe,
     legal: legalDe,
     dhlAdmin: dhlAdminDe,
+    dhlEmployee: dhlEmployeeDe,
     travelMissing: travelMissingDe,
   },
   pl: {
@@ -223,7 +231,9 @@ const resources = {
     faq: faqPl,
     postLogin: postLoginPl,
     ui: uiPl,
+    legal: legalPl,
     dhlAdmin: dhlAdminPl,
+    dhlEmployee: dhlEmployeePl,
     travelMissing: travelMissingPl,
   },
 };
