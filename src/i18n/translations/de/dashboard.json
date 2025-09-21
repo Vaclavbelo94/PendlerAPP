@@ -29,5 +29,17 @@
   "timeTracking": "Zeiterfassung",
   "productivity": "Produktivität",
   "goals": "Ziele",
-  "achievements": "Erfolge"
+  "achievements": "Erfolge",
+  "shiftManagement": "Schichtverwaltung",
+  "manageShifts": "Verwalten Sie Ihre Arbeitsschichten",
+  "taxAdvisor": "Steuerberater",
+  "optimizeYourTaxes": "Optimieren Sie Ihre Steuern",
+  "vehicleManagement": "Fahrzeugverwaltung",
+  "manageYourVehicles": "Verwalten Sie Ihre Fahrzeuge",
+  "dashboardSubtitle": "Ihr Assistent für die Arbeit in Deutschland",
+  "user": "Benutzer",
+  "title": "Übersicht",
+  "travelPlanning": "Reiseplanung",
+  "travelDescription": "Effizienteres Reisen durch Fahrgemeinschaften und Verkehrsüberwachung",
+  "popular": "Beliebt"
 }

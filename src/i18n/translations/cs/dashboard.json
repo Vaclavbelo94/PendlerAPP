@@ -29,5 +29,17 @@
   "timeTracking": "Sledování času",
   "productivity": "Produktivita",
   "goals": "Cíle",
-  "achievements": "Úspěchy"
+  "achievements": "Úspěchy",
+  "shiftManagement": "Správa směn",
+  "manageShifts": "Spravujte své pracovní směny",
+  "taxAdvisor": "Daňový poradce",
+  "optimizeYourTaxes": "Optimalizujte své daně",
+  "vehicleManagement": "Správa vozidel",
+  "manageYourVehicles": "Spravujte svá vozidla",
+  "dashboardSubtitle": "Váš asistent pro práci v Německu",
+  "user": "uživatel",
+  "title": "Přehled",
+  "travelPlanning": "Plánování cest",
+  "travelDescription": "Zefektivněte své cestování pomocí sdílených jízd a dopravního monitoringu",
+  "popular": "Populární"
 }

@@ -67,5 +67,17 @@
   "noActivityYet": "Brak aktywności",
   "statistics": "Statystyki",
   "manageShifts": "Zarządzaj swoimi zmianami roboczymi",
-  "user": "użytkownik"
+  "user": "użytkownik",
+  "goals": "Cele",
+  "achievements": "Osiągnięcia",
+  "shiftManagement": "Zarządzanie zmianami",
+  "taxAdvisor": "Doradca podatkowy",
+  "optimizeYourTaxes": "Zoptymalizuj swoje podatki",
+  "vehicleManagement": "Zarządzanie pojazdami",
+  "manageYourVehicles": "Zarządzaj swoimi pojazdami",
+  "dashboardSubtitle": "Twój asystent do pracy w Niemczech",
+  "title": "Przegląd",
+  "travelPlanning": "Planowanie podróży",
+  "travelDescription": "Zwiększ efektywność podróżowania dzięki wspólnym przejazdom i monitorowaniu ruchu",
+  "popular": "Popularne"
 }
