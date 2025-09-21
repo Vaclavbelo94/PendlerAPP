@@ -114,6 +114,25 @@ import postLoginCs from './translations/cs/postLogin.json';
 import postLoginDe from './translations/de/postLogin.json';
 import postLoginPl from './translations/pl/postLogin.json';
 
+// Import UI translations
+import uiCs from './translations/cs/ui.json';
+import uiDe from './translations/de/ui.json';
+import uiPl from './translations/pl/ui.json';
+
+// Import Legal translations
+import legalCs from './translations/cs/legal.json';
+import legalDe from './translations/de/legal.json';
+
+// Import DHL Admin translations
+import dhlAdminCs from './translations/cs/dhl-admin.json';
+import dhlAdminDe from './translations/de/dhl-admin.json';
+import dhlAdminPl from './translations/pl/dhl-admin.json';
+
+// Import Travel Missing translations
+import travelMissingCs from './translations/cs/travel-missing.json';
+import travelMissingDe from './translations/de/travel-missing.json';
+import travelMissingPl from './translations/pl/travel-missing.json';
+
 const resources = {
   cs: {
     common: commonCs,
@@ -141,6 +160,10 @@ const resources = {
     toast: toastCs,
     faq: faqCs,
     postLogin: postLoginCs,
+    ui: uiCs,
+    legal: legalCs,
+    dhlAdmin: dhlAdminCs,
+    travelMissing: travelMissingCs,
   },
   de: {
     common: commonDe,
@@ -168,6 +191,10 @@ const resources = {
     toast: toastDe,
     faq: faqDe,
     postLogin: postLoginDe,
+    ui: uiDe,
+    legal: legalDe,
+    dhlAdmin: dhlAdminDe,
+    travelMissing: travelMissingDe,
   },
   pl: {
     common: commonPl,
@@ -195,6 +222,9 @@ const resources = {
     toast: toastPl,
     faq: faqPl,
     postLogin: postLoginPl,
+    ui: uiPl,
+    dhlAdmin: dhlAdminPl,
+    travelMissing: travelMissingPl,
   },
 };
 

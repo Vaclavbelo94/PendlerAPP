@@ -1,10 +1,10 @@
 {
   "departure": "Odjezd",
-  "driver": "Řidič", 
+  "driver": "Řidič",
   "price": "Cena",
   "duplicateOfferError": "Nabídka s podobnými údaji již existuje",
   "userNotFoundError": "Uživatel nebyl nalezen",
-  "permissionError": "Nemáte oprávnění k vytvoření nabídky",
+  "permissionError": "Nemáte oprávnění vytvářet nabídky",
   "duplicateKeyError": "Duplicitní záznam - zkuste to znovu",
   "unknownError": "Neočekávaná chyba při vytváření nabídky"
 }
