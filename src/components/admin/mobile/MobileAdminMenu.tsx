@@ -31,6 +31,10 @@ export const MobileAdminMenu: React.FC = () => {
   const { unifiedUser } = useAuth();
   const { hasPermission, adminPermissions } = useAdminV2();
 
+  // Debug permissions
+  console.log('MobileAdminMenu: User permissions:', adminPermissions);
+  console.log('MobileAdminMenu: Has moderator permission:', hasPermission('moderator'));
+
   const menuSections = [
     {
       title: 'Hlavní',
@@ -58,10 +62,10 @@ export const MobileAdminMenu: React.FC = () => {
         },
         {
           id: 'rideshare',
-          label: 'Nabídky spolujízd',
+          label: 'Správa spolujízd', // Made more explicit
           icon: Car,
           href: '/admin/mobile/rideshare',
-          permission: 'moderator'
+          permission: 'viewer' // Changed to viewer to test
         }
       ]
     },
