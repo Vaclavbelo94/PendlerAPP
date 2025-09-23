@@ -9,6 +9,7 @@ import { MobileSecurity } from '@/components/admin/mobile/pages/MobileSecurity';
 import { MobilePremiumCodes } from '@/components/admin/mobile/pages/MobilePremiumCodes';
 import { MobileMonitoring } from '@/components/admin/mobile/pages/MobileMonitoring';
 import { MobileSettings } from '@/components/admin/mobile/pages/MobileSettings';
+import { MobileRideshareManagement } from '@/components/admin/mobile/pages/MobileRideshareManagement';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const MobileAdminV2: React.FC = () => {
@@ -25,6 +26,7 @@ const MobileAdminV2: React.FC = () => {
         <Route path="/" element={<MobileAdminDashboard />} />
         <Route path="/users" element={<MobileUserManagement />} />
         <Route path="/companies" element={<MobileCompanyManagement />} />
+        <Route path="/rideshare" element={<MobileRideshareManagement />} />
         <Route path="/analytics" element={<MobileAnalytics />} />
         <Route path="/security" element={<MobileSecurity />} />
         <Route path="/premium-codes" element={<MobilePremiumCodes />} />

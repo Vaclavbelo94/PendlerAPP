@@ -6,7 +6,8 @@ import {
   Building2, 
   Settings, 
   BarChart3,
-  Shield
+  Shield,
+  Car
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -47,6 +48,13 @@ export const MobileAdminNavigation: React.FC = () => {
       icon: BarChart3,
       href: '/admin/mobile/analytics',
       permission: 'viewer'
+    },
+    {
+      id: 'rideshare',
+      label: 'Spolujízdy',
+      icon: Car,
+      href: '/admin/mobile/rideshare',
+      permission: 'moderator'
     },
     {
       id: 'security',

@@ -13,7 +13,8 @@ import {
   HelpCircle,
   LogOut,
   Crown,
-  Eye
+  Eye,
+  Car
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -54,6 +55,13 @@ export const MobileAdminMenu: React.FC = () => {
           icon: Building2,
           href: '/admin/mobile/companies',
           permission: 'admin'
+        },
+        {
+          id: 'rideshare',
+          label: 'Nabídky spolujízd',
+          icon: Car,
+          href: '/admin/mobile/rideshare',
+          permission: 'moderator'
         }
       ]
     },
