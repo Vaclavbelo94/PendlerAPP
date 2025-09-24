@@ -92,10 +92,11 @@ export const useRideshareAdminLogic = () => {
   const filteredContacts = useMemo(() => {
     return contacts.filter(contact => {
       const matchesSearch = searchTerm === '' || 
-        contact.profiles?.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contact.message.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contact.rideshare_offers?.origin_address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contact.rideshare_offers?.destination_address.toLowerCase().includes(searchTerm.toLowerCase());
+        (contact.profiles?.username && contact.profiles.username.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (contact.requester_email && contact.requester_email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (contact.message && contact.message.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (contact.rideshare_offers?.origin_address && contact.rideshare_offers.origin_address.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (contact.rideshare_offers?.destination_address && contact.rideshare_offers.destination_address.toLowerCase().includes(searchTerm.toLowerCase()));
 
       return matchesSearch;
     });

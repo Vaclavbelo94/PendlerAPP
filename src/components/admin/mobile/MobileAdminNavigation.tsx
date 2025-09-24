@@ -54,7 +54,7 @@ export const MobileAdminNavigation: React.FC = () => {
       label: 'Spolujízdy',
       icon: Car,
       href: '/admin/mobile/rideshare',
-      permission: 'viewer' // Changed to viewer to test
+      permission: 'moderator'
     },
     {
       id: 'security',
