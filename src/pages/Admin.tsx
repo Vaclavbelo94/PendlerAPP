@@ -134,10 +134,10 @@ const Admin = () => {
         return;
       }
       
-      // Hlavní admin jde na V2 panel
+      // Hlavní admin jde na mobilní panel
       if (user?.email === 'admin@pendlerapp.com') {
-        console.log("Main admin email detected, redirecting to V2 panel");
-        navigate('/admin/v2');
+        console.log("Main admin email detected, redirecting to mobile panel");
+        navigate('/admin/mobile');
         return;
       }
       
