@@ -36,9 +36,9 @@ export const getAdminRedirectPath = (user: User | null): string | null => {
     return '/admin/mobile';
   }
   
-  // Other special users go to main admin panel
+  // Other special users go to mobile admin panel too
   if (isSpecialUserSync(user)) {
-    return '/admin/v2';
+    return '/admin/mobile';
   }
   
   return null;

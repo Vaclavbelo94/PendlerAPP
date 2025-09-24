@@ -128,7 +128,7 @@ export const getRedirectPath = (unifiedUser: UnifiedUser | null): string => {
   }
   
   if (unifiedUser.isDHLAdmin) return '/dhl-admin';
-  if (unifiedUser.isAdmin) return '/admin/v2';
+  if (unifiedUser.isAdmin) return '/admin/mobile';
   
   return '/dashboard';
 };

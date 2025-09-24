@@ -141,10 +141,10 @@ const Admin = () => {
         return;
       }
       
-      // Pro ostatní admin uživatele také přesměrovat na V2
+      // Pro ostatní admin uživatele také přesměrovat na mobilní panel
       if (isAdmin && user) {
-        console.log("Other admin user detected, redirecting to V2 panel");
-        navigate('/admin/v2');
+        console.log("Other admin user detected, redirecting to mobile panel");
+        navigate('/admin/mobile');
         return;
       }
       
