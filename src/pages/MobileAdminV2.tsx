@@ -10,16 +10,8 @@ import { MobilePremiumCodes } from '@/components/admin/mobile/pages/MobilePremiu
 import { MobileMonitoring } from '@/components/admin/mobile/pages/MobileMonitoring';
 import { MobileSettings } from '@/components/admin/mobile/pages/MobileSettings';
 import { MobileRideshareManagement } from '@/components/admin/mobile/pages/MobileRideshareManagement';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 const MobileAdminV2: React.FC = () => {
-  const isMobile = useIsMobile();
-
-  // Redirect desktop users to desktop admin
-  if (!isMobile) {
-    return <Navigate to="/admin/v2" replace />;
-  }
-
   return (
     <MobileAdminLayout>
       <Routes>
