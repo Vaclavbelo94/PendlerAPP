@@ -51,12 +51,10 @@ export const MobileUserManagement: React.FC = () => {
   const { data: users, isLoading } = useQuery({
     queryKey: ['mobile-admin-users', searchTerm, filterCompany, filterType],
     queryFn: async () => {
+      // First get users
       let query = supabase
         .from('profiles')
-        .select(`
-          id, email, username, company, is_premium, is_admin, created_at,
-          admin_permissions!admin_permissions_user_id_fkey(permission_level, is_active)
-        `);
+        .select('id, email, username, company, is_premium, is_admin, created_at');
 
       // Apply search filter
       if (searchTerm) {
@@ -68,23 +66,53 @@ export const MobileUserManagement: React.FC = () => {
         query = query.eq('company', filterCompany as any);
       }
 
-      const { data, error } = await query
+      const { data: profiles, error: profilesError } = await query
         .order('created_at', { ascending: false })
         .limit(50);
 
-      if (error) throw error;
+      if (profilesError) throw profilesError;
+
+      if (!profiles || profiles.length === 0) {
+        return [];
+      }
+
+      // Get admin permissions separately
+      const userIds = profiles.map(p => p.id);
+      const { data: permissions, error: permissionsError } = await supabase
+        .from('admin_permissions')
+        .select('user_id, permission_level, is_active')
+        .in('user_id', userIds)
+        .eq('is_active', true);
+
+      if (permissionsError) {
+        console.warn('Error loading permissions:', permissionsError);
+      }
+
+      // Create permissions map
+      const permissionsMap = new Map();
+      permissions?.forEach(perm => {
+        if (!permissionsMap.has(perm.user_id)) {
+          permissionsMap.set(perm.user_id, []);
+        }
+        permissionsMap.get(perm.user_id).push(perm);
+      });
+
+      // Combine data
+      let combinedData = profiles.map(profile => ({
+        ...profile,
+        admin_permissions: permissionsMap.get(profile.id) || []
+      }));
 
       // Filter by user type
-      let filteredData = data || [];
       if (filterType === 'premium') {
-        filteredData = filteredData.filter(u => u.is_premium);
+        combinedData = combinedData.filter(u => u.is_premium);
       } else if (filterType === 'admin') {
-        filteredData = filteredData.filter(u => 
+        combinedData = combinedData.filter(u => 
           u.is_admin || (u.admin_permissions && u.admin_permissions.length > 0)
         );
       }
 
-      return filteredData as User[];
+      return combinedData as User[];
     },
     enabled: hasPermission('moderator')
   });

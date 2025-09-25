@@ -555,7 +555,8 @@ export const rideshareService = {
 
   async getAllRideshareContacts() {
     try {
-      const { data, error } = await supabase
+      // First get contacts with offers
+      const { data: contacts, error: contactsError } = await supabase
         .from('rideshare_contacts')
         .select(`
           *,
@@ -568,19 +569,43 @@ export const rideshareService = {
             price_per_person,
             currency,
             user_id
-          ),
-          profiles!rideshare_contacts_requester_user_id_fkey(
-            username
           )
         `)
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error loading all contacts:', error);
+      if (contactsError) {
+        console.error('Error loading contacts:', contactsError);
         throw new Error('Failed to load contact requests');
       }
 
-      return data || [];
+      if (!contacts || contacts.length === 0) {
+        return [];
+      }
+
+      // Get unique requester user IDs
+      const userIds = [...new Set(contacts.map(contact => contact.requester_user_id))];
+
+      // Get profiles separately to avoid foreign key issues
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, username')
+        .in('id', userIds);
+
+      if (profilesError) {
+        console.warn('Warning loading profiles:', profilesError);
+      }
+
+      // Create a map of profiles for easy lookup
+      const profilesMap = new Map();
+      profiles?.forEach(profile => {
+        profilesMap.set(profile.id, profile);
+      });
+
+      // Combine contacts with profile data
+      return contacts.map(contact => ({
+        ...contact,
+        profiles: profilesMap.get(contact.requester_user_id) || null
+      }));
     } catch (error) {
       console.error('Service error in getAllRideshareContacts:', error);
       throw error;
