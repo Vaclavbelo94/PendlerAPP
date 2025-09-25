@@ -11,13 +11,15 @@ import { useAuth } from '@/hooks/auth';
 import { rideshareService } from "@/services/rideshareService";
 import { getDefaultCurrencyByLanguage, getCurrencyList } from '@/utils/currencyUtils';
 import { useTranslation } from 'react-i18next';
+import { DatePicker } from "@/components/ui/date-picker";
+import CityAutocomplete from "@/components/common/CityAutocomplete";
 
-interface RideOfferFormProps {
+interface ImprovedRideOfferFormProps {
   onOfferCreated: () => void;
   onCancel: () => void;
 }
 
-const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
+const ImprovedRideOfferForm = ({ onOfferCreated, onCancel }: ImprovedRideOfferFormProps) => {
   const { user } = useAuth();
   const { t, i18n } = useTranslation('travel');
   
@@ -25,7 +27,7 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
     origin_address: '',
     destination_address: '',
     departure_time: '07:00',
-    departure_date: '',
+    departure_date: null as Date | null,
     seats_available: 2,
     price_per_person: '',
     currency: getDefaultCurrencyByLanguage(i18n.language),
@@ -37,7 +39,7 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
     if (!user?.id) {
       toast({
         title: t('error'),
-        description: 'Pro nabídnutí spolujízdy se musíte přihlásit',
+        description: t('loginRequired'),
         variant: 'destructive'
       });
       return;
@@ -46,7 +48,7 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
     if (!newRideOffer.origin_address || !newRideOffer.destination_address || !newRideOffer.departure_date) {
       toast({
         title: t('error'),
-        description: t('originRequired') + ', ' + t('destinationRequired') + ', ' + t('selectDepartureDate'),
+        description: `${t('originRequired')}, ${t('destinationRequired')}, ${t('selectDepartureDate')}`,
         variant: 'destructive'
       });
       return;
@@ -64,6 +66,7 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
     try {
       await rideshareService.createRideshareOffer({
         ...newRideOffer,
+        departure_date: newRideOffer.departure_date!.toISOString().split('T')[0],
         user_id: user.id,
         price_per_person: newRideOffer.price_per_person ? parseFloat(newRideOffer.price_per_person) : 0,
         currency: newRideOffer.currency,
@@ -81,7 +84,7 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
         origin_address: '',
         destination_address: '',
         departure_time: '07:00',
-        departure_date: '',
+        departure_date: null,
         seats_available: 2,
         price_per_person: '',
         currency: getDefaultCurrencyByLanguage(i18n.language),
@@ -110,39 +113,30 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="offer-origin">{t('from')} *</Label>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="offer-origin"
-                className="pl-10"
-                value={newRideOffer.origin_address}
-                onChange={(e) => setNewRideOffer({...newRideOffer, origin_address: e.target.value})}
-                placeholder={t('originPlaceholder')}
-              />
-            </div>
+            <CityAutocomplete
+              id="offer-origin"
+              value={newRideOffer.origin_address}
+              onChange={(value) => setNewRideOffer({...newRideOffer, origin_address: value})}
+              placeholder={t('originPlaceholder')}
+            />
           </div>
           
           <div className="space-y-2">
             <Label htmlFor="offer-destination">{t('to')} *</Label>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="offer-destination"
-                className="pl-10"
-                value={newRideOffer.destination_address}
-                onChange={(e) => setNewRideOffer({...newRideOffer, destination_address: e.target.value})}
-                placeholder={t('destinationPlaceholder')}
-              />
-            </div>
+            <CityAutocomplete
+              id="offer-destination"
+              value={newRideOffer.destination_address}
+              onChange={(value) => setNewRideOffer({...newRideOffer, destination_address: value})}
+              placeholder={t('destinationPlaceholder')}
+            />
           </div>
           
           <div className="space-y-2">
             <Label htmlFor="offer-date">{t('departureDate')} *</Label>
-            <Input 
-              id="offer-date"
-              type="date"
-              value={newRideOffer.departure_date}
-              onChange={(e) => setNewRideOffer({...newRideOffer, departure_date: e.target.value})}
+            <DatePicker
+              selected={newRideOffer.departure_date}
+              onSelect={(date) => setNewRideOffer({...newRideOffer, departure_date: date || null})}
+              placeholderText={t('selectDepartureDate')}
             />
           </div>
           
@@ -158,21 +152,18 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
           
           <div className="space-y-2">
             <Label htmlFor="offer-seats">{t('seatsAvailable')}</Label>
-            <Select 
-              value={newRideOffer.seats_available.toString()}
-              onValueChange={(value) => setNewRideOffer({...newRideOffer, seats_available: parseInt(value)})}
-            >
-              <SelectTrigger id="offer-seats">
-                <SelectValue placeholder={t('seatsAvailable')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1">1 {t('seats')}</SelectItem>
-                <SelectItem value="2">2 {t('seats')}</SelectItem>
-                <SelectItem value="3">3 {t('seats')}</SelectItem>
-                <SelectItem value="4">4 {t('seats')}</SelectItem>
-                <SelectItem value="5">5 {t('seats')}</SelectItem>
-              </SelectContent>
-            </Select>
+            <Input
+              id="offer-seats"
+              type="number"
+              min="1"
+              max="8"
+              value={newRideOffer.seats_available}
+              onChange={(e) => {
+                const value = parseInt(e.target.value) || 1;
+                setNewRideOffer({...newRideOffer, seats_available: Math.max(1, Math.min(8, value))});
+              }}
+              className="w-full"
+            />
           </div>
           
           <div className="space-y-2">
@@ -242,4 +233,4 @@ const RideOfferForm = ({ onOfferCreated, onCancel }: RideOfferFormProps) => {
   );
 };
 
-export default RideOfferForm;
+export default ImprovedRideOfferForm;
