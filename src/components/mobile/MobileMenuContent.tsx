@@ -42,7 +42,6 @@ export const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
         { id: 'dashboard', icon: BarChart3, label: t('dashboard'), route: '/dashboard' },
         { id: 'shifts', icon: Calendar, label: t('shifts'), route: '/shifts' },
         { id: 'travel', icon: Car, label: t('travel'), route: '/travel' },
-        { id: 'profile', icon: User, label: t('profile'), route: '/profile' },
         { id: 'settings', icon: Settings, label: t('settings'), route: '/settings' },
       ]
     },

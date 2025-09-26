@@ -6,6 +6,7 @@ import { Settings as SettingsIcon } from 'lucide-react';
 import Layout from '@/components/layouts/Layout';
 import ProfileErrorBoundary from '@/components/profile/ProfileErrorBoundary';
 import ModernSettingsLayout from '@/components/settings/modern/ModernSettingsLayout';
+import MobileSettingsLayout from '@/components/settings/mobile/MobileSettingsLayout';
 import DashboardBackground from '@/components/common/DashboardBackground';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTranslation } from 'react-i18next';
@@ -53,7 +54,7 @@ const Settings = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="h-[calc(100vh-12rem)] bg-card/50 backdrop-blur-sm rounded-lg border border-border/50 overflow-hidden"
             >
-              <ModernSettingsLayout />
+              {isMobile ? <MobileSettingsLayout /> : <ModernSettingsLayout />}
             </motion.div>
           </ProfileErrorBoundary>
         </div>

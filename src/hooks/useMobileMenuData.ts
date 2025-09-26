@@ -76,13 +76,6 @@ const getAuthenticatedMenuItems = (t: any): MenuItem[] => [
     requiresAuth: true
   },
   {
-    id: 'profile',
-    title: t('profile'),
-    icon: 'User',
-    route: '/profile',
-    requiresAuth: true
-  },
-  {
     id: 'settings',
     title: t('settings'),
     icon: 'Settings',
