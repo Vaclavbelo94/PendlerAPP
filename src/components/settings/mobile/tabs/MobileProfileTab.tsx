@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { ConsistentCard, ConsistentButton } from '@/components/ui/design-system';
+import { ConsistentButton } from '@/components/ui/design-system';
 import { useAuth } from '@/hooks/auth';
 import { useUserSettings } from '@/hooks/useUserSettings';
 import { useCompany } from '@/hooks/useCompany';
@@ -127,10 +127,11 @@ const MobileProfileTab = () => {
   return (
     <div className="p-4 space-y-4">
       {/* Account Information */}
-      <ConsistentCard
-        title={t('accountInfo')}
-        className="animate-fade-in"
-      >
+      <div className="bg-card rounded-lg border p-4 animate-fade-in">
+        <div className="flex items-center gap-2 mb-4">
+          <User className="h-5 w-5 text-primary" />
+          <h3 className="text-lg font-semibold">{t('accountInfo')}</h3>
+        </div>
         {/* Avatar Section */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
@@ -232,13 +233,14 @@ const MobileProfileTab = () => {
             <p className="text-xs text-muted-foreground mt-1">{t('bioDescription')}</p>
           </div>
         </div>
-      </ConsistentCard>
+      </div>
 
       {/* Language Settings */}
-      <ConsistentCard
-        title={t('language')}
-        className="animate-fade-in"
-      >
+      <div className="bg-card rounded-lg border p-4 animate-fade-in">
+        <div className="flex items-center gap-2 mb-4">
+          <Languages className="h-5 w-5 text-primary" />
+          <h3 className="text-lg font-semibold">{t('language')}</h3>
+        </div>
         <Select value={settings.language} onValueChange={changeLanguage}>
           <SelectTrigger>
             <SelectValue />
@@ -254,13 +256,14 @@ const MobileProfileTab = () => {
             ))}
           </SelectContent>
         </Select>
-      </ConsistentCard>
+      </div>
 
       {/* Premium Status */}
-      <ConsistentCard
-        title={t('premiumStatus')}
-        className="animate-fade-in"
-      >
+      <div className="bg-card rounded-lg border p-4 animate-fade-in">
+        <div className="flex items-center gap-2 mb-4">
+          <Crown className="h-5 w-5 text-primary" />
+          <h3 className="text-lg font-semibold">{t('premiumStatus')}</h3>
+        </div>
         {unifiedUser?.isPremium ? (
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -284,15 +287,18 @@ const MobileProfileTab = () => {
             </ConsistentButton>
           </div>
         )}
-      </ConsistentCard>
+      </div>
 
       {/* DHL Settings - only for DHL employees */}
       {isDHL && (
-        <ConsistentCard
-          title={t('dhlSettings')}
-          description={t('dhlSettingsDescription')}
-          className="animate-fade-in"
-        >
+        <div className="bg-card rounded-lg border p-4 animate-fade-in">
+          <div className="flex items-center gap-2 mb-4">
+            <Building2 className="h-5 w-5 text-primary" />
+            <div>
+              <h3 className="text-lg font-semibold">{t('dhlSettings')}</h3>
+              <p className="text-sm text-muted-foreground">{t('dhlSettingsDescription')}</p>
+            </div>
+          </div>
           <div className="space-y-4">
             <div>
               <Label>{t('personalNumber')}</Label>
@@ -319,14 +325,15 @@ const MobileProfileTab = () => {
               />
             </div>
           </div>
-        </ConsistentCard>
+        </div>
       )}
 
       {/* Security Settings */}
-      <ConsistentCard
-        title={t('security')}
-        className="animate-fade-in"
-      >
+      <div className="bg-card rounded-lg border p-4 animate-fade-in">
+        <div className="flex items-center gap-2 mb-4">
+          <Lock className="h-5 w-5 text-primary" />
+          <h3 className="text-lg font-semibold">{t('security')}</h3>
+        </div>
         <div className="space-y-4">
           <ConsistentButton
             variant="outline"
@@ -346,7 +353,7 @@ const MobileProfileTab = () => {
             {t('deleteAccount')}
           </ConsistentButton>
         </div>
-      </ConsistentCard>
+      </div>
 
       {/* Save Button */}
       <div className="pb-6">
