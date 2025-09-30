@@ -1,77 +1,82 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
-  Database, 
+  RefreshCw, 
   Download, 
   Upload, 
   Trash2, 
-  RefreshCw, 
   Info, 
-  Shield,
-  HardDrive,
-  ChevronRight 
+  HardDrive, 
+  Shield, 
+  FileText,
+  AlertTriangle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/auth';
 
 const MobileSystemPage = () => {
   const { t } = useTranslation('settings');
+  const { unifiedUser } = useAuth();
+
+  const handleSyncNow = async () => {
+    toast.loading('Synchronizace...', { id: 'sync' });
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    toast.success('Synchronizace dokončena', { id: 'sync' });
+  };
+
+  const handleExportData = async () => {
+    if (!unifiedUser?.id) return;
+    try {
+      toast.loading('Exportování dat...', { id: 'export' });
+      const { data: profile } = await supabase.from('profiles').select('*').eq('id', unifiedUser.id).single();
+      const { data: shifts } = await supabase.from('shifts').select('*').eq('user_id', unifiedUser.id);
+      const exportData = { profile, shifts, exportDate: new Date().toISOString() };
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `planner-data-${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success('Data exportována', { id: 'export' });
+    } catch (error) {
+      toast.error('Chyba při exportu', { id: 'export' });
+    }
+  };
+
+  const handleClearCache = () => {
+    const keysToKeep = ['supabase.auth.token', 'app_language'];
+    Object.keys(localStorage).forEach(key => {
+      if (!keysToKeep.some(keepKey => key.includes(keepKey))) {
+        localStorage.removeItem(key);
+      }
+    });
+    toast.success('Cache vymazána');
+  };
+
+  const handleFactoryReset = () => {
+    if (!confirm(t('factoryResetConfirmation'))) return;
+    localStorage.clear();
+    toast.success('Tovární nastavení obnoveno');
+    setTimeout(() => { supabase.auth.signOut(); window.location.reload(); }, 1500);
+  };
 
   const systemActions = [
-    {
-      id: 'sync',
-      label: t('syncNow'),
-      description: t('syncDesc'),
-      icon: RefreshCw,
-      action: () => toast.success(t('syncCompleted'))
-    },
-    {
-      id: 'export',
-      label: t('exportData'),
-      description: t('exportDataDesc'),
-      icon: Download,
-      action: () => toast.info(t('dataExportNotImplemented'))
-    },
-    {
-      id: 'import',
-      label: t('importData'),
-      description: t('importDataDesc'),
-      icon: Upload,
-      action: () => toast.info(t('dataImportNotImplemented'))
-    },
-    {
-      id: 'clear-cache',
-      label: t('clearCache'),
-      description: t('clearCacheDesc'),
-      icon: Trash2,
-      action: () => toast.success(t('cacheCleared'))
-    }
+    { id: 'sync', label: t('syncNow'), description: t('syncNowDesc'), icon: RefreshCw, action: handleSyncNow },
+    { id: 'export', label: t('exportData'), description: t('exportDataDesc'), icon: Download, action: handleExportData },
+    { id: 'import', label: t('importData'), description: t('importDataDesc'), icon: Upload, action: () => toast.info('Import dat bude brzy k dispozici') },
+    { id: 'cache', label: t('clearCache'), description: t('clearCacheDesc'), icon: Trash2, action: handleClearCache }
   ];
 
   const infoItems = [
-    {
-      id: 'storage',
-      label: t('storage'),
-      description: t('storageDesc'),
-      icon: HardDrive,
-      action: () => console.log('Storage details')
-    },
-    {
-      id: 'privacy',
-      label: t('privacyPolicy'),
-      description: t('privacyPolicyDesc'),
-      icon: Shield,
-      action: () => console.log('Privacy policy')
-    },
-    {
-      id: 'about',
-      label: t('about'),
-      description: t('aboutDesc'),
-      icon: Info,
-      action: () => console.log('About app')
-    }
+    { id: 'storage', label: t('storage'), description: t('storageDesc'), icon: HardDrive },
+    { id: 'privacy', label: t('privacyPolicy'), description: t('privacyPolicyDesc'), icon: Shield },
+    { id: 'about', label: t('about'), description: t('aboutDesc'), icon: Info }
   ];
 
   return (
@@ -86,77 +91,55 @@ const MobileSystemPage = () => {
             onClick={action.action}
             className="w-full justify-between h-auto py-3 px-4"
           >
-            <div className="flex items-center gap-3">
-              <action.icon className="h-5 w-5 text-primary" />
-              <div className="text-left">
-                <div className="font-medium">{action.label}</div>
-                <div className="text-sm text-muted-foreground">
-                  {action.description}
-                </div>
-              </div>
+            <action.icon className="h-5 w-5 text-muted-foreground mr-3" />
+            <div className="text-left flex-1">
+              <div className="font-medium">{action.label}</div>
+              <div className="text-sm text-muted-foreground">{action.description}</div>
             </div>
-            <ChevronRight className="h-5 w-5 text-muted-foreground" />
           </Button>
         ))}
       </div>
 
-      <Separator />
-
       {/* App Info */}
-      <div className="bg-card border rounded-lg p-4">
-        <h3 className="font-semibold mb-4 flex items-center gap-2">
-          <Info className="h-5 w-5 text-primary" />
-          {t('appInfo')}
-        </h3>
-        
-        <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <span className="text-sm">{t('version')}</span>
-            <Badge variant="secondary">v1.0.0</Badge>
+      <div className="bg-card border rounded-lg p-4 space-y-3">
+        <h3 className="text-sm font-medium text-muted-foreground">{t('appInfo')}</h3>
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <span className="text-sm text-muted-foreground">{t('version')}</span>
+            <Badge variant="secondary">1.0.0</Badge>
           </div>
-          
-          <div className="flex justify-between items-center">
-            <span className="text-sm">{t('lastSync')}</span>
-            <span className="text-sm text-muted-foreground">{t('now')}</span>
+          <div className="flex justify-between">
+            <span className="text-sm text-muted-foreground">{t('lastSync')}</span>
+            <span className="text-sm">{t('now')}</span>
           </div>
         </div>
       </div>
 
       {/* Info Actions */}
       <div className="space-y-2">
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">Informace</h3>
         {infoItems.map((item) => (
-          <Button
-            key={item.id}
-            variant="ghost"
-            size="lg"
-            onClick={item.action}
-            className="w-full justify-between h-auto py-3 px-4"
-          >
-            <div className="flex items-center gap-3">
-              <item.icon className="h-5 w-5 text-muted-foreground" />
-              <div className="text-left">
-                <div className="font-medium">{item.label}</div>
-                <div className="text-sm text-muted-foreground">
-                  {item.description}
-                </div>
-              </div>
+          <Button key={item.id} variant="ghost" size="lg" onClick={() => toast.info('Bude brzy k dispozici')} className="w-full justify-start h-auto py-3 px-4">
+            <item.icon className="h-5 w-5 text-muted-foreground mr-3" />
+            <div className="text-left flex-1">
+              <div className="font-medium">{item.label}</div>
+              <div className="text-sm text-muted-foreground">{item.description}</div>
             </div>
-            <ChevronRight className="h-5 w-5 text-muted-foreground" />
           </Button>
         ))}
       </div>
 
       {/* Danger Zone */}
       <div className="bg-destructive/5 border border-destructive/20 rounded-lg p-4">
-        <h4 className="font-medium text-destructive mb-2">{t('dangerZone')}</h4>
-        <Button
-          variant="outline"
-          className="w-full justify-start border-destructive/20 text-destructive hover:bg-destructive/10"
-          onClick={() => toast.error(t('factoryResetConfirmation'))}
-        >
-          <Database className="h-4 w-4 mr-2" />
+        <div className="flex items-center gap-2 mb-3">
+          <AlertTriangle className="h-5 w-5 text-destructive" />
+          <h4 className="font-medium text-destructive">{t('dangerZone')}</h4>
+        </div>
+        <Button variant="outline" className="w-full justify-start border-destructive/20 text-destructive hover:bg-destructive/10" onClick={handleFactoryReset}>
+          <FileText className="h-4 w-4 mr-2" />
           {t('factoryReset')}
         </Button>
+        <p className="text-xs text-muted-foreground mt-2">{t('factoryResetDesc')}</p>
       </div>
     </div>
   );

@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Bell, Mail, Smartphone, Calendar, Volume2, Clock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/auth';
+import { toast } from 'sonner';
 
 const MobileNotificationPage = () => {
   const { t } = useTranslation('settings');
+  const { unifiedUser } = useAuth();
+  const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState({
     email: true,
     push: true,
@@ -16,11 +20,81 @@ const MobileNotificationPage = () => {
     marketing: false
   });
 
-  const toggleNotification = (key: string) => {
+  useEffect(() => {
+    loadNotificationSettings();
+  }, [unifiedUser?.id]);
+
+  const loadNotificationSettings = async () => {
+    if (!unifiedUser?.id) return;
+    
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('user_notification_preferences')
+        .select('*')
+        .eq('user_id', unifiedUser.id)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+      
+      if (data) {
+        setNotifications({
+          email: data.email_notifications ?? true,
+          push: data.push_notifications ?? true,
+          shifts: data.shift_reminders ?? true,
+          reminders: data.shift_reminders ?? true,
+          sound: true, // Not in DB yet
+          marketing: false // Not in DB yet
+        });
+      }
+    } catch (error) {
+      console.error('Error loading notification settings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const toggleNotification = async (key: string) => {
+    if (!unifiedUser?.id) return;
+    
+    const newValue = !notifications[key as keyof typeof notifications];
     setNotifications(prev => ({
       ...prev,
-      [key]: !prev[key as keyof typeof prev]
+      [key]: newValue
     }));
+
+    try {
+      const dbKey = 
+        key === 'email' ? 'email_notifications' :
+        key === 'push' ? 'push_notifications' :
+        key === 'shifts' ? 'shift_reminders' :
+        key === 'reminders' ? 'shift_reminders' :
+        key;
+
+      const { error } = await supabase
+        .from('user_notification_preferences')
+        .upsert({
+          user_id: unifiedUser.id,
+          [dbKey]: newValue,
+          updated_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id'
+        });
+      
+      if (error) throw error;
+      
+      toast.success('Nastavení oznámení uloženo');
+    } catch (error) {
+      console.error('Error saving notification settings:', error);
+      toast.error('Chyba při ukládání');
+      // Revert on error
+      setNotifications(prev => ({
+        ...prev,
+        [key]: !newValue
+      }));
+    }
   };
 
   const notificationSettings = [
@@ -67,6 +141,10 @@ const MobileNotificationPage = () => {
       checked: notifications.marketing
     }
   ];
+
+  if (loading) {
+    return <div className="p-4">Načítání...</div>;
+  }
 
   return (
     <div className="p-4 space-y-4">
