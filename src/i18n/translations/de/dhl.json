@@ -98,6 +98,49 @@
     "title": "DHL Zeiterfassung",
     "description": "Erweiterte Arbeitszeit-Tracking mit KI-Analysen"
   },
+  "recruitment": {
+    "title": "Werden Sie Teil unseres Teams",
+    "subtitle": "Werden Sie Teil des größten Logistikunternehmens der Welt",
+    "form": {
+      "title": "Bewerbungsformular",
+      "description": "Füllen Sie die folgenden Informationen aus und wir kontaktieren Sie mit einem Jobangebot am nächstgelegenen Paketzentrum.",
+      "firstName": "Vorname",
+      "firstNamePlaceholder": "Geben Sie Ihren Vornamen ein",
+      "lastName": "Nachname",
+      "lastNamePlaceholder": "Geben Sie Ihren Nachnamen ein",
+      "packageCenter": "Paketzentrum",
+      "packageCenterPlaceholder": "Wählen Sie ein Paketzentrum",
+      "phone": "Telefonnummer",
+      "phonePlaceholder": "+49 xxx xxx xxx",
+      "consent": "Ich stimme der Verarbeitung meiner persönlichen Daten zu",
+      "consentDescription": "Ihre Daten werden ausschließlich für Rekrutierungszwecke verwendet und nicht an Dritte weitergegeben.",
+      "submit": "Bewerbung absenden",
+      "submitting": "Wird gesendet..."
+    },
+    "location": {
+      "detected": "Standort erkannt - Zentren nach Entfernung sortiert",
+      "nearestFound": "Nächstes Zentrum: {{city}} ({{distance}} km)",
+      "autoSelected": "Nächstgelegenes Zentrum automatisch ausgewählt",
+      "selected": "Ausgewähltes Zentrum"
+    },
+    "validation": {
+      "allFieldsRequired": "Alle Felder sind erforderlich"
+    },
+    "success": {
+      "title": "Vielen Dank für Ihr Interesse!",
+      "message": "Ihre Bewerbung wurde erfolgreich eingereicht. Unser Team wird sich in Kürze bei Ihnen melden.",
+      "submitted": "Formular erfolgreich gesendet",
+      "backToHome": "Zurück zur Startseite"
+    },
+    "error": {
+      "submission": "Fehler beim Absenden des Formulars. Bitte versuchen Sie es erneut."
+    },
+    "footer": "DHL Express - Ihr Partner in der Logistik",
+    "info": {
+      "description": "Sie sind bereits DHL-Mitarbeiter? Melden Sie sich in unserer App zur Schichtverwaltung und vielen weiteren Funktionen an.",
+      "linkText": "Zur App gehen"
+    }
+  },
   "admin": {
     "title": "DHL Administration",
     "subtitle": "Einfache und effiziente Schichtverwaltung",

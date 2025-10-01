@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,29 +6,67 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Truck, MapPin, Phone, User, Mail, CheckCircle, Loader2, ExternalLink, Info } from 'lucide-react';
+import { Truck, MapPin, Phone, User, Mail, CheckCircle, Loader2, ExternalLink, Info, Navigation } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import dhlLogo from '@/assets/dhl-logo.png';
 import LanguageSwitcherCompact from '@/components/ui/LanguageSwitcherCompact';
+import { DHL_PACKAGE_CENTERS, getUserLocation, sortCentersByDistance, type PackageCenter } from '@/utils/dhl/packageCenters';
 
 const DHLRecruitment = () => {
   const { t } = useTranslation('dhl');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
+  const [sortedCenters, setSortedCenters] = useState<Array<{ center: PackageCenter; distance: number }>>(
+    DHL_PACKAGE_CENTERS.map(center => ({ center, distance: 0 }))
+  );
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    city: '',
+    packageCenter: '',
     phone: '',
     consent: false
   });
 
-  const cities = [
-    'Praha', 'Brno', 'Ostrava', 'Plzeň', 'Liberec', 'Olomouc', 'České Budějovice', 
-    'Hradec Králové', 'Ústí nad Labem', 'Pardubice', 'Zlín', 'Kladno', 'Karviná', 
-    'Jihlava', 'Teplice', 'Děčín', 'Frýdek-Místek', 'Opava', 'Karlovy Vary', 'Mladá Boleslav'
-  ];
+  // Get user location on mount
+  useEffect(() => {
+    const getLocation = async () => {
+      setIsLoadingLocation(true);
+      const location = await getUserLocation();
+      
+      if (location) {
+        setUserLocation(location);
+        const sorted = sortCentersByDistance(location.lat, location.lon);
+        setSortedCenters(sorted);
+        
+        // Auto-select nearest center
+        if (sorted.length > 0) {
+          setFormData(prev => ({
+            ...prev,
+            packageCenter: sorted[0].center.id
+          }));
+          toast.success(t('recruitment.location.nearestFound', { 
+            city: sorted[0].center.name, 
+            distance: sorted[0].distance 
+          }), {
+            description: t('recruitment.location.autoSelected')
+          });
+        }
+      } else {
+        // If location not available, just show centers alphabetically
+        const sorted = [...DHL_PACKAGE_CENTERS]
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .map(center => ({ center, distance: 0 }));
+        setSortedCenters(sorted);
+      }
+      
+      setIsLoadingLocation(false);
+    };
+    
+    getLocation();
+  }, [t]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -40,7 +78,7 @@ const DHLRecruitment = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.firstName || !formData.lastName || !formData.city || !formData.phone || !formData.consent) {
+    if (!formData.firstName || !formData.lastName || !formData.packageCenter || !formData.phone || !formData.consent) {
       toast.error(t('recruitment.validation.allFieldsRequired'));
       return;
     }
@@ -48,13 +86,18 @@ const DHLRecruitment = () => {
     setIsSubmitting(true);
 
     try {
+      const selectedCenter = sortedCenters.find(c => c.center.id === formData.packageCenter)?.center;
+      
       const { error } = await supabase.functions.invoke('send-recruitment-email', {
         body: {
           firstName: formData.firstName,
           lastName: formData.lastName,
-          city: formData.city,
+          packageCenter: selectedCenter?.name || formData.packageCenter,
+          packageCenterId: formData.packageCenter,
           phone: formData.phone,
-          language: localStorage.getItem('i18nextLng') || 'cs'
+          language: localStorage.getItem('i18nextLng') || 'cs',
+          userLocation: userLocation ? `${userLocation.lat},${userLocation.lon}` : null,
+          distance: sortedCenters.find(c => c.center.id === formData.packageCenter)?.distance || null
         }
       });
 
@@ -181,24 +224,50 @@ const DHLRecruitment = () => {
                 </div>
               </div>
 
-              {/* City selection */}
+              {/* Package Center selection */}
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
-                  {t('recruitment.form.city')}
+                  {t('recruitment.form.packageCenter')}
+                  {isLoadingLocation && (
+                    <Loader2 className="h-3 w-3 animate-spin ml-2" />
+                  )}
                 </Label>
-                <Select onValueChange={(value) => handleInputChange('city', value)} required>
+                {userLocation && (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2 bg-blue-50 dark:bg-blue-950/20 p-2 rounded-md">
+                    <Navigation className="h-3 w-3 text-blue-600" />
+                    <span>{t('recruitment.location.detected')}</span>
+                  </div>
+                )}
+                <Select 
+                  value={formData.packageCenter}
+                  onValueChange={(value) => handleInputChange('packageCenter', value)} 
+                  required
+                  disabled={isLoadingLocation}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder={t('recruitment.form.cityPlaceholder')} />
+                    <SelectValue placeholder={t('recruitment.form.packageCenterPlaceholder')} />
                   </SelectTrigger>
-                  <SelectContent>
-                    {cities.map((city) => (
-                      <SelectItem key={city} value={city}>
-                        {city}
+                  <SelectContent className="max-h-[300px]">
+                    {sortedCenters.map(({ center, distance }) => (
+                      <SelectItem key={center.id} value={center.id}>
+                        <div className="flex items-center justify-between gap-3 w-full">
+                          <span>{center.name}</span>
+                          {userLocation && distance > 0 && (
+                            <span className="text-xs text-muted-foreground ml-auto">
+                              ~{distance} km
+                            </span>
+                          )}
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                {formData.packageCenter && sortedCenters.find(c => c.center.id === formData.packageCenter) && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {t('recruitment.location.selected')}: {sortedCenters.find(c => c.center.id === formData.packageCenter)?.center.name}
+                  </p>
+                )}
               </div>
 
               {/* Phone */}

@@ -98,6 +98,49 @@
     "title": "DHL Śledzenie czasu",
     "description": "Zaawansowane śledzenie czasu pracy z analizami AI"
   },
+  "recruitment": {
+    "title": "Dołącz do naszego zespołu",
+    "subtitle": "Zostań częścią największej firmy logistycznej na świecie",
+    "form": {
+      "title": "Formularz rekrutacyjny",
+      "description": "Wypełnij poniższe dane, a skontaktujemy się z Tobą z ofertą pracy w najbliższym centrum paczek.",
+      "firstName": "Imię",
+      "firstNamePlaceholder": "Wprowadź swoje imię",
+      "lastName": "Nazwisko",
+      "lastNamePlaceholder": "Wprowadź swoje nazwisko",
+      "packageCenter": "Centrum paczek",
+      "packageCenterPlaceholder": "Wybierz centrum paczek",
+      "phone": "Numer telefonu",
+      "phonePlaceholder": "+48 xxx xxx xxx",
+      "consent": "Zgadzam się na przetwarzanie moich danych osobowych",
+      "consentDescription": "Twoje dane będą używane wyłącznie do celów rekrutacyjnych i nie będą udostępniane osobom trzecim.",
+      "submit": "Wyślij zgłoszenie",
+      "submitting": "Wysyłanie..."
+    },
+    "location": {
+      "detected": "Lokalizacja wykryta - centra posortowane według odległości",
+      "nearestFound": "Najbliższe centrum: {{city}} ({{distance}} km)",
+      "autoSelected": "Automatycznie wybrano najbliższe centrum",
+      "selected": "Wybrane centrum"
+    },
+    "validation": {
+      "allFieldsRequired": "Wszystkie pola są wymagane"
+    },
+    "success": {
+      "title": "Dziękujemy za Twoje zainteresowanie!",
+      "message": "Twoje zgłoszenie zostało pomyślnie wysłane. Nasz zespół skontaktuje się z Tobą wkrótce.",
+      "submitted": "Formularz został pomyślnie wysłany",
+      "backToHome": "Powrót do strony głównej"
+    },
+    "error": {
+      "submission": "Błąd podczas wysyłania formularza. Spróbuj ponownie."
+    },
+    "footer": "DHL Express - Twój partner w logistyce",
+    "info": {
+      "description": "Jesteś już pracownikiem DHL? Zaloguj się do naszej aplikacji do zarządzania zmianami i wielu innych funkcji.",
+      "linkText": "Przejdź do aplikacji"
+    }
+  },
   "admin": {
     "title": "Administracja DHL",
     "subtitle": "Proste i efektywne zarządzanie zmianami",

@@ -298,19 +298,25 @@
     "subtitle": "Staňte se součástí největší logistické společnosti na světě",
     "form": {
       "title": "Náborový formulář",
-      "description": "Vyplňte následující údaje a my se vám ozveme s nabídkou práce ve vašem městě.",
+      "description": "Vyplňte následující údaje a my se vám ozveme s nabídkou práce v nejbližším balíkovém centru.",
       "firstName": "Jméno",
       "firstNamePlaceholder": "Zadejte vaše jméno",
       "lastName": "Příjmení",
       "lastNamePlaceholder": "Zadejte vaše příjmení",
-      "city": "Město",
-      "cityPlaceholder": "Vyberte vaše město",
+      "packageCenter": "Balíkové centrum",
+      "packageCenterPlaceholder": "Vyberte balíkové centrum",
       "phone": "Telefonní číslo",
       "phonePlaceholder": "+420 xxx xxx xxx",
       "consent": "Souhlasím se zpracováním osobních údajů",
       "consentDescription": "Vaše údaje budou použity pouze pro účely náboru a nebudou předány třetím stranám.",
       "submit": "Odeslat žádost",
       "submitting": "Odesílání..."
+    },
+    "location": {
+      "detected": "Poloha detekována - centra seřazena podle vzdálenosti",
+      "nearestFound": "Nejbližší centrum: {{city}} ({{distance}} km)",
+      "autoSelected": "Automaticky vybráno nejbližší centrum",
+      "selected": "Vybrané centrum"
     },
     "validation": {
       "allFieldsRequired": "Všechna pole jsou povinná"
