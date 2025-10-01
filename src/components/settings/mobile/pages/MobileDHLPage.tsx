@@ -25,10 +25,18 @@ const MobileDHLPage = () => {
       setLoading(true);
       const { data: positionsData } = await supabase.from('dhl_positions').select('*').eq('is_active', true);
       if (positionsData) setPositions(positionsData);
+      
       const { data: assignmentData } = await supabase.from('user_dhl_assignments').select('*, dhl_positions(*)').eq('user_id', unifiedUser.id).eq('is_active', true).order('created_at', { ascending: false }).limit(1).single();
+      
+      const { data: profileData } = await supabase.from('profiles').select('location').eq('id', unifiedUser.id).single();
+      
       if (assignmentData) {
         setAssignment(assignmentData);
-        setDhlSettings({ woche: assignmentData.current_woche?.toString() || '', position: assignmentData.dhl_position_id || '', standort: assignmentData.location || '' });
+        setDhlSettings({ 
+          woche: assignmentData.current_woche?.toString() || '', 
+          position: assignmentData.dhl_position_id || '', 
+          standort: profileData?.location || '' 
+        });
       }
     } catch (error) {
       console.error('Error loading DHL data:', error);
@@ -41,7 +49,14 @@ const MobileDHLPage = () => {
     if (!unifiedUser?.id) return;
     try {
       setSaving(true);
-      const assignmentData = { user_id: unifiedUser.id, dhl_position_id: dhlSettings.position || null, current_woche: parseInt(dhlSettings.woche) || null, location: dhlSettings.standort || null, is_active: true, updated_at: new Date().toISOString() };
+      const assignmentData = { 
+        user_id: unifiedUser.id, 
+        dhl_position_id: dhlSettings.position || null, 
+        current_woche: parseInt(dhlSettings.woche) || null, 
+        is_active: true, 
+        updated_at: new Date().toISOString() 
+      };
+      
       if (assignment) {
         const { error } = await supabase.from('user_dhl_assignments').update(assignmentData).eq('id', assignment.id);
         if (error) throw error;
@@ -49,7 +64,11 @@ const MobileDHLPage = () => {
         const { error } = await supabase.from('user_dhl_assignments').insert(assignmentData);
         if (error) throw error;
       }
-      if (dhlSettings.standort) await supabase.from('profiles').update({ location: dhlSettings.standort }).eq('id', unifiedUser.id);
+      
+      if (dhlSettings.standort) {
+        await supabase.from('profiles').update({ location: dhlSettings.standort }).eq('id', unifiedUser.id);
+      }
+      
       toast.success('DHL nastavení uloženo');
       loadDHLData();
     } catch (error) {
