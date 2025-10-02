@@ -18,14 +18,21 @@ export const NotificationManager: React.FC = () => {
 
     const checkUpcomingShifts = async () => {
       try {
+        console.log('🔔 NotificationManager: Checking upcoming shifts for user:', user.id);
+        
         // Get preferences from database
-        const { data: preferences } = await supabase
+        const { data: preferences, error: prefError } = await supabase
           .from('user_notification_preferences')
           .select('shift_reminders')
           .eq('user_id', user.id)
           .single();
 
-        if (!preferences?.shift_reminders) return;
+        console.log('🔔 User preferences:', preferences, 'Error:', prefError);
+
+        if (!preferences?.shift_reminders) {
+          console.log('🔔 Shift reminders disabled or no preferences found');
+          return;
+        }
 
         const today = new Date();
         const tomorrow = new Date(today);
