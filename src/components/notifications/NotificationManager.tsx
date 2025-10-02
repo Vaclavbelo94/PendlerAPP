@@ -54,53 +54,57 @@ export const NotificationManager: React.FC = () => {
           return;
         }
 
-        // Get existing notifications to avoid duplicates
+        // Check if there's already a notification for upcoming shift
         const { data: existingNotifications } = await supabase
           .from('notifications')
-          .select('related_to')
+          .select('id')
           .eq('user_id', user.id)
-          .eq('category', 'shift');
+          .eq('category', 'shift')
+          .limit(1);
 
-        const existingShiftIds = new Set(
-          existingNotifications
-            ?.filter(n => n.related_to && typeof n.related_to === 'object' && 'id' in n.related_to)
-            .map(n => (n.related_to as any).id) || []
-        );
-
-        // Create notifications for shifts that don't have one yet
-        for (const shift of shifts || []) {
-          if (existingShiftIds.has(shift.id)) continue;
-
-          const shiftDate = new Date(shift.date);
-          const isToday = shiftDate.toDateString() === today.toDateString();
-          const isTomorrow = shiftDate.toDateString() === tomorrow.toDateString();
-          
-          let title = 'Nadcházející směna';
-          let dateText = shiftDate.toLocaleDateString('cs-CZ');
-          
-          if (isToday) {
-            title = 'Dnešní směna';
-            dateText = 'dnes';
-          } else if (isTomorrow) {
-            title = 'Zítřejší směna';
-            dateText = 'zítra';
-          }
-
-          const shiftTypeText = shift.type === 'morning' ? 'Ranní' : 
-                              shift.type === 'afternoon' ? 'Odpolední' : 
-                              shift.type === 'night' ? 'Noční' : 'Vlastní';
-
-          await addNotification({
-            title,
-            message: `${shiftTypeText} směna ${dateText} v ${shift.start_time}${shift.notes ? ` - ${shift.notes}` : ''}`,
-            type: isToday ? 'info' : 'warning',
-            category: 'shift',
-            related_to: {
-              type: 'shift',
-              id: shift.id
-            }
-          });
+        // Only create notification if none exists
+        if (existingNotifications && existingNotifications.length > 0) {
+          console.log('🔔 Shift notification already exists, skipping');
+          return;
         }
+
+        // Get only the next upcoming shift
+        if (!shifts || shifts.length === 0) {
+          console.log('🔔 No upcoming shifts found');
+          return;
+        }
+
+        const nextShift = shifts[0]; // First shift is the closest one
+        const shiftDate = new Date(nextShift.date);
+        const isToday = shiftDate.toDateString() === today.toDateString();
+        const isTomorrow = shiftDate.toDateString() === tomorrow.toDateString();
+        
+        let title = 'Nadcházející směna';
+        let dateText = shiftDate.toLocaleDateString('cs-CZ');
+        
+        if (isToday) {
+          title = 'Dnešní směna';
+          dateText = 'dnes';
+        } else if (isTomorrow) {
+          title = 'Zítřejší směna';
+          dateText = 'zítra';
+        }
+
+        const shiftTypeText = nextShift.type === 'morning' ? 'Ranní' : 
+                            nextShift.type === 'afternoon' ? 'Odpolední' : 
+                            nextShift.type === 'night' ? 'Noční' : 'Vlastní';
+
+        console.log('🔔 Creating notification for next shift:', nextShift.id);
+        await addNotification({
+          title,
+          message: `${shiftTypeText} směna ${dateText} v ${nextShift.start_time}${nextShift.notes ? ` - ${nextShift.notes}` : ''}`,
+          type: isToday ? 'info' : 'warning',
+          category: 'shift',
+          related_to: {
+            type: 'shift',
+            id: nextShift.id
+          }
+        });
       } catch (error) {
         console.error('Error checking upcoming shifts:', error);
       }
