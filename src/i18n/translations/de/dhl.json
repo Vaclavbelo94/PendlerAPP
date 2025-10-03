@@ -162,41 +162,25 @@
       "description": "Schichten für ganze Gruppen gleichzeitig festlegen"
     }
   },
-  "recruitment": {
-    "title": "Werden Sie Teil unseres Teams",
-    "subtitle": "Werden Sie Teil des größten Logistikunternehmens der Welt",
-    "form": {
-      "title": "Bewerbungsformular",
-      "description": "Füllen Sie die folgenden Angaben aus und wir melden uns mit einem Stellenangebot in Ihrer Stadt.",
-      "firstName": "Vorname",
-      "firstNamePlaceholder": "Geben Sie Ihren Vornamen ein",
-      "lastName": "Nachname",
-      "lastNamePlaceholder": "Geben Sie Ihren Nachnamen ein",
-      "city": "Stadt",
-      "cityPlaceholder": "Wählen Sie Ihre Stadt",
-      "phone": "Telefonnummer",
-      "phonePlaceholder": "+49 xxx xxx xxx",
-      "consent": "Ich stimme der Verarbeitung personenbezogener Daten zu",
-      "consentDescription": "Ihre Daten werden nur für Rekrutierungszwecke verwendet und nicht an Dritte weitergegeben.",
-      "submit": "Bewerbung senden",
-      "submitting": "Wird gesendet..."
+  "admin": {
+    "title": "DHL Administration",
+    "subtitle": "Einfache und effiziente Schichtverwaltung",
+    "dashboard": {
+      "title": "Übersicht",
+      "description": "Schneller Systemüberblick und Statistiken"
     },
-    "validation": {
-      "allFieldsRequired": "Alle Felder sind erforderlich"
+    "groups": {
+      "title": "Gruppenverwaltung", 
+      "description": "Organisation der Mitarbeiter nach Positionen",
+      "createNew": "Gruppe erstellen",
+      "examples": {
+        "earlyShift": "Frühschicht A",
+        "lateShift": "Spätschicht B"
+      }
     },
-    "success": {
-      "title": "Vielen Dank für Ihr Interesse!",
-      "message": "Ihre Bewerbung wurde erfolgreich gesendet. Unser Team wird sich bald bei Ihnen melden.",
-      "submitted": "Das Formular wurde erfolgreich gesendet",
-      "backToHome": "Zurück zur Startseite"
-    },
-    "error": {
-      "submission": "Fehler beim Senden des Formulars. Bitte versuchen Sie es erneut."
-    },
-    "footer": "DHL Express - Ihr Partner in der Logistik",
-    "info": {
-      "description": "Sind Sie bereits DHL-Mitarbeiter? Melden Sie sich in unserer App für Schichtverwaltung und viele weitere Funktionen an.",
-      "linkText": "Zur App gehen"
+    "shifts": {
+      "title": "Massenbearbeitung Schichten",
+      "description": "Schichten für ganze Gruppen gleichzeitig festlegen"
     }
   }
 }
