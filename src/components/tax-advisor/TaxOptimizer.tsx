@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calculator, Lightbulb, FileText, TrendingUp } from 'lucide-react';
 import GermanTaxCalculator from './calculators/GermanTaxCalculator';
 import TaxOptimizationTips from './optimization/TaxOptimizationTips';
+import PendlerCalculator from './PendlerCalculator';
 import { Badge } from '@/components/ui/badge';
 import { useTranslation } from 'react-i18next';
 
@@ -22,10 +23,14 @@ const TaxOptimizer = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="calculator" className="flex items-center gap-2">
             <Calculator className="h-4 w-4" />
             {t('taxCalculator') || 'Daňový kalkulátor'}
+          </TabsTrigger>
+          <TabsTrigger value="pendler" className="flex items-center gap-2">
+            <Calculator className="h-4 w-4" />
+            {t('pendlerCalculator') || 'Pendler kalkulačka'}
           </TabsTrigger>
           <TabsTrigger value="optimization" className="flex items-center gap-2">
             <Lightbulb className="h-4 w-4" />
@@ -52,6 +57,10 @@ const TaxOptimizer = () => {
           </Card>
           
           <GermanTaxCalculator />
+        </TabsContent>
+
+        <TabsContent value="pendler" className="space-y-6">
+          <PendlerCalculator />
         </TabsContent>
 
         <TabsContent value="optimization" className="space-y-6">
