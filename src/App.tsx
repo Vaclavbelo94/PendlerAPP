@@ -22,6 +22,7 @@ import Overtime from "./pages/Overtime";
 import TravelPlanning from "./pages/TravelPlanning";
 import Translator from "./pages/Translator";
 import TaxAdvisor from "./pages/TaxAdvisor";
+import PendlerCalculatorPage from "./pages/PendlerCalculator";
 import Laws from "./pages/Laws";
 import LawDetail from "./pages/LawDetail";
 import ModernProfile from "./pages/ModernProfile";
@@ -84,6 +85,7 @@ function App() {
                         <Route path="/travel" element={<TravelPlanning />} />
                         <Route path="/translator" element={<Translator />} />
                         <Route path="/tax-advisor" element={<TaxAdvisor />} />
+                        <Route path="/pendler-calculator" element={<PendlerCalculatorPage />} />
                         <Route path="/laws" element={<Laws />} />
                         <Route path="/laws/:lawId" element={<LawDetail />} />
                         <Route path="/profile" element={<ModernProfile />} />

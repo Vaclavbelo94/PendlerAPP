@@ -14,7 +14,8 @@ import {
   CreditCard,
   Mail,
   HelpCircle,
-  ChevronRight
+  ChevronRight,
+  Calculator
 } from 'lucide-react';
 
 interface MobileMenuContentProps {
@@ -33,6 +34,7 @@ export const MobileMenuContent: React.FC<MobileMenuContentProps> = ({
       items: [
         { id: 'translator', icon: Globe, label: t('translator'), route: '/translator' },
         { id: 'taxAdvisor', icon: FileText, label: t('taxAdvisor'), route: '/tax-advisor' },
+        { id: 'pendlerCalculator', icon: Calculator, label: t('pendlerCalculator'), route: '/pendler-calculator' },
         { id: 'laws', icon: Scale, label: t('laws'), route: '/laws' },
       ]
     },
