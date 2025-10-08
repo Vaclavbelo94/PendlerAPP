@@ -144,6 +144,11 @@ import pendlerCalculatorCs from './translations/cs/pendlerCalculator.json';
 import pendlerCalculatorDe from './translations/de/pendlerCalculator.json';
 import pendlerCalculatorPl from './translations/pl/pendlerCalculator.json';
 
+// Import Wage Calculator translations
+import wageCalculatorCs from './translations/cs/wageCalculator.json';
+import wageCalculatorDe from './translations/de/wageCalculator.json';
+import wageCalculatorPl from './translations/pl/wageCalculator.json';
+
 const resources = {
   cs: {
     common: commonCs,
@@ -177,6 +182,7 @@ const resources = {
     dhlEmployee: dhlEmployeeCs,
     travelMissing: travelMissingCs,
     pendlerCalculator: pendlerCalculatorCs,
+    wageCalculator: wageCalculatorCs,
   },
   de: {
     common: commonDe,
@@ -210,6 +216,7 @@ const resources = {
     dhlEmployee: dhlEmployeeDe,
     travelMissing: travelMissingDe,
     pendlerCalculator: pendlerCalculatorDe,
+    wageCalculator: wageCalculatorDe,
   },
   pl: {
     common: commonPl,
@@ -243,6 +250,7 @@ const resources = {
     dhlEmployee: dhlEmployeePl,
     travelMissing: travelMissingPl,
     pendlerCalculator: pendlerCalculatorPl,
+    wageCalculator: wageCalculatorPl,
   },
 };
 
