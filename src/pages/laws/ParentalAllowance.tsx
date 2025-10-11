@@ -44,7 +44,7 @@ const ParentalAllowance = () => {
               <Calendar className="h-6 w-6 text-blue-600" />
               <div>
                 <p className="text-sm text-muted-foreground">{t('laws.updated')}</p>
-                <p className="font-medium">{formatDate('2025-05-15')}</p>
+                <p className="font-medium">{formatDate('2025-01-01')}</p>
               </div>
             </div>
           </CardContent>

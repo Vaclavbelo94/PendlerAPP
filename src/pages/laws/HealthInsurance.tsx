@@ -19,17 +19,17 @@ const HealthInsurance = () => {
     if (i18n.language === 'de') {
       return {
         title: 'Gesetzliche Versicherung (GKV)',
-        desc: 'Pflicht für Arbeitnehmer mit Einkommen bis 69.300 € jährlich (2024)'
+        desc: 'Pflicht für Arbeitnehmer mit Einkommen bis 73.800 € jährlich (2025)'
       };
     } else if (i18n.language === 'pl') {
       return {
         title: 'Ubezpieczenie ustawowe (GKV)',
-        desc: 'Obowiązkowe dla pracowników z dochodem do 69.300 € rocznie (2024)'
+        desc: 'Obowiązkowe dla pracowników z dochodem do 73.800 € rocznie (2025)'
       };
     } else {
       return {
         title: 'Zákonné pojištění (GKV)',
-        desc: 'Povinné pro zaměstnance s příjmem do 69 300 € ročně (2024)'
+        desc: 'Povinné pro zaměstnance s příjmem do 73 800 € ročně (2025)'
       };
     }
   };
@@ -128,7 +128,7 @@ const HealthInsurance = () => {
         <div>
           <h1 className="text-3xl font-bold">{t('laws.healthInsuranceSystem')}</h1>
           <Badge variant="outline" className="mt-2">
-            {t('laws.updated')}: {formatDate('2025-04-02')}
+            {t('laws.updated')}: {formatDate('2025-01-01')}
           </Badge>
         </div>
       </div>

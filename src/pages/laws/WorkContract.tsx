@@ -29,7 +29,7 @@ const WorkContract = () => {
         <div>
           <h1 className="text-3xl font-bold text-foreground">{t('workContract')}</h1>
           <Badge variant="outline" className="mt-2">
-            {t('updated')}: {formatDate('2025-03-18')}
+            {t('updated')}: {formatDate('2025-01-01')}
           </Badge>
         </div>
       </div>

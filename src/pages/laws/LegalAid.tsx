@@ -119,7 +119,7 @@ const LegalAid = () => {
             </Button>
           </Link>
           <Badge variant="outline">
-            {t('updated')}: {formatDate('2025-05-08')}
+            {t('updated')}: {formatDate('2025-01-01')}
           </Badge>
         </div>
       </div>

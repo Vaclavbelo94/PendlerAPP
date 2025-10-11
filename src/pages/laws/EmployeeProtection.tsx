@@ -29,7 +29,7 @@ const EmployeeProtection = () => {
         <div>
           <h1 className="text-3xl font-bold text-foreground">{t('employeeProtectionTitle')}</h1>
           <Badge variant="outline" className="mt-2">
-            {t('updated')}: {formatDate('2025-03-30')}
+            {t('updated')}: {formatDate('2025-01-01')}
           </Badge>
         </div>
       </div>
