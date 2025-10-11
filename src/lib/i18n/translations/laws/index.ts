@@ -26,6 +26,10 @@ export const lawsTranslations = {
       allLawsDescription: 'Zobrazit všechny dostupné zákony a předpisy',
 
       // Categories
+      work: 'Práce',
+      tax: 'Daně',
+      social: 'Sociální',
+      health: 'Zdraví',
       workLaw: 'Pracovní právo',
       workLawDescription: 'Zákony týkající se pracovních smluv a práv zaměstnanců',
       taxes: 'Daně',
@@ -66,6 +70,7 @@ export const lawsTranslations = {
       legalAidDescription: 'Možnosti bezplatné a cenově dostupné právní pomoci pro zahraniční pracovníky',
 
       // UI translations
+      details: 'Detaily',
       noLawsFound: 'Nebyly nalezeny žádné zákony',
       tryChangeCategory: 'Zkuste změnit kategorii',
       lawsCount: 'zákonů',
@@ -109,6 +114,10 @@ export const lawsTranslations = {
       allLaws: 'Alle Gesetze',
       allLawsDescription: 'Alle verfügbaren Gesetze und Vorschriften anzeigen',
       
+      work: 'Arbeit',
+      tax: 'Steuern',
+      social: 'Sozial',
+      health: 'Gesundheit',
       workLaw: 'Arbeitsrecht',
       workLawDescription: 'Gesetze zu Arbeitsverträgen und Arbeitnehmerrechten',
       taxes: 'Steuern',
@@ -148,6 +157,7 @@ export const lawsTranslations = {
       healthInsuranceSystemDescription: 'Überblick über das deutsche Krankenversicherungssystem für ausländische Arbeitnehmer',
 
       // UI translations
+      details: 'Details',
       noLawsFound: 'Keine Gesetze gefunden',
       tryChangeCategory: 'Versuchen Sie, die Kategorie zu ändern',
       lawsCount: 'Gesetze',
@@ -191,6 +201,10 @@ export const lawsTranslations = {
       allLaws: 'Wszystkie prawa',
       allLawsDescription: 'Pokaż wszystkie dostępne prawa i przepisy',
       
+      work: 'Praca',
+      tax: 'Podatki',
+      social: 'Socjalne',
+      health: 'Zdrowie',
       workLaw: 'Prawo pracy',
       workLawDescription: 'Przepisy dotyczące umów o pracę i praw pracowników',
       taxes: 'Podatki',
@@ -230,6 +244,7 @@ export const lawsTranslations = {
       healthInsuranceSystemDescription: 'Przegląd niemieckiego systemu ubezpieczenia zdrowotnego dla zagranicznych pracowników',
 
       // UI translations
+      details: 'Szczegóły',
       noLawsFound: 'Nie znaleziono praw',
       tryChangeCategory: 'Spróbuj zmienić kategorię',
       lawsCount: 'praw',
