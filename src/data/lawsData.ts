@@ -19,7 +19,7 @@ export const getLawItems = (t: any): LawItem[] => [
     title: t('minimumWage'),
     description: t('minimumWageDescription'),
     category: "work",
-    updated: "2024-01-01",
+    updated: "2025-01-01",
     iconName: "Euro",
     iconColor: "text-green-600",
     path: "/laws/minimum-wage"
@@ -29,7 +29,7 @@ export const getLawItems = (t: any): LawItem[] => [
     title: t('workContract'),
     description: t('workContractDescription'),
     category: "work",
-    updated: "2024-01-01",
+    updated: "2025-01-01",
     iconName: "FileText",
     iconColor: "text-blue-600",
     path: "/laws/work-contract"
@@ -39,7 +39,7 @@ export const getLawItems = (t: any): LawItem[] => [
     title: t('workingHours'),
     description: t('workingHoursDescription'),
     category: "work",
-    updated: "2024-01-01",
+    updated: "2025-01-01",
     iconName: "Clock",
     iconColor: "text-purple-600",
     path: "/laws/working-hours"
@@ -49,7 +49,7 @@ export const getLawItems = (t: any): LawItem[] => [
     title: t('minimumHolidays'),
     description: t('minimumHolidaysDescription'),
     category: "work",
-    updated: "2024-01-01",
+    updated: "2025-01-01",
     iconName: "CalendarDays",
     iconColor: "text-orange-600",
     path: "/laws/minimum-holidays"
@@ -59,7 +59,7 @@ export const getLawItems = (t: any): LawItem[] => [
     title: t('employeeProtection'),
     description: t('employeeProtectionDescription'),
     category: "work",
-    updated: "2024-01-01",
+    updated: "2025-01-01",
     iconName: "UserCheck",
     iconColor: "text-indigo-600",
     path: "/laws/employee-protection"
@@ -71,7 +71,7 @@ export const getLawItems = (t: any): LawItem[] => [
     title: t('taxReturn'),
     description: t('taxReturnDescription'),
     category: "tax",
-    updated: "2024-01-01",
+    updated: "2025-01-01",
     iconName: "FileText",
     iconColor: "text-yellow-600",
     path: "/laws/tax-return"
@@ -81,7 +81,7 @@ export const getLawItems = (t: any): LawItem[] => [
     title: t('taxClasses'),
     description: t('taxClassesDescription'),
     category: "tax",
-    updated: "2024-01-01",
+    updated: "2025-01-01",
     iconName: "Users",
     iconColor: "text-green-600",
     path: "/laws/tax-classes"
@@ -93,7 +93,7 @@ export const getLawItems = (t: any): LawItem[] => [
     title: t('pensionInsurance'),
     description: t('pensionInsuranceDescription'),
     category: "social",
-    updated: "2024-01-01",
+    updated: "2025-01-01",
     iconName: "Users",
     iconColor: "text-blue-600",
     path: "/laws/pension-insurance"
@@ -103,7 +103,7 @@ export const getLawItems = (t: any): LawItem[] => [
     title: t('childBenefits'),
     description: t('childBenefitsDescription'),
     category: "social",
-    updated: "2024-01-01",
+    updated: "2025-01-01",
     iconName: "Baby",
     iconColor: "text-pink-600",
     path: "/laws/child-benefits"
@@ -113,7 +113,7 @@ export const getLawItems = (t: any): LawItem[] => [
     title: t('parentalAllowance'),
     description: t('parentalAllowanceDescription'),
     category: "social",
-    updated: "2024-01-01",
+    updated: "2025-01-01",
     iconName: "BabyIcon",
     iconColor: "text-purple-600",
     path: "/laws/parental-allowance"
@@ -125,7 +125,7 @@ export const getLawItems = (t: any): LawItem[] => [
     title: t('healthInsurance'),
     description: t('healthInsuranceSystemDescription'),
     category: "health",
-    updated: "2024-01-01",
+    updated: "2025-01-01",
     iconName: "Heart",
     iconColor: "text-red-600",
     path: "/laws/health-insurance-system"
@@ -135,7 +135,7 @@ export const getLawItems = (t: any): LawItem[] => [
     title: t('legalAid'),
     description: t('legalAidDescription'),
     category: "health",
-    updated: "2024-01-01",
+    updated: "2025-01-01",
     iconName: "Scale",
     iconColor: "text-teal-600",
     path: "/laws/legal-aid"

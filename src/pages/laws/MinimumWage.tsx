@@ -29,7 +29,7 @@ const MinimumWage = () => {
         <div>
           <h1 className="text-3xl font-bold text-foreground">{t('minimumWage')}</h1>
           <Badge variant="outline" className="mt-2">
-            {t('updated')}: {formatDate('2025-05-15')}
+            {t('updated')}: {formatDate('2025-01-01')}
           </Badge>
         </div>
       </div>
@@ -40,7 +40,7 @@ const MinimumWage = () => {
             <CardTitle className="text-foreground">{t('currentMinimumWage')}</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-green-600 mb-2">12,41 € {t('perHour')}</div>
+            <div className="text-2xl font-bold text-green-600 mb-2">12,82 € {t('perHour')}</div>
             <p className="text-muted-foreground">
               {t('currentWageDescription')}
             </p>

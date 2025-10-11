@@ -29,7 +29,7 @@ const ChildBenefits = () => {
         <div>
           <h1 className="text-3xl font-bold">{t('laws.childBenefitsTitle')}</h1>
           <Badge variant="outline" className="mt-2">
-            {t('laws.updated')}: {formatDate('2025-04-05')}
+            {t('laws.updated')}: {formatDate('2025-01-01')}
           </Badge>
         </div>
       </div>
@@ -37,11 +37,11 @@ const ChildBenefits = () => {
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Kindergeld 2024</CardTitle>
+            <CardTitle>Kindergeld 2025</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="text-2xl font-bold text-pink-600 mb-2">{t('laws.kindergeldAmount')}</div>
+              <div className="text-2xl font-bold text-pink-600 mb-2">250 € {t('laws.perMonth')}</div>
               <p className="text-muted-foreground">{t('laws.kindergeldDesc')}</p>
               <div>
                 <h4 className="font-semibold mb-2">{t('laws.ageLimits')}</h4>

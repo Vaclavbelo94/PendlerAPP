@@ -29,7 +29,7 @@ const TaxReturn = () => {
         <div>
           <h1 className="text-3xl font-bold">{t('laws.taxReturnTitle')}</h1>
           <Badge variant="outline" className="mt-2">
-            {t('laws.updated')}: {formatDate('2025-04-10')}
+            {t('laws.updated')}: {formatDate('2025-01-01')}
           </Badge>
         </div>
       </div>
