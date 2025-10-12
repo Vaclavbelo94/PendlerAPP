@@ -9,7 +9,14 @@
     "newShift": "Neue Schicht",
     "shiftChanged": "Schichtänderung",
     "overtime": "Überstunden",
-    "reminder": "Schichterinnerung"
+    "reminder": "Schichterinnerung",
+    "upcomingShift": "Bevorstehende Schicht",
+    "todayShift": "Heutige Schicht",
+    "tomorrowShift": "Morgige Schicht",
+    "morning": "Früh",
+    "afternoon": "Spät",
+    "night": "Nacht",
+    "custom": "Benutzerdefiniert"
   },
   "rideshare": {
     "newRequest": "Neue Mitfahrgesuche",

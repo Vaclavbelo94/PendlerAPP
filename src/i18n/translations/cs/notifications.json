@@ -9,7 +9,14 @@
     "newShift": "Nová směna",
     "shiftChanged": "Změna směny",
     "overtime": "Přesčas",
-    "reminder": "Připomínka směny"
+    "reminder": "Připomínka směny",
+    "upcomingShift": "Nadcházející směna",
+    "todayShift": "Dnešní směna",
+    "tomorrowShift": "Zítřejší směna",
+    "morning": "Ranní",
+    "afternoon": "Odpolední",
+    "night": "Noční",
+    "custom": "Vlastní"
   },
   "rideshare": {
     "newRequest": "Nová žádost o spolujízdu",

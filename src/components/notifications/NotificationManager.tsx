@@ -54,20 +54,6 @@ export const NotificationManager: React.FC = () => {
           return;
         }
 
-        // Check if there's already a notification for upcoming shift
-        const { data: existingNotifications } = await supabase
-          .from('notifications')
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('category', 'shift')
-          .limit(1);
-
-        // Only create notification if none exists
-        if (existingNotifications && existingNotifications.length > 0) {
-          console.log('🔔 Shift notification already exists, skipping');
-          return;
-        }
-
         // Get only the next upcoming shift
         if (!shifts || shifts.length === 0) {
           console.log('🔔 No upcoming shifts found');
@@ -75,6 +61,47 @@ export const NotificationManager: React.FC = () => {
         }
 
         const nextShift = shifts[0]; // First shift is the closest one
+
+        // Check if there's already a notification for THIS specific shift
+        const { data: existingNotifications } = await supabase
+          .from('notifications')
+          .select('id, related_to, created_at')
+          .eq('user_id', user.id)
+          .eq('category', 'shift');
+
+        // Check if notification for this specific shift exists
+        const relevantNotification = existingNotifications?.find(n => {
+          const relatedTo = n.related_to as { type: string; id: string } | null;
+          return relatedTo?.id === nextShift.id;
+        });
+
+        if (relevantNotification) {
+          console.log('🔔 Notification for this shift already exists:', nextShift.id);
+          return;
+        }
+
+        // Delete old or irrelevant notifications (older than 24h or not for upcoming shifts)
+        const oneDayAgo = new Date();
+        oneDayAgo.setHours(oneDayAgo.getHours() - 24);
+
+        if (existingNotifications && existingNotifications.length > 0) {
+          const oldNotificationIds = existingNotifications
+            .filter(n => {
+              const isOld = new Date(n.created_at) < oneDayAgo;
+              const relatedTo = n.related_to as { type: string; id: string } | null;
+              const isIrrelevant = relatedTo?.id !== nextShift.id;
+              return isOld || isIrrelevant;
+            })
+            .map(n => n.id);
+            
+          if (oldNotificationIds.length > 0) {
+            console.log('🧹 Deleting', oldNotificationIds.length, 'old/irrelevant shift notifications');
+            await supabase
+              .from('notifications')
+              .delete()
+              .in('id', oldNotificationIds);
+          }
+        }
         const shiftDate = new Date(nextShift.date);
         const isToday = shiftDate.toDateString() === today.toDateString();
         const isTomorrow = shiftDate.toDateString() === tomorrow.toDateString();
@@ -94,10 +121,19 @@ export const NotificationManager: React.FC = () => {
                             nextShift.type === 'afternoon' ? 'Odpolední' : 
                             nextShift.type === 'night' ? 'Noční' : 'Vlastní';
 
+        // Format times without seconds
+        const startTime = nextShift.start_time.substring(0, 5); // "06:00"
+        const endTime = nextShift.end_time.substring(0, 5); // "14:00"
+
+        // Shorten notes - take only first part before " - "
+        const shortNotes = nextShift.notes 
+          ? ` | ${nextShift.notes.split(' - ')[0]}` 
+          : '';
+
         console.log('🔔 Creating notification for next shift:', nextShift.id);
         await addNotification({
           title,
-          message: `${shiftTypeText} směna ${dateText} v ${nextShift.start_time}${nextShift.notes ? ` - ${nextShift.notes}` : ''}`,
+          message: `${shiftTypeText} směna ${dateText}: ${startTime} - ${endTime}${shortNotes}`,
           type: isToday ? 'info' : 'warning',
           category: 'shift',
           related_to: {

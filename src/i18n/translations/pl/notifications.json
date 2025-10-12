@@ -9,7 +9,14 @@
     "newShift": "Nowa zmiana",
     "shiftChanged": "Zmiana zmiany",
     "overtime": "Nadgodziny",
-    "reminder": "Przypomnienie o zmianie"
+    "reminder": "Przypomnienie o zmianie",
+    "upcomingShift": "Nadchodząca zmiana",
+    "todayShift": "Dzisiejsza zmiana",
+    "tomorrowShift": "Jutrzejsza zmiana",
+    "morning": "Poranna",
+    "afternoon": "Popołudniowa",
+    "night": "Nocna",
+    "custom": "Niestandardowa"
   },
   "rideshare": {
     "newRequest": "Nowa prośba o współprzejazd",
