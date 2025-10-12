@@ -69,13 +69,28 @@ export const NotificationManager: React.FC = () => {
           .eq('user_id', user.id)
           .eq('category', 'shift');
 
-        // Check if notification for this specific shift exists
-        const relevantNotification = existingNotifications?.find(n => {
+        // Find all notifications for this specific shift
+        const shiftNotifications = existingNotifications?.filter(n => {
           const relatedTo = n.related_to as { type: string; id: string } | null;
           return relatedTo?.id === nextShift.id;
-        });
+        }) || [];
 
-        if (relevantNotification) {
+        // If there are duplicate notifications for the same shift, keep only the most recent
+        if (shiftNotifications.length > 1) {
+          const sorted = [...shiftNotifications].sort((a, b) => 
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
+          
+          const duplicateIds = sorted.slice(1).map(n => n.id);
+          console.log('🧹 Deleting', duplicateIds.length, 'duplicate shift notifications');
+          await supabase
+            .from('notifications')
+            .delete()
+            .in('id', duplicateIds);
+          
+          console.log('🔔 Kept most recent notification for shift:', nextShift.id);
+          return;
+        } else if (shiftNotifications.length === 1) {
           console.log('🔔 Notification for this shift already exists:', nextShift.id);
           return;
         }
