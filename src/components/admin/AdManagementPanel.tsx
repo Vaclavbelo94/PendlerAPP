@@ -148,10 +148,10 @@ export const AdManagementPanel = () => {
           <div className="flex items-center justify-between p-4 border rounded-lg bg-amber-50 dark:bg-amber-900/10">
             <div className="space-y-1">
               <Label htmlFor="global-override" className="text-base font-medium">
-                Globální vypnutí reklam
+                {t('globalOverride.label')}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Vypnout všechny reklamy pro všechny uživatele (emergency switch)
+                {t('globalOverride.description')}
               </p>
             </div>
             <Switch
@@ -168,17 +168,17 @@ export const AdManagementPanel = () => {
                 {adSettings.adsEnabled ? (
                   <>
                     <Eye className="h-4 w-4 text-green-600" />
-                    Reklamy zapnuté
+                    {t('mainToggle.enabled')}
                   </>
                 ) : (
                   <>
                     <EyeOff className="h-4 w-4 text-red-600" />
-                    Reklamy vypnuté
+                    {t('mainToggle.disabled')}
                   </>
                 )}
               </Label>
               <p className="text-sm text-muted-foreground">
-                Hlavní přepínač pro zobrazování reklam neprémiovým uživatelům
+                {t('mainToggle.description')}
               </p>
             </div>
             <Switch
@@ -194,9 +194,9 @@ export const AdManagementPanel = () => {
       {/* Ad Types Control */}
       <Card>
         <CardHeader>
-          <CardTitle>Typy reklam</CardTitle>
+          <CardTitle>{t('adTypes.title')}</CardTitle>
           <CardDescription>
-            Detailní nastavení jednotlivých typů reklam
+            {t('adTypes.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -205,13 +205,13 @@ export const AdManagementPanel = () => {
             <div className="flex items-center justify-between p-3 border rounded-lg">
               <div className="space-y-1">
                 <Label htmlFor="banner-ads" className="flex items-center gap-2">
-                  Banner reklamy
+                  {t('adTypes.banner.label')}
                   <Badge variant="secondary" className="text-xs">
-                    Implementováno
+                    {t('adTypes.banner.badge')}
                   </Badge>
                 </Label>
                 <p className="text-sm text-muted-foreground">
-                  Bannery zobrazované v layoutu aplikace
+                  {t('adTypes.banner.description')}
                 </p>
               </div>
               <Switch
@@ -226,13 +226,13 @@ export const AdManagementPanel = () => {
             <div className="flex items-center justify-between p-3 border rounded-lg">
               <div className="space-y-1">
                 <Label htmlFor="popup-ads" className="flex items-center gap-2">
-                  Popup reklamy
+                  {t('adTypes.popup.label')}
                   <Badge variant="secondary" className="text-xs">
-                    Implementováno
+                    {t('adTypes.popup.badge')}
                   </Badge>
                 </Label>
                 <p className="text-sm text-muted-foreground">
-                  Modální reklamy po určitém počtu zobrazení
+                  {t('adTypes.popup.description')}
                 </p>
               </div>
               <Switch
@@ -247,13 +247,13 @@ export const AdManagementPanel = () => {
             <div className="flex items-center justify-between p-3 border rounded-lg">
               <div className="space-y-1">
                 <Label htmlFor="interstitial-ads" className="flex items-center gap-2">
-                  Interstitial reklamy
+                  {t('adTypes.interstitial.label')}
                   <Badge variant="outline" className="text-xs">
-                    V přípravě
+                    {t('adTypes.interstitial.badge')}
                   </Badge>
                 </Label>
                 <p className="text-sm text-muted-foreground">
-                  Celostránkové reklamy mezi akcemi
+                  {t('adTypes.interstitial.description')}
                 </p>
               </div>
               <Switch
