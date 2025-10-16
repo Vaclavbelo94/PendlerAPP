@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { ShieldCheck } from "lucide-react";
 import AdminLoginDialog from "@/components/admin/AdminLoginDialog";
@@ -11,6 +11,7 @@ import { AdminDashboard } from "@/components/admin/core/AdminDashboard";
 import { AdminProvider, useAdminContext } from "@/components/admin/core/AdminProvider";
 import { UserManagement } from "@/components/admin/users";
 import UserActivityPanel from "@/components/admin/users/UserActivityPanel";
+import { useTranslation } from "react-i18next";
 
 import { PremiumFeaturesPanel } from "@/components/admin/PremiumFeaturesPanel";
 import { AdManagementPanel } from "@/components/admin/AdManagementPanel";
@@ -25,22 +26,23 @@ const AdminContent = () => {
   const { currentSection, setCurrentSection } = useAdminContext();
   const [showNavigation, setShowNavigation] = useState(true);
   const navigate = useNavigate();
+  const { t } = useTranslation('admin');
 
   const renderContent = () => {
     if (showNavigation && currentSection === 'dashboard') {
       return (
         <div className="space-y-8">
           <div className="text-center space-y-4">
-            <h1 className="text-3xl font-bold tracking-tight">Administrace</h1>
+            <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Kompletní správa aplikace s pokročilými funkcemi pro monitoring, analytics a správu uživatelů
+              {t('subtitle')}
             </p>
             <div className="flex justify-center">
               <Button 
                 onClick={() => navigate('/admin/v2')}
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
-                🚀 Přejít na nový Admin V2 panel
+                {t('goToAdminV2')}
               </Button>
             </div>
           </div>
@@ -55,7 +57,7 @@ const AdminContent = () => {
           />
           
           <div className="mt-12">
-            <h2 className="text-xl font-semibold mb-6">Další nástroje</h2>
+            <h2 className="text-xl font-semibold mb-6">{t('moreTools')}</h2>
             <AdminNavigation
               activeSection={currentSection}
               onSectionChange={(section) => {
@@ -73,17 +75,17 @@ const AdminContent = () => {
       case 'users-list':
         return <UserManagement />;
       case 'users-roles':
-        return <div className="p-4">Role a oprávnění - zatím nedostupné</div>;
+        return <div className="p-4">{t('roleAndPermissions')}</div>;
       case 'users-activity':
         return <UserActivityPanel />;
       case 'promo-codes':
-        return <div>Premium codes feature has been moved to company premium codes</div>;
+        return <div>{t('premiumCodesMovedNotice')}</div>;
       case 'premium-features':
         return <PremiumFeaturesPanel />;
       case 'ad-management':
         return <AdManagementPanel />;
       case 'system-logs':
-        return <div className="p-4">Systémové logy - zatím nedostupné</div>;
+        return <div className="p-4">{t('systemLogs')}</div>;
       case 'system-monitoring':
         return <SystemMonitoringPanel />;
       case 'database':
@@ -108,7 +110,7 @@ const AdminContent = () => {
           }}
           className="mb-4"
         >
-          ← Zpět na přehled
+          {t('backToOverview')}
         </Button>
       )}
       {renderContent()}
@@ -120,6 +122,8 @@ const Admin = () => {
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const navigate = useNavigate();
   const { isAdmin, signOut, refreshAdminStatus, user, isLoading } = useAuth();
+  const { t } = useTranslation('admin');
+  const { toast } = useToast();
 
   useEffect(() => {
     const checkAdminStatus = async () => {
@@ -152,7 +156,10 @@ const Admin = () => {
       if (!isAdmin && user) {
         // User is logged in but not admin
         setShowLoginDialog(false);
-        toast.error("Nemáte administrátorská práva");
+        toast({
+          title: t('toast.noPermission'),
+          variant: "destructive"
+        });
         navigate("/");
         return;
       }
@@ -169,7 +176,9 @@ const Admin = () => {
 
   const handleLogout = () => {
     signOut();
-    toast.info("Odhlášení z administrace proběhlo úspěšně");
+    toast({
+      title: t('toast.logoutSuccess')
+    });
   };
 
   if (isLoading) {
@@ -189,13 +198,13 @@ const Admin = () => {
     return (
       <div className="container py-8 max-w-4xl">
         <SectionHeader
-          title="Administrace"
-          description="Pro přístup k administraci je nutné se přihlásit s administrátorskými právy."
+          title={t('title')}
+          description={t('access.description')}
         />
         
         <InfoCard
-          title="Přístup omezen"
-          description="Přihlašte se prosím jako administrátor pro pokračování."
+          title={t('access.title')}
+          description={t('access.loginDescription')}
           icon={<ShieldCheck className="h-5 w-5" />}
           variant="muted"
           footer={
@@ -203,7 +212,7 @@ const Admin = () => {
               onClick={() => setShowLoginDialog(true)}
               className="w-full"
             >
-              Přihlásit se jako administrátor
+              {t('access.loginButton')}
             </Button>
           }
         />
@@ -213,7 +222,9 @@ const Admin = () => {
           onClose={() => navigate("/")}
           onSuccess={() => {
             setShowLoginDialog(false);
-            toast.success("Přihlášení do administrace úspěšné");
+            toast({
+              title: t('toast.loginSuccess')
+            });
           }}
         />
       </div>

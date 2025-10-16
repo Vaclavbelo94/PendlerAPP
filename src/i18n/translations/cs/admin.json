@@ -1,0 +1,21 @@
+{
+  "title": "Administrace",
+  "subtitle": "Kompletní správa aplikace s pokročilými funkcemi pro monitoring, analytics a správu uživatelů",
+  "goToAdminV2": "🚀 Přejít na nový Admin V2 panel",
+  "moreTools": "Další nástroje",
+  "backToOverview": "← Zpět na přehled",
+  "roleAndPermissions": "Role a oprávnění - zatím nedostupné",
+  "systemLogs": "Systémové logy - zatím nedostupné",
+  "premiumCodesMovedNotice": "Premium codes feature has been moved to company premium codes",
+  "access": {
+    "title": "Přístup omezen",
+    "description": "Pro přístup k administraci je nutné se přihlásit s administrátorskými právy.",
+    "loginDescription": "Přihlašte se prosím jako administrátor pro pokračování.",
+    "loginButton": "Přihlásit se jako administrátor"
+  },
+  "toast": {
+    "loginSuccess": "Přihlášení do administrace úspěšné",
+    "logoutSuccess": "Odhlášení z administrace proběhlo úspěšně",
+    "noPermission": "Nemáte administrátorská práva"
+  }
+}

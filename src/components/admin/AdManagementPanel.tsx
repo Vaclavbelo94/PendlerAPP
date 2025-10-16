@@ -7,7 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, AlertTriangle, Settings } from "lucide-react";
-import { toast } from "sonner";
+import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 interface AdSettings {
   adsEnabled: boolean;
@@ -18,6 +19,8 @@ interface AdSettings {
 }
 
 export const AdManagementPanel = () => {
+  const { t } = useTranslation('admin-ads');
+  const { toast } = useToast();
   const [adSettings, setAdSettings] = useState<AdSettings>({
     adsEnabled: true,
     bannerAdsEnabled: true,
@@ -39,7 +42,7 @@ export const AdManagementPanel = () => {
       }
     } catch (error) {
       console.error('Error loading ad settings:', error);
-      toast.error('Chyba při načítání nastavení reklam');
+      toast({ title: t('toast.loadError'), variant: "destructive" });
     }
   };
 
@@ -52,10 +55,10 @@ export const AdManagementPanel = () => {
         detail: newSettings 
       }));
       
-      toast.success('Nastavení reklam bylo uloženo');
+      toast({ title: t('toast.settingsSaved') });
     } catch (error) {
       console.error('Error saving ad settings:', error);
-      toast.error('Chyba při ukládání nastavení reklam');
+      toast({ title: t('toast.saveError'), variant: "destructive" });
     }
   };
 
@@ -67,7 +70,7 @@ export const AdManagementPanel = () => {
     
     setTimeout(() => {
       setIsLoading(false);
-      toast.success(enabled ? 'Reklamy byly zapnuty' : 'Reklamy byly vypnuty');
+      toast({ title: enabled ? t('toast.adsEnabled') : t('toast.adsDisabled') });
     }, 500);
   };
 
@@ -86,10 +89,9 @@ export const AdManagementPanel = () => {
     setAdSettings(newSettings);
     saveAdSettings(newSettings);
     
-    toast.success(enabled ? 
-      'Globální vypnutí reklam aktivováno' : 
-      'Globální vypnutí reklam deaktivováno'
-    );
+    toast({ 
+      title: enabled ? t('toast.overrideEnabled') : t('toast.overrideDisabled')
+    });
   };
 
   const resetToDefaults = () => {
@@ -102,45 +104,43 @@ export const AdManagementPanel = () => {
     };
     setAdSettings(defaultSettings);
     saveAdSettings(defaultSettings);
-    toast.success('Nastavení bylo obnoveno na výchozí hodnoty');
+    toast({ title: t('toast.defaultsRestored') });
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-medium">Správa reklam</h3>
+          <h3 className="text-lg font-medium">{t('title')}</h3>
           <p className="text-sm text-muted-foreground">
-            Ovládání zobrazování reklam pro neprémiové uživatele
+            {t('subtitle')}
           </p>
         </div>
         <Button variant="outline" onClick={resetToDefaults}>
-          Obnovit výchozí
+          {t('resetDefaults')}
         </Button>
       </div>
 
-      {/* Global Override Alert */}
       {adSettings.globalAdOverride && (
         <Alert className="border-red-500/20 bg-red-50 dark:bg-red-900/10">
           <AlertTriangle className="h-4 w-4 text-red-600" />
           <AlertDescription className="text-red-800 dark:text-red-200">
-            <strong>Globální vypnutí reklam je aktivní!</strong>
+            <strong>{t('alert.title')}</strong>
             <p className="text-sm mt-1">
-              Všechny reklamy jsou vypnuté pro všechny uživatele bez ohledu na jejich premium status.
+              {t('alert.description')}
             </p>
           </AlertDescription>
         </Alert>
       )}
 
-      {/* Main Ad Control */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Settings className="h-5 w-5" />
-            Hlavní ovládání reklam
+            {t('mainControl.title')}
           </CardTitle>
           <CardDescription>
-            Globální nastavení pro zobrazování reklam v aplikaci
+            {t('mainControl.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">

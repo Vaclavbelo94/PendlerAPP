@@ -1,0 +1,51 @@
+{
+  "title": "Werbeverwaltung",
+  "subtitle": "Steuerung der Werbeanzeige für Nicht-Premium-Benutzer",
+  "resetDefaults": "Standardwerte wiederherstellen",
+  "alert": {
+    "title": "Globale Werbeabschaltung ist aktiv!",
+    "description": "Alle Werbeanzeigen sind für alle Benutzer unabhängig von ihrem Premium-Status deaktiviert."
+  },
+  "mainControl": {
+    "title": "Hauptsteuerung der Werbung",
+    "description": "Globale Einstellungen für die Anzeige von Werbung in der Anwendung"
+  },
+  "globalOverride": {
+    "label": "Globale Werbeabschaltung",
+    "description": "Alle Werbung für alle Benutzer deaktivieren (Notschalter)"
+  },
+  "mainToggle": {
+    "enabled": "Werbung eingeschaltet",
+    "disabled": "Werbung ausgeschaltet",
+    "description": "Hauptschalter für die Anzeige von Werbung für Nicht-Premium-Benutzer"
+  },
+  "adTypes": {
+    "title": "Werbetypen",
+    "description": "Detaillierte Einstellungen für einzelne Werbetypen",
+    "banner": {
+      "label": "Banner-Werbung",
+      "description": "Banner, die im Anwendungslayout angezeigt werden",
+      "badge": "Implementiert"
+    },
+    "popup": {
+      "label": "Popup-Werbung",
+      "description": "Modale Werbung nach einer bestimmten Anzahl von Ansichten",
+      "badge": "Implementiert"
+    },
+    "interstitial": {
+      "label": "Interstitial-Werbung",
+      "description": "Vollbild-Werbung zwischen Aktionen",
+      "badge": "In Vorbereitung"
+    }
+  },
+  "toast": {
+    "settingsSaved": "Werbeeinstellungen wurden gespeichert",
+    "loadError": "Fehler beim Laden der Werbeeinstellungen",
+    "saveError": "Fehler beim Speichern der Werbeeinstellungen",
+    "adsEnabled": "Werbung wurde eingeschaltet",
+    "adsDisabled": "Werbung wurde ausgeschaltet",
+    "overrideEnabled": "Globale Werbeabschaltung aktiviert",
+    "overrideDisabled": "Globale Werbeabschaltung deaktiviert",
+    "defaultsRestored": "Einstellungen wurden auf Standardwerte zurückgesetzt"
+  }
+}

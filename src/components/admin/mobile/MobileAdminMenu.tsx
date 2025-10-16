@@ -24,41 +24,43 @@ import { useAuth } from '@/hooks/auth';
 import { useAdminV2 } from '@/hooks/useAdminV2';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 export const MobileAdminMenu: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { unifiedUser } = useAuth();
   const { hasPermission, adminPermissions } = useAdminV2();
+  const { t } = useTranslation('admin-mobile');
 
   const menuSections = [
     {
-      title: 'Hlavní',
+      title: t('menu.main'),
       items: [
         {
           id: 'dashboard',
-          label: 'Dashboard',
+          label: t('menu.dashboard'),
           icon: Home,
           href: '/admin/mobile',
           permission: 'viewer'
         },
         {
           id: 'users',
-          label: 'Správa uživatelů',
+          label: t('menu.users'),
           icon: Users,
           href: '/admin/mobile/users',
           permission: 'moderator'
         },
         {
           id: 'companies',
-          label: 'Správa firem',
+          label: t('menu.companies'),
           icon: Building2,
           href: '/admin/mobile/companies',
           permission: 'admin'
         },
         {
           id: 'rideshare',
-          label: 'Správa spolujízd',
+          label: t('menu.rideshare'),
           icon: Car,
           href: '/admin/mobile/rideshare',
           permission: 'moderator'
@@ -66,18 +68,18 @@ export const MobileAdminMenu: React.FC = () => {
       ]
     },
     {
-      title: 'Analytics & Monitoring',
+      title: t('menu.analyticsMonitoring'),
       items: [
         {
           id: 'analytics',
-          label: 'Analytics',
+          label: t('menu.analytics'),
           icon: BarChart3,
           href: '/admin/mobile/analytics',
           permission: 'viewer'
         },
         {
           id: 'monitoring',
-          label: 'Monitoring',
+          label: t('menu.monitoring'),
           icon: Monitor,
           href: '/admin/mobile/monitoring',
           permission: 'admin'
@@ -85,32 +87,32 @@ export const MobileAdminMenu: React.FC = () => {
       ]
     },
     {
-      title: 'Systém',
+      title: t('menu.system'),
       items: [
         {
           id: 'premium-codes',
-          label: 'Premium kódy',
+          label: t('menu.premiumCodes'),
           icon: CreditCard,
           href: '/admin/mobile/premium-codes',
           permission: 'admin'
         },
         {
           id: 'security',
-          label: 'Zabezpečení',
+          label: t('menu.security'),
           icon: Shield,
           href: '/admin/mobile/security',
           permission: 'admin'
         },
         {
           id: 'database',
-          label: 'Databáze',
+          label: t('menu.database'),
           icon: Database,
           href: '/admin/mobile/database',
           permission: 'super_admin'
         },
         {
           id: 'settings',
-          label: 'Nastavení',
+          label: t('menu.settings'),
           icon: Settings,
           href: '/admin/mobile/settings',
           permission: 'admin'
@@ -133,19 +135,19 @@ export const MobileAdminMenu: React.FC = () => {
     if (!adminPermissions?.permission_level) return null;
     
     const config = {
-      super_admin: { icon: Crown, label: 'Super Admin', color: 'text-red-500' },
-      admin: { icon: Shield, label: 'Admin', color: 'text-orange-500' },
-      dhl_admin: { icon: Building2, label: 'DHL Admin', color: 'text-yellow-500' },
-      moderator: { icon: Users, label: 'Moderátor', color: 'text-blue-500' },
-      viewer: { icon: Eye, label: 'Prohlížeč', color: 'text-green-500' }
+      super_admin: { icon: Crown, labelKey: 'permissions.superAdmin', color: 'text-red-500' },
+      admin: { icon: Shield, labelKey: 'permissions.admin', color: 'text-orange-500' },
+      dhl_admin: { icon: Building2, labelKey: 'permissions.dhlAdmin', color: 'text-yellow-500' },
+      moderator: { icon: Users, labelKey: 'permissions.moderator', color: 'text-blue-500' },
+      viewer: { icon: Eye, labelKey: 'permissions.viewer', color: 'text-green-500' }
     };
 
-    const { icon: Icon, label, color } = config[adminPermissions.permission_level];
+    const { icon: Icon, labelKey, color } = config[adminPermissions.permission_level];
 
     return (
       <div className="flex items-center gap-2">
         <Icon className={cn("h-4 w-4", color)} />
-        <span className="text-sm font-medium">{label}</span>
+        <span className="text-sm font-medium">{t(labelKey)}</span>
       </div>
     );
   };
@@ -220,7 +222,7 @@ export const MobileAdminMenu: React.FC = () => {
           className="w-full justify-start gap-3 text-destructive hover:text-destructive hover:bg-destructive/10"
         >
           <LogOut className="h-5 w-5" />
-          <span className="text-sm">Odhlásit se</span>
+          <span className="text-sm">{t('menu.logout')}</span>
         </Button>
       </div>
     </div>

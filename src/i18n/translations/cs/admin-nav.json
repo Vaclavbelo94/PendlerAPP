@@ -1,0 +1,42 @@
+{
+  "dashboard": {
+    "label": "Dashboard",
+    "description": "Přehled všech metrik"
+  },
+  "users": {
+    "label": "Správa uživatelů",
+    "description": "Přehled a správa účtů"
+  },
+  "usersActivity": {
+    "label": "Aktivita uživatelů",
+    "description": "Monitoring uživatelských akcí"
+  },
+  "premium": {
+    "label": "Premium funkce",
+    "description": "Konfigurace prémiových funkcí"
+  },
+  "promoCodes": {
+    "label": "Promo kódy",
+    "description": "Správa promocijních kódů"
+  },
+  "adManagement": {
+    "label": "Správa reklam",
+    "description": "Ovládání zobrazování reklam"
+  },
+  "monitoring": {
+    "label": "Monitoring",
+    "description": "Stav systému a výkon"
+  },
+  "passwordReset": {
+    "label": "Reset hesla",
+    "description": "Generování reset odkazů"
+  },
+  "database": {
+    "label": "Databáze",
+    "description": "Statistiky a správa DB"
+  },
+  "systemLogs": {
+    "label": "Systémové logy",
+    "description": "Monitoring událostí"
+  }
+}

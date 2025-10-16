@@ -1,0 +1,42 @@
+{
+  "dashboard": {
+    "label": "Dashboard",
+    "description": "Przegląd wszystkich metryk"
+  },
+  "users": {
+    "label": "Zarządzanie użytkownikami",
+    "description": "Przegląd i zarządzanie kontami"
+  },
+  "usersActivity": {
+    "label": "Aktywność użytkowników",
+    "description": "Monitorowanie działań użytkowników"
+  },
+  "premium": {
+    "label": "Funkcje Premium",
+    "description": "Konfiguracja funkcji premium"
+  },
+  "promoCodes": {
+    "label": "Kody promocyjne",
+    "description": "Zarządzanie kodami promocyjnymi"
+  },
+  "adManagement": {
+    "label": "Zarządzanie reklamami",
+    "description": "Kontrola wyświetlania reklam"
+  },
+  "monitoring": {
+    "label": "Monitoring",
+    "description": "Status systemu i wydajność"
+  },
+  "passwordReset": {
+    "label": "Reset hasła",
+    "description": "Generowanie linków resetujących"
+  },
+  "database": {
+    "label": "Baza danych",
+    "description": "Statystyki i zarządzanie bazą danych"
+  },
+  "systemLogs": {
+    "label": "Logi systemowe",
+    "description": "Monitorowanie zdarzeń"
+  }
+}

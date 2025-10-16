@@ -1,0 +1,31 @@
+{
+  "header": {
+    "title": "Admin Panel",
+    "searchPlaceholder": "Benutzer, Unternehmen, Einstellungen suchen...",
+    "settings": "Einstellungen",
+    "logout": "Abmelden"
+  },
+  "permissions": {
+    "superAdmin": "Super Admin",
+    "admin": "Admin",
+    "dhlAdmin": "DHL Admin",
+    "moderator": "Moderator",
+    "viewer": "Betrachter"
+  },
+  "menu": {
+    "main": "Hauptmenü",
+    "analyticsMonitoring": "Analytics & Monitoring",
+    "system": "System",
+    "dashboard": "Dashboard",
+    "users": "Benutzerverwaltung",
+    "companies": "Firmenverwaltung",
+    "rideshare": "Fahrgemeinschaftsverwaltung",
+    "analytics": "Analytics",
+    "monitoring": "Monitoring",
+    "premiumCodes": "Premium-Codes",
+    "security": "Sicherheit",
+    "database": "Datenbank",
+    "settings": "Einstellungen",
+    "logout": "Abmelden"
+  }
+}

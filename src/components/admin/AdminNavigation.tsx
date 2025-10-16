@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface AdminNavigationProps {
   activeSection: string;
@@ -22,69 +23,69 @@ interface AdminNavigationProps {
   variant?: 'primary' | 'secondary';
 }
 
-const primarySections = [
+const getPrimarySections = (t: any) => [
   {
     id: 'dashboard',
     icon: BarChart3,
-    label: 'Dashboard',
-    description: 'Přehled všech metrik'
+    label: t('dashboard.label'),
+    description: t('dashboard.description')
   },
   {
     id: 'users-list',
     icon: Users,
-    label: 'Správa uživatelů',
-    description: 'Přehled a správa účtů'
+    label: t('users.label'),
+    description: t('users.description')
   },
   {
     id: 'premium-features',
     icon: Crown,
-    label: 'Premium funkce',
-    description: 'Konfigurace prémiových funkcí'
+    label: t('premium.label'),
+    description: t('premium.description')
   },
   {
     id: 'system-monitoring',
     icon: Activity,
-    label: 'Monitoring',
-    description: 'Stav systému a výkon'
+    label: t('monitoring.label'),
+    description: t('monitoring.description')
   }
 ];
 
-const secondarySections = [
+const getSecondarySections = (t: any) => [
   {
     id: 'users-activity',
     icon: Activity,
-    label: 'Aktivita uživatelů',
-    description: 'Monitoring uživatelských akcí'
+    label: t('usersActivity.label'),
+    description: t('usersActivity.description')
   },
   {
     id: 'promo-codes',
     icon: Key,
-    label: 'Promo kódy',
-    description: 'Správa promocijních kódů'
+    label: t('promoCodes.label'),
+    description: t('promoCodes.description')
   },
   {
     id: 'ad-management',
     icon: Eye,
-    label: 'Správa reklam',
-    description: 'Ovládání zobrazování reklam'
+    label: t('adManagement.label'),
+    description: t('adManagement.description')
   },
   {
     id: 'password-reset',
     icon: RefreshCw,
-    label: 'Reset hesla',
-    description: 'Generování reset odkazů'
+    label: t('passwordReset.label'),
+    description: t('passwordReset.description')
   },
   {
     id: 'database',
     icon: Database,
-    label: 'Databáze',
-    description: 'Statistiky a správa DB'
+    label: t('database.label'),
+    description: t('database.description')
   },
   {
     id: 'system-logs',
     icon: FileText,
-    label: 'Systémové logy',
-    description: 'Monitoring událostí'
+    label: t('systemLogs.label'),
+    description: t('systemLogs.description')
   }
 ];
 
@@ -93,7 +94,10 @@ export const AdminNavigation: React.FC<AdminNavigationProps> = ({
   onSectionChange,
   variant = 'primary'
 }) => {
-  const sections = variant === 'primary' ? primarySections : secondarySections;
+  const { t } = useTranslation('admin-nav');
+  const sections = variant === 'primary' 
+    ? getPrimarySections(t) 
+    : getSecondarySections(t);
   
   return (
     <div className="flex justify-center">

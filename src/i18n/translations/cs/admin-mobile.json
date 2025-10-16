@@ -1,0 +1,31 @@
+{
+  "header": {
+    "title": "Admin Panel",
+    "searchPlaceholder": "Vyhledat uživatele, firmy, nastavení...",
+    "settings": "Nastavení",
+    "logout": "Odhlásit se"
+  },
+  "permissions": {
+    "superAdmin": "Super Admin",
+    "admin": "Admin",
+    "dhlAdmin": "DHL Admin",
+    "moderator": "Moderátor",
+    "viewer": "Prohlížeč"
+  },
+  "menu": {
+    "main": "Hlavní",
+    "analyticsMonitoring": "Analytics & Monitoring",
+    "system": "Systém",
+    "dashboard": "Dashboard",
+    "users": "Správa uživatelů",
+    "companies": "Správa firem",
+    "rideshare": "Správa spolujízd",
+    "analytics": "Analytics",
+    "monitoring": "Monitoring",
+    "premiumCodes": "Premium kódy",
+    "security": "Zabezpečení",
+    "database": "Databáze",
+    "settings": "Nastavení",
+    "logout": "Odhlásit se"
+  }
+}

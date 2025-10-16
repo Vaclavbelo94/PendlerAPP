@@ -1,0 +1,21 @@
+{
+  "title": "Administracja",
+  "subtitle": "Kompletne zarządzanie aplikacją z zaawansowanymi funkcjami monitoringu, analityki i zarządzania użytkownikami",
+  "goToAdminV2": "🚀 Przejdź do nowego panelu Admin V2",
+  "moreTools": "Dodatkowe narzędzia",
+  "backToOverview": "← Powrót do przeglądu",
+  "roleAndPermissions": "Role i uprawnienia - jeszcze niedostępne",
+  "systemLogs": "Logi systemowe - jeszcze niedostępne",
+  "premiumCodesMovedNotice": "Premium codes feature has been moved to company premium codes",
+  "access": {
+    "title": "Dostęp ograniczony",
+    "description": "Aby uzyskać dostęp do administracji, należy zalogować się z uprawnieniami administratora.",
+    "loginDescription": "Zaloguj się jako administrator, aby kontynuować.",
+    "loginButton": "Zaloguj się jako administrator"
+  },
+  "toast": {
+    "loginSuccess": "Logowanie do administracji pomyślne",
+    "logoutSuccess": "Wylogowanie z administracji pomyślne",
+    "noPermission": "Nie masz uprawnień administratora"
+  }
+}

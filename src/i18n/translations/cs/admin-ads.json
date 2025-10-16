@@ -1,0 +1,51 @@
+{
+  "title": "Správa reklam",
+  "subtitle": "Ovládání zobrazování reklam pro neprémiové uživatele",
+  "resetDefaults": "Obnovit výchozí",
+  "alert": {
+    "title": "Globální vypnutí reklam je aktivní!",
+    "description": "Všechny reklamy jsou vypnuté pro všechny uživatele bez ohledu na jejich premium status."
+  },
+  "mainControl": {
+    "title": "Hlavní ovládání reklam",
+    "description": "Globální nastavení pro zobrazování reklam v aplikaci"
+  },
+  "globalOverride": {
+    "label": "Globální vypnutí reklam",
+    "description": "Vypnout všechny reklamy pro všechny uživatele (emergency switch)"
+  },
+  "mainToggle": {
+    "enabled": "Reklamy zapnuté",
+    "disabled": "Reklamy vypnuté",
+    "description": "Hlavní přepínač pro zobrazování reklam neprémiovým uživatelům"
+  },
+  "adTypes": {
+    "title": "Typy reklam",
+    "description": "Detailní nastavení jednotlivých typů reklam",
+    "banner": {
+      "label": "Banner reklamy",
+      "description": "Bannery zobrazované v layoutu aplikace",
+      "badge": "Implementováno"
+    },
+    "popup": {
+      "label": "Popup reklamy",
+      "description": "Modální reklamy po určitém počtu zobrazení",
+      "badge": "Implementováno"
+    },
+    "interstitial": {
+      "label": "Interstitial reklamy",
+      "description": "Celostránkové reklamy mezi akcemi",
+      "badge": "V přípravě"
+    }
+  },
+  "toast": {
+    "settingsSaved": "Nastavení reklam bylo uloženo",
+    "loadError": "Chyba při načítání nastavení reklam",
+    "saveError": "Chyba při ukládání nastavení reklam",
+    "adsEnabled": "Reklamy byly zapnuty",
+    "adsDisabled": "Reklamy byly vypnuty",
+    "overrideEnabled": "Globální vypnutí reklam aktivováno",
+    "overrideDisabled": "Globální vypnutí reklam deaktivováno",
+    "defaultsRestored": "Nastavení bylo obnoveno na výchozí hodnoty"
+  }
+}

@@ -11,12 +11,14 @@ import { MobileAdminMenu } from './MobileAdminMenu';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export const MobileAdminHeader: React.FC = () => {
   const { unifiedUser } = useAuth();
   const { adminPermissions } = useAdminV2();
   const navigate = useNavigate();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { t } = useTranslation('admin-mobile');
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -39,17 +41,17 @@ export const MobileAdminHeader: React.FC = () => {
       viewer: 'bg-green-100 text-green-800'
     };
 
-    const labels = {
-      super_admin: 'Super Admin',
-      admin: 'Admin',
-      dhl_admin: 'DHL Admin', 
-      moderator: 'Moderátor',
-      viewer: 'Prohlížeč'
+    const labelKeys: Record<string, string> = {
+      super_admin: 'permissions.superAdmin',
+      admin: 'permissions.admin',
+      dhl_admin: 'permissions.dhlAdmin', 
+      moderator: 'permissions.moderator',
+      viewer: 'permissions.viewer'
     };
 
     return (
       <Badge variant="secondary" className={colors[adminPermissions.permission_level]}>
-        {labels[adminPermissions.permission_level]}
+        {t(labelKeys[adminPermissions.permission_level])}
       </Badge>
     );
   };
@@ -71,7 +73,7 @@ export const MobileAdminHeader: React.FC = () => {
           </Sheet>
           
           <div>
-            <h1 className="text-lg font-semibold">Admin Panel</h1>
+            <h1 className="text-lg font-semibold">{t('header.title')}</h1>
             <div className="flex items-center gap-2">
               {getPermissionBadge()}
             </div>
@@ -118,10 +120,10 @@ export const MobileAdminHeader: React.FC = () => {
               </div>
               <DropdownMenuItem onClick={() => navigate('/admin/mobile/settings')}>
                 <Settings className="h-4 w-4 mr-2" />
-                Nastavení
+                {t('header.settings')}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleLogout} className="text-destructive">
-                Odhlásit se
+                {t('header.logout')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -132,7 +134,7 @@ export const MobileAdminHeader: React.FC = () => {
       {isSearchOpen && (
         <div className="px-4 pb-4">
           <Input
-            placeholder="Vyhledat uživatele, firmy, nastavení..."
+            placeholder={t('header.searchPlaceholder')}
             autoFocus
             onBlur={() => setIsSearchOpen(false)}
           />

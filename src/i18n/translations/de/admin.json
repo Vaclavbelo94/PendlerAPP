@@ -1,0 +1,21 @@
+{
+  "title": "Administration",
+  "subtitle": "Vollständige Anwendungsverwaltung mit erweiterten Funktionen für Monitoring, Analytics und Benutzerverwaltung",
+  "goToAdminV2": "🚀 Zum neuen Admin V2 Panel wechseln",
+  "moreTools": "Weitere Tools",
+  "backToOverview": "← Zurück zur Übersicht",
+  "roleAndPermissions": "Rollen und Berechtigungen - noch nicht verfügbar",
+  "systemLogs": "Systemprotokolle - noch nicht verfügbar",
+  "premiumCodesMovedNotice": "Premium codes feature has been moved to company premium codes",
+  "access": {
+    "title": "Zugriff eingeschränkt",
+    "description": "Für den Zugriff auf die Administration ist eine Anmeldung mit Administratorrechten erforderlich.",
+    "loginDescription": "Bitte melden Sie sich als Administrator an, um fortzufahren.",
+    "loginButton": "Als Administrator anmelden"
+  },
+  "toast": {
+    "loginSuccess": "Anmeldung zur Administration erfolgreich",
+    "logoutSuccess": "Abmeldung von der Administration erfolgreich",
+    "noPermission": "Sie haben keine Administratorrechte"
+  }
+}

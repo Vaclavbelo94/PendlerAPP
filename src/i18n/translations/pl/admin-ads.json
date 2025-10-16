@@ -1,0 +1,51 @@
+{
+  "title": "Zarządzanie reklamami",
+  "subtitle": "Kontrola wyświetlania reklam dla użytkowników bez premium",
+  "resetDefaults": "Przywróć domyślne",
+  "alert": {
+    "title": "Globalne wyłączenie reklam jest aktywne!",
+    "description": "Wszystkie reklamy są wyłączone dla wszystkich użytkowników niezależnie od statusu premium."
+  },
+  "mainControl": {
+    "title": "Główne sterowanie reklamami",
+    "description": "Globalne ustawienia wyświetlania reklam w aplikacji"
+  },
+  "globalOverride": {
+    "label": "Globalne wyłączenie reklam",
+    "description": "Wyłącz wszystkie reklamy dla wszystkich użytkowników (przełącznik awaryjny)"
+  },
+  "mainToggle": {
+    "enabled": "Reklamy włączone",
+    "disabled": "Reklamy wyłączone",
+    "description": "Główny przełącznik wyświetlania reklam dla użytkowników bez premium"
+  },
+  "adTypes": {
+    "title": "Typy reklam",
+    "description": "Szczegółowe ustawienia poszczególnych typów reklam",
+    "banner": {
+      "label": "Reklamy banerowe",
+      "description": "Banery wyświetlane w układzie aplikacji",
+      "badge": "Zaimplementowano"
+    },
+    "popup": {
+      "label": "Reklamy popup",
+      "description": "Modalne reklamy po określonej liczbie wyświetleń",
+      "badge": "Zaimplementowano"
+    },
+    "interstitial": {
+      "label": "Reklamy interstitial",
+      "description": "Pełnoekranowe reklamy między akcjami",
+      "badge": "W przygotowaniu"
+    }
+  },
+  "toast": {
+    "settingsSaved": "Ustawienia reklam zostały zapisane",
+    "loadError": "Błąd podczas ładowania ustawień reklam",
+    "saveError": "Błąd podczas zapisywania ustawień reklam",
+    "adsEnabled": "Reklamy zostały włączone",
+    "adsDisabled": "Reklamy zostały wyłączone",
+    "overrideEnabled": "Globalne wyłączenie reklam aktywowane",
+    "overrideDisabled": "Globalne wyłączenie reklam dezaktywowane",
+    "defaultsRestored": "Ustawienia zostały przywrócone do wartości domyślnych"
+  }
+}
