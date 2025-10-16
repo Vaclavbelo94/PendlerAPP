@@ -41,6 +41,9 @@
     "error": "fehler"
   },
   "database": {
+    "activeConnections": "Aktive Verbindungen",
+    "errorRate": "Fehlerrate",
+    "uptime": "Verfügbarkeit",
     "connectionsLimit": "von {{limit}} möglich",
     "last24h": "in den letzten 24h",
     "last30days": "in den letzten 30 Tagen"

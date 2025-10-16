@@ -41,6 +41,9 @@
     "error": "error"
   },
   "database": {
+    "activeConnections": "Aktivní spojení",
+    "errorRate": "Chybovost",
+    "uptime": "Dostupnost",
     "connectionsLimit": "z {{limit}} možných",
     "last24h": "za posledních 24h",
     "last30days": "za posledních 30 dní"

@@ -1,18 +1,16 @@
 {
   "title": "Benutzeraktivität",
   "subtitle": "Überwachung und Audit von Benutzeraktionen",
-  "refresh": "Aktualisieren",
-  "export": "Exportieren",
-  "metrics": {
+  "summary": {
     "totalActions": "Aktionen gesamt",
     "activeUsers": "Aktive Benutzer",
-    "mostActive": "Aktivster",
+    "mostActive": "Aktivste",
     "popularAction": "Beliebte Aktion"
   },
   "filters": {
     "search": "Nach Benutzer, Aktion oder Ressource suchen...",
     "allActions": "Alle Aktionen",
-    "timeRanges": {
+    "timeFilter": {
       "1h": "Letzte Stunde",
       "24h": "Letzte 24h",
       "7d": "Letzte 7 Tage",
@@ -26,7 +24,11 @@
     "time": "Zeit",
     "ipAddress": "IP-Adresse",
     "details": "Details",
-    "items": "{{count}} Einträge"
+    "items": "Elemente"
+  },
+  "buttons": {
+    "refresh": "Aktualisieren",
+    "export": "Exportieren"
   },
   "toast": {
     "loaded": "Benutzeraktivität geladen",

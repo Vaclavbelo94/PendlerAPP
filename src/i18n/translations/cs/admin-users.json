@@ -1,36 +1,32 @@
 {
   "title": "Správa uživatelů",
-  "subtitle": "Přehled a správa uživatelských účtů",
-  "refresh": "Obnovit",
-  "userCount": "Celkem uživatelů: {{count}}",
+  "subtitle": "Přehled, správa premium a uživatelských účtů",
   "table": {
     "name": "Jméno",
     "email": "Email",
-    "premium": "Premium",
-    "registered": "Registrace",
+    "registeredAt": "Datum registrace",
     "premiumUntil": "Premium do",
-    "actions": "Akce"
-  },
-  "premium": {
-    "active": "Aktivní",
-    "inactive": "Neaktivní",
-    "toggle": "Přepnout premium"
+    "premiumStatus": "Premium status",
+    "actions": "Akce",
+    "premium": "Premium",
+    "basic": "Základní",
+    "addPremium": "Přidat premium",
+    "removePremium": "Odebrat premium"
   },
   "states": {
     "loading": "Načítání uživatelů...",
-    "error": "Nepodařilo se načíst uživatele",
+    "error": "Chyba při načítání",
+    "errorMessage": "Nepodařilo se načíst uživatele z databáze. Zkuste to prosím znovu.",
     "retry": "Zkusit znovu",
-    "empty": "Zatím žádní uživatelé",
-    "emptyDesc": "Nebyli nalezeni žádní registrovaní uživatelé"
+    "empty": "Žádní uživatelé",
+    "emptyMessage": "V systému zatím nejsou registrovaní žádní uživatelé nebo nemáte oprávnění je zobrazit.",
+    "refresh": "Obnovit"
   },
-  "toast": {
-    "loaded": "Načteno {{count}} uživatelů",
-    "premiumUpdated": "Uživatel {{name}} nyní {{status}} premium status",
-    "premiumActive": "má",
-    "premiumInactive": "nemá",
-    "updateError": "Chyba při aktualizaci: {{message}}",
-    "userNotFound": "Uživatel nebyl nalezen v databázi",
-    "loadError": "Nepodařilo se načíst data uživatele",
-    "reloginRequired": "Uživatel musí obnovit stránku nebo se znovu přihlásit pro aktualizaci premium statusu"
+  "mobile": {
+    "premiumStatus": "Premium status",
+    "registration": "Registrace",
+    "premiumUntil": "Premium do",
+    "add": "Přidat",
+    "remove": "Odebrat"
   }
 }

@@ -121,10 +121,10 @@ const UserActivityPanel: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       setActivities(mockActivities);
       setSummary(mockSummary);
-      toast.success('Aktivita uživatelů načtena');
+      toast.success(t('toast.loaded'));
     } catch (error) {
       console.error('Error fetching user activity:', error);
-      toast.error('Nepodařilo se načíst aktivitu uživatelů');
+      toast.error(t('toast.loadError'));
     } finally {
       setIsLoading(false);
     }
@@ -168,7 +168,7 @@ const UserActivityPanel: React.FC = () => {
     link.download = `user-activity-${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
     URL.revokeObjectURL(url);
-    toast.success('Aktivita exportována');
+    toast.success(t('toast.exported'));
   };
 
   const getActionBadgeVariant = (action: string) => {
@@ -203,7 +203,7 @@ const UserActivityPanel: React.FC = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
                 <Activity className="h-4 w-4" />
-                Celkem akcí
+                {t('summary.totalActions')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -215,7 +215,7 @@ const UserActivityPanel: React.FC = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
                 <Users className="h-4 w-4" />
-                Aktivní uživatelé
+                {t('summary.activeUsers')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -227,7 +227,7 @@ const UserActivityPanel: React.FC = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
                 <TrendingUp className="h-4 w-4" />
-                Nejaktivnější
+                {t('summary.mostActive')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -239,7 +239,7 @@ const UserActivityPanel: React.FC = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
                 <Eye className="h-4 w-4" />
-                Populární akce
+                {t('summary.popularAction')}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -255,20 +255,20 @@ const UserActivityPanel: React.FC = () => {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Activity className="h-5 w-5" />
-                Aktivita uživatelů
+                {t('title')}
               </CardTitle>
               <CardDescription>
-                Monitoring a audit uživatelských akcí
+                {t('subtitle')}
               </CardDescription>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" onClick={fetchUserActivity} disabled={isLoading}>
                 <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-                Obnovit
+                {t('buttons.refresh')}
               </Button>
               <Button variant="outline" onClick={exportActivity}>
                 <Download className="h-4 w-4 mr-2" />
-                Export
+                {t('buttons.export')}
               </Button>
             </div>
           </div>
@@ -279,7 +279,7 @@ const UserActivityPanel: React.FC = () => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Hledat podle uživatele, akce nebo zdroje..."
+                placeholder={t('filters.search')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -291,7 +291,7 @@ const UserActivityPanel: React.FC = () => {
                 <SelectValue placeholder="Akce" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Všechny akce</SelectItem>
+                <SelectItem value="all">{t('filters.allActions')}</SelectItem>
                 {uniqueActions.map(action => (
                   <SelectItem key={action} value={action}>{action}</SelectItem>
                 ))}
@@ -303,10 +303,10 @@ const UserActivityPanel: React.FC = () => {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1h">Poslední hodina</SelectItem>
-                <SelectItem value="24h">Posledních 24h</SelectItem>
-                <SelectItem value="7d">Posledních 7 dní</SelectItem>
-                <SelectItem value="30d">Posledních 30 dní</SelectItem>
+                <SelectItem value="1h">{t('filters.timeFilter.1h')}</SelectItem>
+                <SelectItem value="24h">{t('filters.timeFilter.24h')}</SelectItem>
+                <SelectItem value="7d">{t('filters.timeFilter.7d')}</SelectItem>
+                <SelectItem value="30d">{t('filters.timeFilter.30d')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -316,12 +316,12 @@ const UserActivityPanel: React.FC = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Uživatel</TableHead>
-                  <TableHead>Akce</TableHead>
-                  <TableHead>Zdroj</TableHead>
-                  <TableHead>Čas</TableHead>
-                  <TableHead>IP adresa</TableHead>
-                  <TableHead>Detaily</TableHead>
+                  <TableHead>{t('table.user')}</TableHead>
+                  <TableHead>{t('table.action')}</TableHead>
+                  <TableHead>{t('table.resource')}</TableHead>
+                  <TableHead>{t('table.time')}</TableHead>
+                  <TableHead>{t('table.ipAddress')}</TableHead>
+                  <TableHead>{t('table.details')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -361,7 +361,7 @@ const UserActivityPanel: React.FC = () => {
                     <TableCell className="text-sm">
                       {activity.details ? (
                         <Badge variant="secondary" className="text-xs">
-                          {Object.keys(activity.details).length} položek
+                          {Object.keys(activity.details).length} {t('table.items')}
                         </Badge>
                       ) : (
                         <span className="text-muted-foreground">-</span>

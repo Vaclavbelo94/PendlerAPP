@@ -1,36 +1,32 @@
 {
   "title": "Benutzerverwaltung",
-  "subtitle": "Übersicht und Verwaltung von Benutzerkonten",
-  "refresh": "Aktualisieren",
-  "userCount": "Benutzer gesamt: {{count}}",
+  "subtitle": "Übersicht, Premium-Verwaltung und Benutzerkonten",
   "table": {
     "name": "Name",
     "email": "E-Mail",
-    "premium": "Premium",
-    "registered": "Registriert",
+    "registeredAt": "Registrierungsdatum",
     "premiumUntil": "Premium bis",
-    "actions": "Aktionen"
-  },
-  "premium": {
-    "active": "Aktiv",
-    "inactive": "Inaktiv",
-    "toggle": "Premium umschalten"
+    "premiumStatus": "Premium-Status",
+    "actions": "Aktionen",
+    "premium": "Premium",
+    "basic": "Basis",
+    "addPremium": "Premium hinzufügen",
+    "removePremium": "Premium entfernen"
   },
   "states": {
     "loading": "Benutzer werden geladen...",
-    "error": "Benutzer konnten nicht geladen werden",
+    "error": "Fehler beim Laden",
+    "errorMessage": "Benutzer konnten nicht aus der Datenbank geladen werden. Bitte versuchen Sie es erneut.",
     "retry": "Erneut versuchen",
-    "empty": "Noch keine Benutzer",
-    "emptyDesc": "Es wurden keine registrierten Benutzer gefunden"
+    "empty": "Keine Benutzer",
+    "emptyMessage": "Es sind noch keine Benutzer im System registriert oder Sie haben keine Berechtigung, sie anzuzeigen.",
+    "refresh": "Aktualisieren"
   },
-  "toast": {
-    "loaded": "{{count}} Benutzer geladen",
-    "premiumUpdated": "Benutzer {{name}} {{status}} jetzt Premium-Status",
-    "premiumActive": "hat",
-    "premiumInactive": "hat nicht",
-    "updateError": "Fehler beim Aktualisieren: {{message}}",
-    "userNotFound": "Benutzer wurde nicht in der Datenbank gefunden",
-    "loadError": "Benutzerdaten konnten nicht geladen werden",
-    "reloginRequired": "Benutzer muss die Seite aktualisieren oder sich erneut anmelden, um den Premium-Status zu aktualisieren"
+  "mobile": {
+    "premiumStatus": "Premium-Status",
+    "registration": "Registrierung",
+    "premiumUntil": "Premium bis",
+    "add": "Hinzufügen",
+    "remove": "Entfernen"
   }
 }

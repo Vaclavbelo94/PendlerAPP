@@ -41,6 +41,9 @@
     "error": "błąd"
   },
   "database": {
+    "activeConnections": "Aktywne połączenia",
+    "errorRate": "Współczynnik błędów",
+    "uptime": "Dostępność",
     "connectionsLimit": "z {{limit}} możliwych",
     "last24h": "w ciągu ostatnich 24h",
     "last30days": "w ciągu ostatnich 30 dni"

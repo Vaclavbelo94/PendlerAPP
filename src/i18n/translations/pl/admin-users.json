@@ -1,36 +1,32 @@
 {
   "title": "Zarządzanie użytkownikami",
-  "subtitle": "Przegląd i zarządzanie kontami użytkowników",
-  "refresh": "Odśwież",
-  "userCount": "Łącznie użytkowników: {{count}}",
+  "subtitle": "Przegląd, zarządzanie premium i kontami użytkowników",
   "table": {
     "name": "Imię",
-    "email": "E-mail",
-    "premium": "Premium",
-    "registered": "Zarejestrowany",
+    "email": "Email",
+    "registeredAt": "Data rejestracji",
     "premiumUntil": "Premium do",
-    "actions": "Akcje"
-  },
-  "premium": {
-    "active": "Aktywny",
-    "inactive": "Nieaktywny",
-    "toggle": "Przełącz premium"
+    "premiumStatus": "Status premium",
+    "actions": "Akcje",
+    "premium": "Premium",
+    "basic": "Podstawowy",
+    "addPremium": "Dodaj premium",
+    "removePremium": "Usuń premium"
   },
   "states": {
     "loading": "Ładowanie użytkowników...",
-    "error": "Nie udało się załadować użytkowników",
+    "error": "Błąd podczas ładowania",
+    "errorMessage": "Nie udało się załadować użytkowników z bazy danych. Spróbuj ponownie.",
     "retry": "Spróbuj ponownie",
-    "empty": "Jeszcze brak użytkowników",
-    "emptyDesc": "Nie znaleziono żadnych zarejestrowanych użytkowników"
+    "empty": "Brak użytkowników",
+    "emptyMessage": "W systemie nie ma jeszcze zarejestrowanych użytkowników lub nie masz uprawnień do ich wyświetlenia.",
+    "refresh": "Odśwież"
   },
-  "toast": {
-    "loaded": "Załadowano {{count}} użytkowników",
-    "premiumUpdated": "Użytkownik {{name}} teraz {{status}} status premium",
-    "premiumActive": "ma",
-    "premiumInactive": "nie ma",
-    "updateError": "Błąd podczas aktualizacji: {{message}}",
-    "userNotFound": "Użytkownik nie został znaleziony w bazie danych",
-    "loadError": "Nie udało się załadować danych użytkownika",
-    "reloginRequired": "Użytkownik musi odświeżyć stronę lub zalogować się ponownie, aby zaktualizować status premium"
+  "mobile": {
+    "premiumStatus": "Status premium",
+    "registration": "Rejestracja",
+    "premiumUntil": "Premium do",
+    "add": "Dodaj",
+    "remove": "Usuń"
   }
 }

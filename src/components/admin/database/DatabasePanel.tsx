@@ -102,10 +102,10 @@ const DatabasePanel: React.FC = () => {
       return;
     }
 
-    // Basic security check - only allow SELECT queries
+      // Basic security check - only allow SELECT queries
     const trimmedQuery = sqlQuery.trim().toLowerCase();
     if (!trimmedQuery.startsWith('select')) {
-      toast({ title: 'Pouze SELECT dotazy jsou povoleny', variant: "destructive" });
+      toast({ title: t('query.securityNote'), variant: "destructive" });
       return;
     }
 
@@ -156,7 +156,7 @@ const DatabasePanel: React.FC = () => {
 
   const exportData = (format: 'csv' | 'json') => {
     if (!queryResult) {
-      toast.error('Nejprve proveďte dotaz');
+      toast({ title: t('query.noResults'), variant: "destructive" });
       return;
     }
 
@@ -191,7 +191,7 @@ const DatabasePanel: React.FC = () => {
     link.download = filename;
     link.click();
     URL.revokeObjectURL(url);
-    toast.success(`Data exportována jako ${format.toUpperCase()}`);
+    toast({ title: t('query.results') + ` ${format.toUpperCase()}` });
   };
 
   const totalSize = tableStats.reduce((sum, table) => sum + table.size_mb, 0);
@@ -419,26 +419,13 @@ const DatabasePanel: React.FC = () => {
                   </Button>
                 </div>
 
-                <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Automatické zálohy</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Konfigurace pravidelných automatických záloh.
-                  </p>
-                  <div className="space-y-2">
-                    <Badge variant="secondary">Denní záloha: 02:00</Badge>
-                    <Badge variant="secondary">Týdenní záloha: Neděle 01:00</Badge>
-                    <Badge variant="secondary">Uchování: 30 dní</Badge>
-                  </div>
-                </div>
+                <Alert>
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>
+                    {t('backup.create.description')}
+                  </AlertDescription>
+                </Alert>
               </div>
-
-              <Alert>
-                <AlertTriangle className="h-4 w-4" />
-                <AlertDescription>
-                  Zálohy jsou automaticky šifrovány a ukládány do zabezpečeného úložiště. 
-                  Pro obnovu dat kontaktujte systémového administrátora.
-                </AlertDescription>
-              </Alert>
             </CardContent>
           </Card>
         </TabsContent>

@@ -1,18 +1,16 @@
 {
   "title": "Aktywność użytkowników",
   "subtitle": "Monitorowanie i audyt działań użytkowników",
-  "refresh": "Odśwież",
-  "export": "Eksportuj",
-  "metrics": {
+  "summary": {
     "totalActions": "Łącznie akcji",
     "activeUsers": "Aktywni użytkownicy",
-    "mostActive": "Najaktywniejszy",
+    "mostActive": "Najbardziej aktywny",
     "popularAction": "Popularna akcja"
   },
   "filters": {
     "search": "Szukaj według użytkownika, akcji lub zasobu...",
     "allActions": "Wszystkie akcje",
-    "timeRanges": {
+    "timeFilter": {
       "1h": "Ostatnia godzina",
       "24h": "Ostatnie 24h",
       "7d": "Ostatnie 7 dni",
@@ -26,10 +24,14 @@
     "time": "Czas",
     "ipAddress": "Adres IP",
     "details": "Szczegóły",
-    "items": "{{count}} pozycji"
+    "items": "elementów"
+  },
+  "buttons": {
+    "refresh": "Odśwież",
+    "export": "Eksportuj"
   },
   "toast": {
-    "loaded": "Załadowano aktywność użytkowników",
+    "loaded": "Aktywność użytkowników załadowana",
     "loadError": "Nie udało się załadować aktywności użytkowników",
     "exported": "Aktywność wyeksportowana"
   }

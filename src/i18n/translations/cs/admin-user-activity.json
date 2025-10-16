@@ -1,9 +1,7 @@
 {
   "title": "Aktivita uživatelů",
   "subtitle": "Monitoring a audit uživatelských akcí",
-  "refresh": "Obnovit",
-  "export": "Export",
-  "metrics": {
+  "summary": {
     "totalActions": "Celkem akcí",
     "activeUsers": "Aktivní uživatelé",
     "mostActive": "Nejaktivnější",
@@ -12,7 +10,7 @@
   "filters": {
     "search": "Hledat podle uživatele, akce nebo zdroje...",
     "allActions": "Všechny akce",
-    "timeRanges": {
+    "timeFilter": {
       "1h": "Poslední hodina",
       "24h": "Posledních 24h",
       "7d": "Posledních 7 dní",
@@ -26,7 +24,11 @@
     "time": "Čas",
     "ipAddress": "IP adresa",
     "details": "Detaily",
-    "items": "{{count}} položek"
+    "items": "položek"
+  },
+  "buttons": {
+    "refresh": "Obnovit",
+    "export": "Export"
   },
   "toast": {
     "loaded": "Aktivita uživatelů načtena",

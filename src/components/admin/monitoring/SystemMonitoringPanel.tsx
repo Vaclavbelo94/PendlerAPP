@@ -386,12 +386,12 @@ const SystemMonitoringPanel: React.FC = () => {
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium flex items-center gap-2">
                   <Database className="h-4 w-4" />
-                  Aktivní spojení
+                  {t('database.activeConnections')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{metrics.dbConnections}</div>
-                <p className="text-xs text-muted-foreground">z 100 možných</p>
+                <p className="text-xs text-muted-foreground">{t('database.connectionsLimit', { limit: 100 })}</p>
                 <Progress value={(metrics.dbConnections / 100) * 100} className="mt-2" />
               </CardContent>
             </Card>
@@ -400,12 +400,12 @@ const SystemMonitoringPanel: React.FC = () => {
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium flex items-center gap-2">
                   <Zap className="h-4 w-4" />
-                  Chybovost
+                  {t('database.errorRate')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{metrics.errorRate}%</div>
-                <p className="text-xs text-muted-foreground">za posledních 24h</p>
+                <p className="text-xs text-muted-foreground">{t('database.last24h')}</p>
                 <Progress value={metrics.errorRate} className="mt-2" />
               </CardContent>
             </Card>
@@ -414,12 +414,12 @@ const SystemMonitoringPanel: React.FC = () => {
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium flex items-center gap-2">
                   <Clock className="h-4 w-4" />
-                  Dostupnost
+                  {t('database.uptime')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{metrics.uptime}%</div>
-                <p className="text-xs text-muted-foreground">za posledních 30 dní</p>
+                <p className="text-xs text-muted-foreground">{t('database.last30days')}</p>
                 <Progress value={metrics.uptime} className="mt-2" />
               </CardContent>
             </Card>
