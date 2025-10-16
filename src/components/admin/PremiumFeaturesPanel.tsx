@@ -9,8 +9,10 @@ import {
   toggleFeatureStatus, 
   resetToDefaultFeatures 
 } from "./services/featureService";
+import { useTranslation } from "react-i18next";
 
 export const PremiumFeaturesPanel = () => {
+  const { t } = useTranslation('admin-premium');
   const [features, setFeatures] = useState<PremiumFeature[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -38,9 +40,9 @@ export const PremiumFeaturesPanel = () => {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium">Nastavení prémiových funkcí</h3>
+        <h3 className="text-lg font-medium">{t('title')}</h3>
         <Button variant="outline" onClick={handleResetToDefaults}>
-          Obnovit výchozí nastavení
+          {t('resetButton')}
         </Button>
       </div>
 

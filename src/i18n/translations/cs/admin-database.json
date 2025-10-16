@@ -1,0 +1,52 @@
+{
+  "title": "Správa databáze",
+  "subtitle": "Statistiky, zálohy a údržba databáze",
+  "tabs": {
+    "overview": "Přehled",
+    "query": "SQL Dotazy",
+    "backup": "Zálohy",
+    "maintenance": "Údržba"
+  },
+  "overview": {
+    "title": "Přehled tabulek",
+    "refresh": "Obnovit",
+    "table": "Tabulka",
+    "rows": "Řádky",
+    "size": "Velikost",
+    "lastUpdate": "Poslední aktualizace",
+    "noTables": "Žádné tabulky nenalezeny"
+  },
+  "query": {
+    "title": "SQL Editor",
+    "placeholder": "SELECT * FROM profiles LIMIT 10;",
+    "execute": "Spustit dotaz",
+    "executionTime": "Čas provedení",
+    "rowCount": "Počet řádků",
+    "results": "Výsledky",
+    "noResults": "Žádné výsledky"
+  },
+  "backup": {
+    "title": "Správa záloh databáze a obnova dat",
+    "create": {
+      "title": "Vytvoření zálohy",
+      "description": "Vytvoří kompletní zálohu databáze ve formátu SQL dump.",
+      "button": "Vytvořit zálohu",
+      "success": "Záloha vytvořena"
+    },
+    "status": {
+      "idle": "Připraveno",
+      "running": "Vytváření zálohy...",
+      "success": "Záloha úspěšně vytvořena",
+      "error": "Chyba při vytváření zálohy"
+    }
+  },
+  "toast": {
+    "statsLoaded": "Statistiky databáze načteny",
+    "statsError": "Nepodařilo se načíst statistiky databáze",
+    "queryEmpty": "Zadejte SQL dotaz",
+    "querySuccess": "Dotaz byl úspěšně proveden",
+    "queryError": "Chyba při provádění dotazu",
+    "backupCreated": "Záloha databáze vytvořena úspěšně",
+    "backupError": "Nepodařilo se vytvořit zálohu"
+  }
+}

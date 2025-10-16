@@ -22,7 +22,8 @@ import {
   RefreshCw,
   HardDrive
 } from 'lucide-react';
-import { toast } from 'sonner';
+import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 
 interface TableStat {
   table_name: string;
@@ -39,6 +40,8 @@ interface QueryResult {
 }
 
 const DatabasePanel: React.FC = () => {
+  const { t } = useTranslation('admin-database');
+  const { toast } = useToast();
   const [tableStats, setTableStats] = useState<TableStat[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [sqlQuery, setSqlQuery] = useState('');
@@ -84,10 +87,10 @@ const DatabasePanel: React.FC = () => {
       // TODO: Replace with actual Supabase query
       await new Promise(resolve => setTimeout(resolve, 1000));
       setTableStats(mockTableStats);
-      toast.success('Statistiky databáze načteny');
+      toast({ title: t('toast.statsLoaded') });
     } catch (error) {
       console.error('Error fetching table stats:', error);
-      toast.error('Nepodařilo se načíst statistiky databáze');
+      toast({ title: t('toast.statsError'), variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -95,14 +98,14 @@ const DatabasePanel: React.FC = () => {
 
   const executeQuery = async () => {
     if (!sqlQuery.trim()) {
-      toast.error('Zadejte SQL dotaz');
+      toast({ title: t('toast.queryEmpty'), variant: "destructive" });
       return;
     }
 
     // Basic security check - only allow SELECT queries
     const trimmedQuery = sqlQuery.trim().toLowerCase();
     if (!trimmedQuery.startsWith('select')) {
-      toast.error('Pouze SELECT dotazy jsou povoleny');
+      toast({ title: 'Pouze SELECT dotazy jsou povoleny', variant: "destructive" });
       return;
     }
 
@@ -124,10 +127,10 @@ const DatabasePanel: React.FC = () => {
       };
       
       setQueryResult(mockResult);
-      toast.success(`Dotaz proveden úspěšně (${mockResult.execution_time}ms)`);
+      toast({ title: t('toast.querySuccess') + ` (${mockResult.execution_time}ms)` });
     } catch (error) {
       console.error('Error executing query:', error);
-      toast.error('Chyba při provádění dotazu');
+      toast({ title: t('toast.queryError'), variant: "destructive" });
     } finally {
       setIsExecuting(false);
     }
@@ -139,14 +142,14 @@ const DatabasePanel: React.FC = () => {
       // TODO: Replace with actual backup creation
       await new Promise(resolve => setTimeout(resolve, 3000));
       setBackupStatus('success');
-      toast.success('Záloha databáze vytvořena úspěšně');
+      toast({ title: t('toast.backupCreated') });
       
       // Reset status after 3 seconds
       setTimeout(() => setBackupStatus('idle'), 3000);
     } catch (error) {
       console.error('Error creating backup:', error);
       setBackupStatus('error');
-      toast.error('Nepodařilo se vytvořit zálohu');
+      toast({ title: t('toast.backupError'), variant: "destructive" });
       setTimeout(() => setBackupStatus('idle'), 3000);
     }
   };

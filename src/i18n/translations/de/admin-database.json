@@ -1,0 +1,52 @@
+{
+  "title": "Datenbankverwaltung",
+  "subtitle": "Statistiken, Backups und Datenbankwartung",
+  "tabs": {
+    "overview": "Übersicht",
+    "query": "SQL-Abfragen",
+    "backup": "Backups",
+    "maintenance": "Wartung"
+  },
+  "overview": {
+    "title": "Tabellenübersicht",
+    "refresh": "Aktualisieren",
+    "table": "Tabelle",
+    "rows": "Zeilen",
+    "size": "Größe",
+    "lastUpdate": "Letzte Aktualisierung",
+    "noTables": "Keine Tabellen gefunden"
+  },
+  "query": {
+    "title": "SQL-Editor",
+    "placeholder": "SELECT * FROM profiles LIMIT 10;",
+    "execute": "Abfrage ausführen",
+    "executionTime": "Ausführungszeit",
+    "rowCount": "Zeilenanzahl",
+    "results": "Ergebnisse",
+    "noResults": "Keine Ergebnisse"
+  },
+  "backup": {
+    "title": "Datenbank-Backup-Verwaltung und Datenwiederherstellung",
+    "create": {
+      "title": "Backup erstellen",
+      "description": "Erstellt ein vollständiges Datenbank-Backup im SQL-Dump-Format.",
+      "button": "Backup erstellen",
+      "success": "Backup erstellt"
+    },
+    "status": {
+      "idle": "Bereit",
+      "running": "Backup wird erstellt...",
+      "success": "Backup erfolgreich erstellt",
+      "error": "Fehler beim Erstellen des Backups"
+    }
+  },
+  "toast": {
+    "statsLoaded": "Datenbankstatistiken geladen",
+    "statsError": "Fehler beim Laden der Datenbankstatistiken",
+    "queryEmpty": "Bitte geben Sie eine SQL-Abfrage ein",
+    "querySuccess": "Abfrage erfolgreich ausgeführt",
+    "queryError": "Fehler beim Ausführen der Abfrage",
+    "backupCreated": "Datenbank-Backup erfolgreich erstellt",
+    "backupError": "Fehler beim Erstellen des Backups"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "title": "Zarządzanie bazą danych",
+  "subtitle": "Statystyki, kopie zapasowe i konserwacja bazy danych",
+  "tabs": {
+    "overview": "Przegląd",
+    "query": "Zapytania SQL",
+    "backup": "Kopie zapasowe",
+    "maintenance": "Konserwacja"
+  },
+  "overview": {
+    "title": "Przegląd tabel",
+    "refresh": "Odśwież",
+    "table": "Tabela",
+    "rows": "Wiersze",
+    "size": "Rozmiar",
+    "lastUpdate": "Ostatnia aktualizacja",
+    "noTables": "Nie znaleziono tabel"
+  },
+  "query": {
+    "title": "Edytor SQL",
+    "placeholder": "SELECT * FROM profiles LIMIT 10;",
+    "execute": "Wykonaj zapytanie",
+    "executionTime": "Czas wykonania",
+    "rowCount": "Liczba wierszy",
+    "results": "Wyniki",
+    "noResults": "Brak wyników"
+  },
+  "backup": {
+    "title": "Zarządzanie kopiami zapasowymi bazy danych i przywracanie danych",
+    "create": {
+      "title": "Tworzenie kopii zapasowej",
+      "description": "Tworzy kompletną kopię zapasową bazy danych w formacie SQL dump.",
+      "button": "Utwórz kopię zapasową",
+      "success": "Kopia zapasowa utworzona"
+    },
+    "status": {
+      "idle": "Gotowe",
+      "running": "Tworzenie kopii zapasowej...",
+      "success": "Kopia zapasowa pomyślnie utworzona",
+      "error": "Błąd podczas tworzenia kopii zapasowej"
+    }
+  },
+  "toast": {
+    "statsLoaded": "Załadowano statystyki bazy danych",
+    "statsError": "Nie udało się załadować statystyk bazy danych",
+    "queryEmpty": "Wprowadź zapytanie SQL",
+    "querySuccess": "Zapytanie wykonane pomyślnie",
+    "queryError": "Błąd podczas wykonywania zapytania",
+    "backupCreated": "Kopia zapasowa bazy danych utworzona pomyślnie",
+    "backupError": "Nie udało się utworzyć kopii zapasowej"
+  }
+}

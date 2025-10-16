@@ -1,0 +1,15 @@
+{
+  "title": "Premium-Funktionen Einstellungen",
+  "resetButton": "Auf Standardeinstellungen zurücksetzen",
+  "loading": "Lädt...",
+  "table": {
+    "feature": "Funktion",
+    "description": "Beschreibung",
+    "status": "Status",
+    "actions": "Aktionen"
+  },
+  "status": {
+    "enabled": "Aktiv",
+    "disabled": "Inaktiv"
+  }
+}

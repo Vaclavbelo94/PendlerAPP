@@ -1,0 +1,15 @@
+{
+  "title": "Nastavení prémiových funkcí",
+  "resetButton": "Obnovit výchozí nastavení",
+  "loading": "Načítání...",
+  "table": {
+    "feature": "Funkce",
+    "description": "Popis",
+    "status": "Stav",
+    "actions": "Akce"
+  },
+  "status": {
+    "enabled": "Aktivní",
+    "disabled": "Neaktivní"
+  }
+}

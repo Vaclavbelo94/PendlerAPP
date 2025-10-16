@@ -1,0 +1,15 @@
+{
+  "title": "Ustawienia funkcji Premium",
+  "resetButton": "Przywróć domyślne ustawienia",
+  "loading": "Ładowanie...",
+  "table": {
+    "feature": "Funkcja",
+    "description": "Opis",
+    "status": "Status",
+    "actions": "Akcje"
+  },
+  "status": {
+    "enabled": "Aktywna",
+    "disabled": "Nieaktywna"
+  }
+}
