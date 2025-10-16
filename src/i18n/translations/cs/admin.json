@@ -7,6 +7,72 @@
   "roleAndPermissions": "Role a oprávnění - zatím nedostupné",
   "systemLogs": "Systémové logy - zatím nedostupné",
   "premiumCodesMovedNotice": "Premium codes feature has been moved to company premium codes",
+  "header": {
+    "title": "Administrace",
+    "subtitle": "Kompletní správa aplikace s pokročilými funkcemi pro monitoring, analytics a správu uživatelů",
+    "adminMode": "Admin režim",
+    "refresh": "Obnovit",
+    "logout": "Odhlásit se"
+  },
+  "categories": {
+    "userManagement": {
+      "title": "Správa uživatelů",
+      "description": "Nástroje pro správu uživatelských účtů a oprávnění"
+    },
+    "features": {
+      "title": "Funkce a konfigurace",
+      "description": "Nastavení aplikačních funkcí a promocí"
+    },
+    "monitoring": {
+      "title": "Monitoring a analýza",
+      "description": "Sledování výkonu a analýza dat"
+    }
+  },
+  "quickStats": {
+    "activeUsers": "Aktivní uživatelé",
+    "premiumUsers": "Premium uživatelé",
+    "systemStatus": "Systémový stav",
+    "monthCompare": "+{{percent}}% oproti minulému měsíci",
+    "conversionRate": "{{rate}}% konverzní poměr",
+    "availability": "Dostupnost"
+  },
+  "sectionView": {
+    "backToOverview": "← Zpět na přehled",
+    "adminMode": "Admin režim",
+    "logout": "Odhlásit se"
+  },
+  "login": {
+    "title": "Přihlášení administrátora",
+    "description": "Pro přístup do administrátorské sekce je nutné se přihlásit s administrátorskými právy.",
+    "email": "Email",
+    "emailPlaceholder": "admin@pendlerapp.com",
+    "password": "Heslo",
+    "passwordPlaceholder": "********",
+    "testAccess": "Testovací admin přístupy:",
+    "mainAdmin": "Hlavní admin:",
+    "dhlAdmin": "DHL admin:",
+    "cancel": "Zrušit",
+    "login": "Přihlásit",
+    "loggingIn": "Přihlašování...",
+    "loginFailed": "Přihlášení selhalo",
+    "loginSuccess": "Přihlášení do {{type}}administrace úspěšné",
+    "noPermissions": "Nemáte administrátorská práva",
+    "unexpectedError": "Neočekávaná chyba"
+  },
+  "tabs": {
+    "security": "Bezpečnost",
+    "users": "Uživatelé",
+    "premium": "Premium",
+    "rideshare": "Spolujízdy",
+    "promos": "Promo kódy",
+    "ads": "Reklamy",
+    "passwords": "Hesla",
+    "modules": "Moduly",
+    "database": "Databáze",
+    "monitoring": "Monitoring",
+    "analytics": "Analytics",
+    "modulesMessage": "Company modules management moved to new Admin V2"
+  },
   "access": {
     "title": "Přístup omezen",
     "description": "Pro přístup k administraci je nutné se přihlásit s administrátorskými právy.",

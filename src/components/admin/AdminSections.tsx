@@ -11,22 +11,25 @@ import SecurityDashboard from './security/SecurityDashboard';
 import DatabasePanel from './database/DatabasePanel';
 import SystemMonitoringPanel from './monitoring/SystemMonitoringPanel';
 import PerformanceDashboard from './analytics/PerformanceDashboard';
+import { useTranslation } from 'react-i18next';
 
 const AdminSections = () => {
+  const { t } = useTranslation('admin');
+
   return (
     <Tabs defaultValue="users" className="space-y-6">
       <TabsList className="grid grid-cols-11 w-full">
-        <TabsTrigger value="security">Bezpečnost</TabsTrigger>
-        <TabsTrigger value="users">Uživatelé</TabsTrigger>
-        <TabsTrigger value="premium">Premium</TabsTrigger>
-        <TabsTrigger value="rideshare">Spolujízdy</TabsTrigger>
-        <TabsTrigger value="promos">Promo kódy</TabsTrigger>
-        <TabsTrigger value="ads">Reklamy</TabsTrigger>
-        <TabsTrigger value="passwords">Hesla</TabsTrigger>
-        <TabsTrigger value="modules">Moduly</TabsTrigger>
-        <TabsTrigger value="database">Databáze</TabsTrigger>
-        <TabsTrigger value="monitoring">Monitoring</TabsTrigger>
-        <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        <TabsTrigger value="security">{t('tabs.security')}</TabsTrigger>
+        <TabsTrigger value="users">{t('tabs.users')}</TabsTrigger>
+        <TabsTrigger value="premium">{t('tabs.premium')}</TabsTrigger>
+        <TabsTrigger value="rideshare">{t('tabs.rideshare')}</TabsTrigger>
+        <TabsTrigger value="promos">{t('tabs.promos')}</TabsTrigger>
+        <TabsTrigger value="ads">{t('tabs.ads')}</TabsTrigger>
+        <TabsTrigger value="passwords">{t('tabs.passwords')}</TabsTrigger>
+        <TabsTrigger value="modules">{t('tabs.modules')}</TabsTrigger>
+        <TabsTrigger value="database">{t('tabs.database')}</TabsTrigger>
+        <TabsTrigger value="monitoring">{t('tabs.monitoring')}</TabsTrigger>
+        <TabsTrigger value="analytics">{t('tabs.analytics')}</TabsTrigger>
       </TabsList>
 
       <TabsContent value="users">
@@ -54,7 +57,7 @@ const AdminSections = () => {
       </TabsContent>
 
       <TabsContent value="modules">
-        <div className="p-4">Company modules management moved to new Admin V2</div>
+        <div className="p-4">{t('tabs.modulesMessage')}</div>
       </TabsContent>
 
       <TabsContent value="database">

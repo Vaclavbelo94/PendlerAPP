@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, Settings, Crown, Key, BarChart3, FileText, Activity } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface AdminSection {
   id: string;
@@ -16,22 +17,24 @@ interface AdminCategoriesProps {
   onSectionClick: (sectionId: string) => void;
 }
 
-const categories = {
-  "user-management": {
-    title: "Správa uživatelů",
-    description: "Nástroje pro správu uživatelských účtů a oprávnění"
-  },
-  "features": {
-    title: "Funkce a konfigurace",
-    description: "Nastavení aplikačních funkcí a promocí"
-  },
-  "monitoring": {
-    title: "Monitoring a analýza",
-    description: "Sledování výkonu a analýza dat"
-  }
-};
-
 export const AdminCategories = ({ adminSections, onSectionClick }: AdminCategoriesProps) => {
+  const { t } = useTranslation('admin');
+
+  const categories = {
+    "user-management": {
+      title: t('categories.userManagement.title'),
+      description: t('categories.userManagement.description')
+    },
+    "features": {
+      title: t('categories.features.title'),
+      description: t('categories.features.description')
+    },
+    "monitoring": {
+      title: t('categories.monitoring.title'),
+      description: t('categories.monitoring.description')
+    }
+  };
+
   return (
     <>
       {Object.entries(categories).map(([categoryKey, category]) => (

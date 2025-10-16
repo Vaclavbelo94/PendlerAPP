@@ -7,6 +7,72 @@
   "roleAndPermissions": "Rollen und Berechtigungen - noch nicht verfügbar",
   "systemLogs": "Systemprotokolle - noch nicht verfügbar",
   "premiumCodesMovedNotice": "Premium codes feature has been moved to company premium codes",
+  "header": {
+    "title": "Administration",
+    "subtitle": "Vollständige Anwendungsverwaltung mit erweiterten Funktionen für Monitoring, Analytics und Benutzerverwaltung",
+    "adminMode": "Admin-Modus",
+    "refresh": "Aktualisieren",
+    "logout": "Abmelden"
+  },
+  "categories": {
+    "userManagement": {
+      "title": "Benutzerverwaltung",
+      "description": "Tools zur Verwaltung von Benutzerkonten und Berechtigungen"
+    },
+    "features": {
+      "title": "Funktionen und Konfiguration",
+      "description": "Einstellungen für Anwendungsfunktionen und Promotionen"
+    },
+    "monitoring": {
+      "title": "Monitoring und Analyse",
+      "description": "Leistungsüberwachung und Datenanalyse"
+    }
+  },
+  "quickStats": {
+    "activeUsers": "Aktive Benutzer",
+    "premiumUsers": "Premium-Benutzer",
+    "systemStatus": "Systemstatus",
+    "monthCompare": "+{{percent}}% im Vergleich zum Vormonat",
+    "conversionRate": "{{rate}}% Konversionsrate",
+    "availability": "Verfügbarkeit"
+  },
+  "sectionView": {
+    "backToOverview": "← Zurück zur Übersicht",
+    "adminMode": "Admin-Modus",
+    "logout": "Abmelden"
+  },
+  "login": {
+    "title": "Administrator-Login",
+    "description": "Für den Zugriff auf den Administrationsbereich ist eine Anmeldung mit Administratorrechten erforderlich.",
+    "email": "E-Mail",
+    "emailPlaceholder": "admin@pendlerapp.com",
+    "password": "Passwort",
+    "passwordPlaceholder": "********",
+    "testAccess": "Test-Admin-Zugänge:",
+    "mainAdmin": "Hauptadministrator:",
+    "dhlAdmin": "DHL-Administrator:",
+    "cancel": "Abbrechen",
+    "login": "Anmelden",
+    "loggingIn": "Anmeldung läuft...",
+    "loginFailed": "Anmeldung fehlgeschlagen",
+    "loginSuccess": "Anmeldung zur {{type}}Administration erfolgreich",
+    "noPermissions": "Sie haben keine Administratorrechte",
+    "unexpectedError": "Unerwarteter Fehler"
+  },
+  "tabs": {
+    "security": "Sicherheit",
+    "users": "Benutzer",
+    "premium": "Premium",
+    "rideshare": "Mitfahrgelegenheiten",
+    "promos": "Promo-Codes",
+    "ads": "Werbung",
+    "passwords": "Passwörter",
+    "modules": "Module",
+    "database": "Datenbank",
+    "monitoring": "Monitoring",
+    "analytics": "Analytics",
+    "modulesMessage": "Unternehmensverwaltung wurde zu Admin V2 verschoben"
+  },
   "access": {
     "title": "Zugriff eingeschränkt",
     "description": "Für den Zugriff auf die Administration ist eine Anmeldung mit Administratorrechten erforderlich.",

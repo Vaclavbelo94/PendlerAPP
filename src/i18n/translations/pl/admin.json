@@ -7,6 +7,72 @@
   "roleAndPermissions": "Role i uprawnienia - jeszcze niedostępne",
   "systemLogs": "Logi systemowe - jeszcze niedostępne",
   "premiumCodesMovedNotice": "Premium codes feature has been moved to company premium codes",
+  "header": {
+    "title": "Administracja",
+    "subtitle": "Kompletne zarządzanie aplikacją z zaawansowanymi funkcjami monitoringu, analityki i zarządzania użytkownikami",
+    "adminMode": "Tryb administratora",
+    "refresh": "Odśwież",
+    "logout": "Wyloguj się"
+  },
+  "categories": {
+    "userManagement": {
+      "title": "Zarządzanie użytkownikami",
+      "description": "Narzędzia do zarządzania kontami użytkowników i uprawnieniami"
+    },
+    "features": {
+      "title": "Funkcje i konfiguracja",
+      "description": "Ustawienia funkcji aplikacji i promocji"
+    },
+    "monitoring": {
+      "title": "Monitoring i analiza",
+      "description": "Śledzenie wydajności i analiza danych"
+    }
+  },
+  "quickStats": {
+    "activeUsers": "Aktywni użytkownicy",
+    "premiumUsers": "Użytkownicy Premium",
+    "systemStatus": "Status systemu",
+    "monthCompare": "+{{percent}}% w porównaniu do poprzedniego miesiąca",
+    "conversionRate": "{{rate}}% wskaźnik konwersji",
+    "availability": "Dostępność"
+  },
+  "sectionView": {
+    "backToOverview": "← Powrót do przeglądu",
+    "adminMode": "Tryb administratora",
+    "logout": "Wyloguj się"
+  },
+  "login": {
+    "title": "Logowanie administratora",
+    "description": "Aby uzyskać dostęp do sekcji administratora, należy zalogować się z uprawnieniami administratora.",
+    "email": "Email",
+    "emailPlaceholder": "admin@pendlerapp.com",
+    "password": "Hasło",
+    "passwordPlaceholder": "********",
+    "testAccess": "Testowe dostępy administratora:",
+    "mainAdmin": "Główny administrator:",
+    "dhlAdmin": "Administrator DHL:",
+    "cancel": "Anuluj",
+    "login": "Zaloguj",
+    "loggingIn": "Logowanie...",
+    "loginFailed": "Logowanie nie powiodło się",
+    "loginSuccess": "Logowanie do {{type}}administracji pomyślne",
+    "noPermissions": "Nie masz uprawnień administratora",
+    "unexpectedError": "Nieoczekiwany błąd"
+  },
+  "tabs": {
+    "security": "Bezpieczeństwo",
+    "users": "Użytkownicy",
+    "premium": "Premium",
+    "rideshare": "Współjazdy",
+    "promos": "Kody promocyjne",
+    "ads": "Reklamy",
+    "passwords": "Hasła",
+    "modules": "Moduły",
+    "database": "Baza danych",
+    "monitoring": "Monitoring",
+    "analytics": "Analityka",
+    "modulesMessage": "Zarządzanie modułami firmowymi przeniesione do nowego Admin V2"
+  },
   "access": {
     "title": "Dostęp ograniczony",
     "description": "Aby uzyskać dostęp do administracji, należy zalogować się z uprawnieniami administratora.",

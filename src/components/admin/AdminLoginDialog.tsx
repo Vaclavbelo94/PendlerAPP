@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/auth";
 import { isRegularAdmin, isDHLAdmin } from "@/utils/dhlAuthUtils";
+import { useTranslation } from "react-i18next";
 
 interface AdminLoginDialogProps {
   isOpen: boolean;
@@ -22,6 +23,7 @@ interface AdminLoginDialogProps {
 }
 
 const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps) => {
+  const { t } = useTranslation('admin');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +37,7 @@ const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps)
       const { error } = await signIn(email, password);
       
       if (error) {
-        toast.error("Přihlášení selhalo: " + String(error));
+        toast.error(t('login.loginFailed') + ": " + String(error));
         return;
       }
       
@@ -50,17 +52,17 @@ const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps)
         const isDHLAdm = isDHLAdmin(userObj);
         
         if (isRegAdmin || isDHLAdm) {
-          toast.success(`Přihlášení do ${isDHLAdm ? 'DHL ' : ''}administrace úspěšné`);
+          toast.success(t('login.loginSuccess', { type: isDHLAdm ? 'DHL ' : '' }));
           setEmail("");
           setPassword("");
           onSuccess();
         } else {
-          toast.error("Nemáte administrátorská práva");
+          toast.error(t('login.noPermissions'));
         }
       }, 100);
     } catch (error: any) {
-      const errorMessage = error?.message || "Neočekávaná chyba";
-      toast.error("Přihlášení selhalo: " + errorMessage);
+      const errorMessage = error?.message || t('login.unexpectedError');
+      toast.error(t('login.loginFailed') + ": " + errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -70,38 +72,38 @@ const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps)
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Přihlášení administrátora</DialogTitle>
+          <DialogTitle>{t('login.title')}</DialogTitle>
           <DialogDescription>
-            Pro přístup do administrátorské sekce je nutné se přihlásit s administrátorskými právy.
+            {t('login.description')}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="admin-email">Email</Label>
+            <Label htmlFor="admin-email">{t('login.email')}</Label>
             <Input 
               id="admin-email" 
               type="email" 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@pendlerapp.com"
+              placeholder={t('login.emailPlaceholder')}
               required
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="admin-password">Heslo</Label>
+            <Label htmlFor="admin-password">{t('login.password')}</Label>
             <Input 
               id="admin-password" 
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="********" 
+              placeholder={t('login.passwordPlaceholder')} 
               required
             />
           </div>
           <div className="text-sm bg-muted p-2 rounded space-y-1">
-            <p>Testovací admin přístupy:</p>
-            <p><strong>Hlavní admin:</strong> admin@pendlerapp.com / admin123</p>
-            <p><strong>DHL admin:</strong> admindhl@pendlerapp.com / admin123</p>
+            <p>{t('login.testAccess')}</p>
+            <p><strong>{t('login.mainAdmin')}</strong> admin@pendlerapp.com / admin123</p>
+            <p><strong>{t('login.dhlAdmin')}</strong> admindhl@pendlerapp.com / admin123</p>
           </div>
           <DialogFooter>
             <Button 
@@ -110,13 +112,13 @@ const AdminLoginDialog = ({ isOpen, onClose, onSuccess }: AdminLoginDialogProps)
               onClick={onClose}
               disabled={isLoading}
             >
-              Zrušit
+              {t('login.cancel')}
             </Button>
             <Button 
               type="submit" 
               disabled={isLoading}
             >
-              {isLoading ? "Přihlašování..." : "Přihlásit"}
+              {isLoading ? t('login.loggingIn') : t('login.login')}
             </Button>
           </DialogFooter>
         </form>
