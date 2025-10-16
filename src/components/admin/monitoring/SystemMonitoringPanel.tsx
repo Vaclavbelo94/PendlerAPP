@@ -274,7 +274,6 @@ const SystemMonitoringPanel: React.FC = () => {
           </CardContent>
         </Card>
       </div>
-      </div>
 
       {/* Detailed Monitoring */}
       <Tabs defaultValue="performance" className="space-y-4">
@@ -290,10 +289,42 @@ const SystemMonitoringPanel: React.FC = () => {
               <CardHeader>
                 <CardTitle>{t('charts.cpuMemory24h')}</CardTitle>
                 <CardDescription>{t('charts.cpuMemoryDesc')}</CardDescription>
-...
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={performanceData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="time" />
+                    <YAxis />
+                    <Tooltip />
+                    <Area type="monotone" dataKey="cpu" stroke="#8884d8" fill="#8884d8" name="CPU" />
+                    <Area type="monotone" dataKey="memory" stroke="#82ca9d" fill="#82ca9d" name="Paměť" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
                 <CardTitle>{t('charts.responseTime24h')}</CardTitle>
                 <CardDescription>{t('charts.responseTimeDesc')}</CardDescription>
-...
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <LineChart data={performanceData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="time" />
+                    <YAxis />
+                    <Tooltip />
+                    <Line type="monotone" dataKey="responseTime" stroke="#8884d8" name="Odezva (ms)" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card>
+            <CardHeader>
               <CardTitle>{t('charts.apiRequests24h')}</CardTitle>
               <CardDescription>{t('charts.apiRequestsDesc')}</CardDescription>
             </CardHeader>
