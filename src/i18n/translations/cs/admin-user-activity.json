@@ -1,0 +1,36 @@
+{
+  "title": "Aktivita uživatelů",
+  "subtitle": "Monitoring a audit uživatelských akcí",
+  "refresh": "Obnovit",
+  "export": "Export",
+  "metrics": {
+    "totalActions": "Celkem akcí",
+    "activeUsers": "Aktivní uživatelé",
+    "mostActive": "Nejaktivnější",
+    "popularAction": "Populární akce"
+  },
+  "filters": {
+    "search": "Hledat podle uživatele, akce nebo zdroje...",
+    "allActions": "Všechny akce",
+    "timeRanges": {
+      "1h": "Poslední hodina",
+      "24h": "Posledních 24h",
+      "7d": "Posledních 7 dní",
+      "30d": "Posledních 30 dní"
+    }
+  },
+  "table": {
+    "user": "Uživatel",
+    "action": "Akce",
+    "resource": "Zdroj",
+    "time": "Čas",
+    "ipAddress": "IP adresa",
+    "details": "Detaily",
+    "items": "{{count}} položek"
+  },
+  "toast": {
+    "loaded": "Aktivita uživatelů načtena",
+    "loadError": "Nepodařilo se načíst aktivitu uživatelů",
+    "exported": "Aktivita exportována"
+  }
+}

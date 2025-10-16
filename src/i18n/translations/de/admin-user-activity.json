@@ -1,0 +1,36 @@
+{
+  "title": "Benutzeraktivität",
+  "subtitle": "Überwachung und Audit von Benutzeraktionen",
+  "refresh": "Aktualisieren",
+  "export": "Exportieren",
+  "metrics": {
+    "totalActions": "Aktionen gesamt",
+    "activeUsers": "Aktive Benutzer",
+    "mostActive": "Aktivster",
+    "popularAction": "Beliebte Aktion"
+  },
+  "filters": {
+    "search": "Nach Benutzer, Aktion oder Ressource suchen...",
+    "allActions": "Alle Aktionen",
+    "timeRanges": {
+      "1h": "Letzte Stunde",
+      "24h": "Letzte 24h",
+      "7d": "Letzte 7 Tage",
+      "30d": "Letzte 30 Tage"
+    }
+  },
+  "table": {
+    "user": "Benutzer",
+    "action": "Aktion",
+    "resource": "Ressource",
+    "time": "Zeit",
+    "ipAddress": "IP-Adresse",
+    "details": "Details",
+    "items": "{{count}} Einträge"
+  },
+  "toast": {
+    "loaded": "Benutzeraktivität geladen",
+    "loadError": "Fehler beim Laden der Benutzeraktivität",
+    "exported": "Aktivität exportiert"
+  }
+}

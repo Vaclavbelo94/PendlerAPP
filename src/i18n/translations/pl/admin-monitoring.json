@@ -1,0 +1,48 @@
+{
+  "title": "Monitorowanie systemu",
+  "subtitle": "Metryki wydajności i zdrowia systemu w czasie rzeczywistym",
+  "refresh": "Odśwież",
+  "metrics": {
+    "cpu": "Wykorzystanie CPU",
+    "memory": "Pamięć RAM",
+    "activeUsers": "Aktywni użytkownicy",
+    "requestsPerMinute": "Żądania/min",
+    "totalTables": "Łącznie tabel",
+    "totalRecords": "Łącznie rekordów",
+    "databaseSize": "Rozmiar bazy danych",
+    "activeConnections": "Aktywne połączenia",
+    "errorRate": "Współczynnik błędów",
+    "uptime": "Dostępność"
+  },
+  "trends": {
+    "hourIncrease": "+{{percent}}% na godzinę",
+    "hourDecrease": "-{{percent}}% na godzinę"
+  },
+  "tabs": {
+    "performance": "Wydajność",
+    "services": "Usługi",
+    "database": "Baza danych",
+    "tables": "Tabele"
+  },
+  "charts": {
+    "cpuMemory24h": "CPU i pamięć (24h)",
+    "cpuMemoryDesc": "Historyczne wykorzystanie zasobów systemowych",
+    "responseTime24h": "Czas odpowiedzi (24h)",
+    "responseTimeDesc": "Średni czas odpowiedzi API",
+    "apiRequests24h": "Żądania API (24h)",
+    "apiRequestsDesc": "Liczba żądań na godzinę"
+  },
+  "services": {
+    "responseTime": "Odpowiedź",
+    "uptime": "Czas działania",
+    "lastCheck": "Ostatnie sprawdzenie",
+    "healthy": "zdrowy",
+    "warning": "ostrzeżenie",
+    "error": "błąd"
+  },
+  "database": {
+    "connectionsLimit": "z {{limit}} możliwych",
+    "last24h": "w ciągu ostatnich 24h",
+    "last30days": "w ciągu ostatnich 30 dni"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "title": "Benutzerverwaltung",
+  "subtitle": "Übersicht und Verwaltung von Benutzerkonten",
+  "refresh": "Aktualisieren",
+  "userCount": "Benutzer gesamt: {{count}}",
+  "table": {
+    "name": "Name",
+    "email": "E-Mail",
+    "premium": "Premium",
+    "registered": "Registriert",
+    "premiumUntil": "Premium bis",
+    "actions": "Aktionen"
+  },
+  "premium": {
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "toggle": "Premium umschalten"
+  },
+  "states": {
+    "loading": "Benutzer werden geladen...",
+    "error": "Benutzer konnten nicht geladen werden",
+    "retry": "Erneut versuchen",
+    "empty": "Noch keine Benutzer",
+    "emptyDesc": "Es wurden keine registrierten Benutzer gefunden"
+  },
+  "toast": {
+    "loaded": "{{count}} Benutzer geladen",
+    "premiumUpdated": "Benutzer {{name}} {{status}} jetzt Premium-Status",
+    "premiumActive": "hat",
+    "premiumInactive": "hat nicht",
+    "updateError": "Fehler beim Aktualisieren: {{message}}",
+    "userNotFound": "Benutzer wurde nicht in der Datenbank gefunden",
+    "loadError": "Benutzerdaten konnten nicht geladen werden",
+    "reloginRequired": "Benutzer muss die Seite aktualisieren oder sich erneut anmelden, um den Premium-Status zu aktualisieren"
+  }
+}

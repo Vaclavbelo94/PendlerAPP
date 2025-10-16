@@ -39,6 +39,7 @@ import {
   TrendingUp,
   TrendingDown
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface SystemMetrics {
   cpu: number;
@@ -70,6 +71,7 @@ interface ServiceStatus {
 }
 
 const SystemMonitoringPanel: React.FC = () => {
+  const { t } = useTranslation('admin-monitoring');
   const [metrics, setMetrics] = useState<SystemMetrics>({
     cpu: 45,
     memory: 62,
@@ -200,15 +202,15 @@ const SystemMonitoringPanel: React.FC = () => {
       {/* Header */}
       <div className="flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Systémové monitorování</h1>
+          <h1 className="text-3xl font-bold tracking-tight">{t('title')}</h1>
           <p className="text-muted-foreground">
-            Real-time metriky výkonu a zdraví systému
+            {t('subtitle')}
           </p>
         </div>
         
         <Button variant="outline" onClick={refreshMetrics} disabled={isRefreshing}>
           <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-          Obnovit
+          {t('refresh')}
         </Button>
       </div>
 
@@ -218,7 +220,7 @@ const SystemMonitoringPanel: React.FC = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Cpu className="h-4 w-4" />
-              CPU využití
+              {t('metrics.cpu')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -231,7 +233,7 @@ const SystemMonitoringPanel: React.FC = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <HardDrive className="h-4 w-4" />
-              Paměť RAM
+              {t('metrics.memory')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -244,14 +246,14 @@ const SystemMonitoringPanel: React.FC = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Users className="h-4 w-4" />
-              Aktivní uživatelé
+              {t('metrics.activeUsers')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metrics.activeUsers}</div>
             <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
               <TrendingUp className="h-3 w-3 text-green-500" />
-              +5% za hodinu
+              {t('trends.hourIncrease', { percent: 5 })}
             </p>
           </CardContent>
         </Card>
@@ -260,71 +262,40 @@ const SystemMonitoringPanel: React.FC = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Activity className="h-4 w-4" />
-              Požadavky/min
+              {t('metrics.requestsPerMinute')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metrics.requestsPerMinute}</div>
             <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
               <TrendingDown className="h-3 w-3 text-red-500" />
-              -2% za hodinu
+              {t('trends.hourDecrease', { percent: 2 })}
             </p>
           </CardContent>
         </Card>
+      </div>
       </div>
 
       {/* Detailed Monitoring */}
       <Tabs defaultValue="performance" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="performance">Výkon</TabsTrigger>
-          <TabsTrigger value="services">Služby</TabsTrigger>
-          <TabsTrigger value="database">Databáze</TabsTrigger>
+          <TabsTrigger value="performance">{t('tabs.performance')}</TabsTrigger>
+          <TabsTrigger value="services">{t('tabs.services')}</TabsTrigger>
+          <TabsTrigger value="database">{t('tabs.database')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="performance" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
-                <CardTitle>CPU a paměť (24h)</CardTitle>
-                <CardDescription>Historické využití systémových prostředků</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={performanceData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" />
-                    <YAxis />
-                    <Tooltip />
-                    <Area type="monotone" dataKey="cpu" stackId="1" stroke="#8884d8" fill="#8884d8" name="CPU %" />
-                    <Area type="monotone" dataKey="memory" stackId="1" stroke="#82ca9d" fill="#82ca9d" name="Paměť %" />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Doba odezvy (24h)</CardTitle>
-                <CardDescription>Průměrná doba odezvy API</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={performanceData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" />
-                    <YAxis />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="responseTime" stroke="#ff7300" name="Odezva (ms)" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Požadavky na API (24h)</CardTitle>
-              <CardDescription>Počet požadavků za hodinu</CardDescription>
+                <CardTitle>{t('charts.cpuMemory24h')}</CardTitle>
+                <CardDescription>{t('charts.cpuMemoryDesc')}</CardDescription>
+...
+                <CardTitle>{t('charts.responseTime24h')}</CardTitle>
+                <CardDescription>{t('charts.responseTimeDesc')}</CardDescription>
+...
+              <CardTitle>{t('charts.apiRequests24h')}</CardTitle>
+              <CardDescription>{t('charts.apiRequestsDesc')}</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -359,17 +330,17 @@ const SystemMonitoringPanel: React.FC = () => {
                 <CardContent>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <p className="text-muted-foreground">Odezva</p>
+                      <p className="text-muted-foreground">{t('services.responseTime')}</p>
                       <p className="font-medium">{service.responseTime}ms</p>
                     </div>
                     <div>
-                      <p className="text-muted-foreground">Uptime</p>
+                      <p className="text-muted-foreground">{t('services.uptime')}</p>
                       <p className="font-medium">{service.uptime}%</p>
                     </div>
                   </div>
                   <div className="mt-3">
                     <p className="text-xs text-muted-foreground">
-                      Poslední kontrola: {new Date(service.lastCheck).toLocaleString('cs-CZ')}
+                      {t('services.lastCheck')}: {new Date(service.lastCheck).toLocaleString('cs-CZ')}
                     </p>
                   </div>
                 </CardContent>

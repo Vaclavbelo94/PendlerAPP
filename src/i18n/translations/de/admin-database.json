@@ -16,14 +16,21 @@
     "lastUpdate": "Letzte Aktualisierung",
     "noTables": "Keine Tabellen gefunden"
   },
+  "metrics": {
+    "totalTables": "Tabellen gesamt",
+    "totalRecords": "Datensätze gesamt",
+    "databaseSize": "Datenbankgröße"
+  },
   "query": {
     "title": "SQL-Editor",
     "placeholder": "SELECT * FROM profiles LIMIT 10;",
     "execute": "Abfrage ausführen",
+    "executing": "Wird ausgeführt...",
     "executionTime": "Ausführungszeit",
     "rowCount": "Zeilenanzahl",
     "results": "Ergebnisse",
-    "noResults": "Keine Ergebnisse"
+    "noResults": "Keine Ergebnisse",
+    "securityNote": "Aus Sicherheitsgründen sind nur SELECT-Abfragen erlaubt."
   },
   "backup": {
     "title": "Datenbank-Backup-Verwaltung und Datenwiederherstellung",

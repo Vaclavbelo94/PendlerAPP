@@ -22,6 +22,7 @@ import {
   Download
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface UserActivity {
   id: string;
@@ -43,6 +44,7 @@ interface ActivitySummary {
 }
 
 const UserActivityPanel: React.FC = () => {
+  const { t } = useTranslation('admin-user-activity');
   const [activities, setActivities] = useState<UserActivity[]>([]);
   const [filteredActivities, setFilteredActivities] = useState<UserActivity[]>([]);
   const [summary, setSummary] = useState<ActivitySummary | null>(null);

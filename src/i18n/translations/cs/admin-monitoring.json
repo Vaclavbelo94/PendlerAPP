@@ -1,0 +1,48 @@
+{
+  "title": "Systémové monitorování",
+  "subtitle": "Real-time metriky výkonu a zdraví systému",
+  "refresh": "Obnovit",
+  "metrics": {
+    "cpu": "CPU využití",
+    "memory": "Paměť RAM",
+    "activeUsers": "Aktivní uživatelé",
+    "requestsPerMinute": "Požadavky/min",
+    "totalTables": "Celkem tabelek",
+    "totalRecords": "Celkem záznamů",
+    "databaseSize": "Velikost databáze",
+    "activeConnections": "Aktivní spojení",
+    "errorRate": "Chybovost",
+    "uptime": "Dostupnost"
+  },
+  "trends": {
+    "hourIncrease": "+{{percent}}% za hodinu",
+    "hourDecrease": "-{{percent}}% za hodinu"
+  },
+  "tabs": {
+    "performance": "Výkon",
+    "services": "Služby",
+    "database": "Databáze",
+    "tables": "Tabulky"
+  },
+  "charts": {
+    "cpuMemory24h": "CPU a paměť (24h)",
+    "cpuMemoryDesc": "Historické využití systémových prostředků",
+    "responseTime24h": "Doba odezvy (24h)",
+    "responseTimeDesc": "Průměrná doba odezvy API",
+    "apiRequests24h": "Požadavky na API (24h)",
+    "apiRequestsDesc": "Počet požadavků za hodinu"
+  },
+  "services": {
+    "responseTime": "Odezva",
+    "uptime": "Uptime",
+    "lastCheck": "Poslední kontrola",
+    "healthy": "healthy",
+    "warning": "warning",
+    "error": "error"
+  },
+  "database": {
+    "connectionsLimit": "z {{limit}} možných",
+    "last24h": "za posledních 24h",
+    "last30days": "za posledních 30 dní"
+  }
+}

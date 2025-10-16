@@ -205,7 +205,7 @@ const DatabasePanel: React.FC = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <TableIcon className="h-4 w-4" />
-              Celkem tabulek
+              {t('overview.table')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -217,7 +217,7 @@ const DatabasePanel: React.FC = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <BarChart3 className="h-4 w-4" />
-              Celkem záznamů
+              {t('metrics.totalRecords')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -229,7 +229,7 @@ const DatabasePanel: React.FC = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <HardDrive className="h-4 w-4" />
-              Velikost databáze
+              {t('metrics.databaseSize')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -240,9 +240,9 @@ const DatabasePanel: React.FC = () => {
 
       <Tabs defaultValue="tables" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="tables">Tabulky</TabsTrigger>
-          <TabsTrigger value="query">SQL Runner</TabsTrigger>
-          <TabsTrigger value="backup">Záloha & Obnova</TabsTrigger>
+          <TabsTrigger value="tables">{t('tabs.overview')}</TabsTrigger>
+          <TabsTrigger value="query">{t('tabs.query')}</TabsTrigger>
+          <TabsTrigger value="backup">{t('tabs.backup')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="tables">
@@ -252,15 +252,15 @@ const DatabasePanel: React.FC = () => {
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <Database className="h-5 w-5" />
-                    Statistiky tabulek
+                    {t('overview.title')}
                   </CardTitle>
                   <CardDescription>
-                    Přehled velikosti a aktivity databázových tabulek
+                    {t('subtitle')}
                   </CardDescription>
                 </div>
                 <Button variant="outline" onClick={fetchTableStats} disabled={isLoading}>
                   <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-                  Obnovit
+                  {t('overview.refresh')}
                 </Button>
               </div>
             </CardHeader>
@@ -268,10 +268,10 @@ const DatabasePanel: React.FC = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Tabulka</TableHead>
-                    <TableHead>Počet záznamů</TableHead>
-                    <TableHead>Velikost (MB)</TableHead>
-                    <TableHead>Poslední aktualizace</TableHead>
+                    <TableHead>{t('overview.table')}</TableHead>
+                    <TableHead>{t('overview.rows')}</TableHead>
+                    <TableHead>{t('overview.size')}</TableHead>
+                    <TableHead>{t('overview.lastUpdate')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -296,25 +296,25 @@ const DatabasePanel: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Play className="h-5 w-5" />
-                SQL Runner
+                {t('query.title')}
               </CardTitle>
               <CardDescription>
-                Spouštění SELECT dotazů pro analýzu dat (pouze čtení)
+                {t('query.executionTime')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Alert>
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
-                  Z bezpečnostních důvodů jsou povoleny pouze SELECT dotazy.
+                  {t('query.securityNote')}
                 </AlertDescription>
               </Alert>
 
               <div className="space-y-2">
-                <Label htmlFor="sqlQuery">SQL Dotaz</Label>
+                <Label htmlFor="sqlQuery">{t('query.title')}</Label>
                 <Textarea
                   id="sqlQuery"
-                  placeholder="SELECT * FROM profiles LIMIT 10;"
+                  placeholder={t('query.placeholder')}
                   value={sqlQuery}
                   onChange={(e) => setSqlQuery(e.target.value)}
                   rows={6}
@@ -325,7 +325,7 @@ const DatabasePanel: React.FC = () => {
               <div className="flex gap-2">
                 <Button onClick={executeQuery} disabled={isExecuting}>
                   <Play className={`h-4 w-4 mr-2 ${isExecuting ? 'animate-spin' : ''}`} />
-                  {isExecuting ? 'Provádí se...' : 'Spustit dotaz'}
+                  {isExecuting ? t('query.executing') : t('query.execute')}
                 </Button>
                 
                 {queryResult && (
@@ -345,8 +345,8 @@ const DatabasePanel: React.FC = () => {
               {queryResult && (
                 <div className="space-y-4">
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <span>Výsledků: {queryResult.row_count}</span>
-                    <span>Čas: {queryResult.execution_time}ms</span>
+                    <span>{t('query.results')}: {queryResult.row_count}</span>
+                    <span>{t('query.executionTime')}: {queryResult.execution_time}ms</span>
                   </div>
 
                   <ScrollArea className="h-64 border rounded">
@@ -382,18 +382,18 @@ const DatabasePanel: React.FC = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Upload className="h-5 w-5" />
-                Záloha & Obnova
+                {t('backup.title')}
               </CardTitle>
               <CardDescription>
-                Správa záloh databáze a obnova dat
+                {t('subtitle')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-4">
-                  <h3 className="text-lg font-medium">Vytvoření zálohy</h3>
+                  <h3 className="text-lg font-medium">{t('backup.create.title')}</h3>
                   <p className="text-sm text-muted-foreground">
-                    Vytvoří kompletní zálohu databáze ve formátu SQL dump.
+                    {t('backup.create.description')}
                   </p>
                   <Button 
                     onClick={createBackup} 
@@ -403,17 +403,17 @@ const DatabasePanel: React.FC = () => {
                     {backupStatus === 'running' ? (
                       <>
                         <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                        Vytváří se záloha...
+                        {t('backup.status.running')}
                       </>
                     ) : backupStatus === 'success' ? (
                       <>
                         <CheckCircle className="h-4 w-4 mr-2" />
-                        Záloha vytvořena
+                        {t('backup.status.success')}
                       </>
                     ) : (
                       <>
                         <Download className="h-4 w-4 mr-2" />
-                        Vytvořit zálohu
+                        {t('backup.create.button')}
                       </>
                     )}
                   </Button>

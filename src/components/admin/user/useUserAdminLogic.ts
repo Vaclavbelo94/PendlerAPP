@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useOptimizedQuery } from "@/hooks/useOptimizedQuery";
 import { useMemoizedCallback } from "@/hooks/useMemoizedCallback";
+import { useTranslation } from "react-i18next";
 
 interface User {
   id: string;
@@ -15,6 +16,7 @@ interface User {
 }
 
 export const useUserAdminLogic = () => {
+  const { t } = useTranslation('admin-users');
   const [users, setUsers] = useState<User[]>([]);
 
   // Optimalizovaný query pro načítání uživatelů
@@ -61,7 +63,7 @@ export const useUserAdminLogic = () => {
       
       setUsers(transformedUsers);
       console.log("Transformovaní uživatelé:", transformedUsers);
-      toast.success(`Načteno ${transformedUsers.length} uživatelů`);
+      toast.success(t('toast.loaded', { count: transformedUsers.length }));
     } else if (profiles && profiles.length === 0) {
       console.log("Žádní uživatelé nebyli nalezeni");
       setUsers([]);
@@ -87,7 +89,7 @@ export const useUserAdminLogic = () => {
           
         if (error || !dbUser) {
           console.error("Uživatel neexistuje v databázi:", error);
-          toast.error("Uživatel nebyl nalezen v databázi");
+          toast.error(t('toast.userNotFound'));
           return;
         }
         
@@ -104,7 +106,7 @@ export const useUserAdminLogic = () => {
         return;
       } catch (dbError) {
         console.error("Chyba při načítání z databáze:", dbError);
-        toast.error("Nepodařilo se načíst data uživatele");
+        toast.error(t('toast.loadError'));
         return;
       }
     }
@@ -141,7 +143,7 @@ export const useUserAdminLogic = () => {
       
       if (error) {
         console.error("Chyba při aktualizaci premium statusu:", error);
-        toast.error(`Chyba při aktualizaci: ${error.message}`);
+        toast.error(t('toast.updateError', { message: error.message }));
         return;
       }
       
@@ -162,12 +164,12 @@ export const useUserAdminLogic = () => {
       );
       
       const userName = users.find(u => u.id === userId)?.name || userEmail.split('@')[0];
-      const statusText = newPremiumStatus ? 'má' : 'nemá';
-      toast.success(`Uživatel ${userName} nyní ${statusText} premium status`);
+      const statusText = newPremiumStatus ? t('toast.premiumActive') : t('toast.premiumInactive');
+      toast.success(t('toast.premiumUpdated', { name: userName, status: statusText }));
       
       // Přidáme informaci o nutnosti opětovného přihlášení
       if (!newPremiumStatus) {
-        toast.info("Uživatel musí obnovit stránku nebo se znovu přihlásit pro aktualizaci premium statusu", {
+        toast.info(t('toast.reloginRequired'), {
           duration: 5000
         });
       }

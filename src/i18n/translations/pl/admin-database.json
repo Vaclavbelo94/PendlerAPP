@@ -16,14 +16,21 @@
     "lastUpdate": "Ostatnia aktualizacja",
     "noTables": "Nie znaleziono tabel"
   },
+  "metrics": {
+    "totalTables": "Łącznie tabel",
+    "totalRecords": "Łącznie rekordów",
+    "databaseSize": "Rozmiar bazy danych"
+  },
   "query": {
     "title": "Edytor SQL",
     "placeholder": "SELECT * FROM profiles LIMIT 10;",
     "execute": "Wykonaj zapytanie",
+    "executing": "Wykonywanie...",
     "executionTime": "Czas wykonania",
     "rowCount": "Liczba wierszy",
     "results": "Wyniki",
-    "noResults": "Brak wyników"
+    "noResults": "Brak wyników",
+    "securityNote": "Ze względów bezpieczeństwa dozwolone są tylko zapytania SELECT."
   },
   "backup": {
     "title": "Zarządzanie kopiami zapasowymi bazy danych i przywracanie danych",

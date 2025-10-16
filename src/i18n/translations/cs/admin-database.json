@@ -16,14 +16,21 @@
     "lastUpdate": "Poslední aktualizace",
     "noTables": "Žádné tabulky nenalezeny"
   },
+  "metrics": {
+    "totalTables": "Celkem tabulek",
+    "totalRecords": "Celkem záznamů",
+    "databaseSize": "Velikost databáze"
+  },
   "query": {
     "title": "SQL Editor",
     "placeholder": "SELECT * FROM profiles LIMIT 10;",
     "execute": "Spustit dotaz",
+    "executing": "Provádí se...",
     "executionTime": "Čas provedení",
     "rowCount": "Počet řádků",
     "results": "Výsledky",
-    "noResults": "Žádné výsledky"
+    "noResults": "Žádné výsledky",
+    "securityNote": "Z bezpečnostních důvodů jsou povoleny pouze SELECT dotazy."
   },
   "backup": {
     "title": "Správa záloh databáze a obnova dat",

@@ -1,0 +1,36 @@
+{
+  "title": "Správa uživatelů",
+  "subtitle": "Přehled a správa uživatelských účtů",
+  "refresh": "Obnovit",
+  "userCount": "Celkem uživatelů: {{count}}",
+  "table": {
+    "name": "Jméno",
+    "email": "Email",
+    "premium": "Premium",
+    "registered": "Registrace",
+    "premiumUntil": "Premium do",
+    "actions": "Akce"
+  },
+  "premium": {
+    "active": "Aktivní",
+    "inactive": "Neaktivní",
+    "toggle": "Přepnout premium"
+  },
+  "states": {
+    "loading": "Načítání uživatelů...",
+    "error": "Nepodařilo se načíst uživatele",
+    "retry": "Zkusit znovu",
+    "empty": "Zatím žádní uživatelé",
+    "emptyDesc": "Nebyli nalezeni žádní registrovaní uživatelé"
+  },
+  "toast": {
+    "loaded": "Načteno {{count}} uživatelů",
+    "premiumUpdated": "Uživatel {{name}} nyní {{status}} premium status",
+    "premiumActive": "má",
+    "premiumInactive": "nemá",
+    "updateError": "Chyba při aktualizaci: {{message}}",
+    "userNotFound": "Uživatel nebyl nalezen v databázi",
+    "loadError": "Nepodařilo se načíst data uživatele",
+    "reloginRequired": "Uživatel musí obnovit stránku nebo se znovu přihlásit pro aktualizaci premium statusu"
+  }
+}

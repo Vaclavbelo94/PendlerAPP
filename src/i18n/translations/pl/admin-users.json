@@ -1,0 +1,36 @@
+{
+  "title": "Zarządzanie użytkownikami",
+  "subtitle": "Przegląd i zarządzanie kontami użytkowników",
+  "refresh": "Odśwież",
+  "userCount": "Łącznie użytkowników: {{count}}",
+  "table": {
+    "name": "Imię",
+    "email": "E-mail",
+    "premium": "Premium",
+    "registered": "Zarejestrowany",
+    "premiumUntil": "Premium do",
+    "actions": "Akcje"
+  },
+  "premium": {
+    "active": "Aktywny",
+    "inactive": "Nieaktywny",
+    "toggle": "Przełącz premium"
+  },
+  "states": {
+    "loading": "Ładowanie użytkowników...",
+    "error": "Nie udało się załadować użytkowników",
+    "retry": "Spróbuj ponownie",
+    "empty": "Jeszcze brak użytkowników",
+    "emptyDesc": "Nie znaleziono żadnych zarejestrowanych użytkowników"
+  },
+  "toast": {
+    "loaded": "Załadowano {{count}} użytkowników",
+    "premiumUpdated": "Użytkownik {{name}} teraz {{status}} status premium",
+    "premiumActive": "ma",
+    "premiumInactive": "nie ma",
+    "updateError": "Błąd podczas aktualizacji: {{message}}",
+    "userNotFound": "Użytkownik nie został znaleziony w bazie danych",
+    "loadError": "Nie udało się załadować danych użytkownika",
+    "reloginRequired": "Użytkownik musi odświeżyć stronę lub zalogować się ponownie, aby zaktualizować status premium"
+  }
+}
