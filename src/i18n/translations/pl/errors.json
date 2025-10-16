@@ -1,4 +1,3 @@
-
 {
   "generic": "Wystąpił błąd",
   "networkError": "Błąd sieci",
@@ -10,5 +9,12 @@
   "serverError": "Błąd serwera",
   "validationError": "Błąd walidacji",
   "tryAgain": "Spróbuj ponownie",
-  "contactSupport": "Skontaktuj się z pomocą"
+  "contactSupport": "Skontaktuj się z pomocą",
+  "boundary": {
+    "title": "Coś poszło nie tak",
+    "subtitle": "Aplikacja napotkała nieoczekiwany błąd",
+    "retry": "Spróbuj ponownie",
+    "goHome": "Powrót do strony głównej",
+    "persistentError": "Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną"
+  }
 }

@@ -1,4 +1,3 @@
-
 {
   "generic": "Ein Fehler ist aufgetreten",
   "networkError": "Netzwerkfehler",
@@ -10,5 +9,12 @@
   "serverError": "Serverfehler",
   "validationError": "Validierungsfehler",
   "tryAgain": "Erneut versuchen",
-  "contactSupport": "Support kontaktieren"
+  "contactSupport": "Support kontaktieren",
+  "boundary": {
+    "title": "Etwas ist schief gelaufen",
+    "subtitle": "Die Anwendung ist auf einen unerwarteten Fehler gestoßen",
+    "retry": "Erneut versuchen",
+    "goHome": "Zurück zur Startseite",
+    "persistentError": "Wenn das Problem weiterhin besteht, kontaktieren Sie den Support"
+  }
 }

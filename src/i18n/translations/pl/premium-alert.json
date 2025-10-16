@@ -1,0 +1,12 @@
+{
+  "compact": {
+    "requiresPremium": "Ta funkcja wymaga konta Premium",
+    "activatePremium": "Aktywuj Premium"
+  },
+  "full": {
+    "title": "Funkcja Premium",
+    "description": "Funkcja <strong>{{featureName}}</strong> jest dostępna tylko dla użytkowników z kontem Premium.",
+    "activatePremium": "Aktywuj Premium",
+    "login": "Zaloguj się"
+  }
+}

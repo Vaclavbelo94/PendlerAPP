@@ -1,0 +1,19 @@
+{
+  "title": "Über das Projekt",
+  "subtitle": "PendlerHelfer ist eine umfassende Lösung für tschechische Pendler, die in Deutschland arbeiten.",
+  "mission": {
+    "title": "Unsere Mission",
+    "text1": "Unser Ziel ist es, das Leben tschechischer Pendler, die in Deutschland arbeiten, durch praktische Tools und nützliche Informationen zu vereinfachen. Wir wollen sprachliche, rechtliche und logistische Barrieren beseitigen, mit denen Pendler täglich konfrontiert sind.",
+    "text2": "Wir glauben, dass die Arbeit im Ausland mit den richtigen Tools und Informationen zu einer einfacheren und angenehmeren Erfahrung werden kann."
+  },
+  "history": {
+    "title": "Projektgeschichte",
+    "text1": "Das PendlerHelfer-Projekt entstand 2023 auf Basis der eigenen Erfahrungen seiner Gründer, die selbst mehrere Jahre als Pendler in Deutschland gearbeitet haben. Durch ihre eigene Erfahrung konnten sie die Hauptprobleme und Herausforderungen identifizieren, mit denen tschechische Pendler täglich konfrontiert sind.",
+    "text2": "Seit seiner Gründung hat sich das Projekt von einem einfachen Phrasenwörterbuch zu einer umfassenden Plattform entwickelt, die Deutschunterricht, Gesetzesübersicht, Fahrzeugverwaltung und Schichtplanung umfasst."
+  },
+  "team": {
+    "title": "Team",
+    "text1": "Unser Team besteht aus Fachleuten mit direkter Erfahrung in der Arbeit in Deutschland, Anwälten, die auf internationales Arbeitsrecht spezialisiert sind, und Sprachexperten. Gemeinsam arbeiten wir daran, das bestmögliche Tool für tschechische Pendler zu schaffen.",
+    "text2": "Wir sind stolz darauf, dass alle Funktionen und Inhalte unserer Anwendung in Zusammenarbeit mit aktiven Pendlern erstellt werden, die uns unschätzbares Feedback und Verbesserungsvorschläge geben."
+  }
+}

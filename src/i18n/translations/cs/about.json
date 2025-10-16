@@ -1,0 +1,19 @@
+{
+  "title": "O projektu",
+  "subtitle": "PendlerHelfer je komplexní řešení pro české pendlery pracující v Německu.",
+  "mission": {
+    "title": "Naše mise",
+    "text1": "Naším cílem je zjednodušit život českých pendlerů pracujících v Německu prostřednictvím praktických nástrojů a užitečných informací. Chceme odstranit jazykové, právní a logistické překážky, kterým pendleři denně čelí.",
+    "text2": "Věříme, že díky správným nástrojům a informacím může být práce v zahraničí jednodušší a příjemnější zkušeností."
+  },
+  "history": {
+    "title": "Historie projektu",
+    "text1": "Projekt PendlerHelfer vznikl v roce 2023 na základě vlastních zkušeností jeho zakladatelů, kteří sami několik let pracovali jako pendleři v Německu. Díky vlastní zkušenosti dokázali identifikovat hlavní problémy a výzvy, se kterými se čeští pendleři denně potýkají.",
+    "text2": "Od svého vzniku se projekt rozrostl z jednoduchého slovníčku frází na komplexní platformu zahrnující výuku němčiny, přehled zákonů, správu vozidla a plánování směn."
+  },
+  "team": {
+    "title": "Tým",
+    "text1": "Náš tým je složen z profesionálů s přímou zkušeností s prací v Německu, právníků specializujících se na mezinárodní pracovní právo a jazykových expertů. Společně pracujeme na tom, abychom vytvořili nejlepší možný nástroj pro české pendlery.",
+    "text2": "Jsme hrdí na to, že všechny funkce a obsah naší aplikace jsou vytvářeny ve spolupráci s aktivními pendlery, kteří nám poskytují neocenitelnou zpětnou vazbu a návrhy na zlepšení."
+  }
+}

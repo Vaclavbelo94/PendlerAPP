@@ -1,0 +1,12 @@
+{
+  "compact": {
+    "requiresPremium": "Tato funkce vyžaduje Premium účet",
+    "activatePremium": "Aktivovat Premium"
+  },
+  "full": {
+    "title": "Premium funkce",
+    "description": "Funkce <strong>{{featureName}}</strong> je dostupná pouze pro uživatele s Premium účtem.",
+    "activatePremium": "Aktivovat Premium",
+    "login": "Přihlásit se"
+  }
+}

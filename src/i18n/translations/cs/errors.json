@@ -1,4 +1,3 @@
-
 {
   "generic": "Nastala chyba",
   "networkError": "Chyba sítě",
@@ -10,5 +9,12 @@
   "serverError": "Chyba serveru",
   "validationError": "Chyba validace",
   "tryAgain": "Zkusit znovu",
-  "contactSupport": "Kontaktovat podporu"
+  "contactSupport": "Kontaktovat podporu",
+  "boundary": {
+    "title": "Něco se pokazilo",
+    "subtitle": "Aplikace narazila na neočekávanou chybu",
+    "retry": "Zkusit znovu",
+    "goHome": "Zpět na hlavní stránku",
+    "persistentError": "Pokud problém přetrvává, kontaktujte podporu"
+  }
 }

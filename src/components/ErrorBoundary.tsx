@@ -2,6 +2,7 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 import { errorHandler } from '@/utils/errorHandler';
+import i18n from '@/i18n/config';
 
 interface Props {
   children: ReactNode;
@@ -72,6 +73,8 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       // Default error UI
+      const t = (key: string) => i18n.t(key, { ns: 'errors' });
+      
       return (
         <div className="min-h-screen flex items-center justify-center bg-background">
           <div className="max-w-md w-full mx-4 p-6 bg-card rounded-lg border border-border">
@@ -79,10 +82,10 @@ export class ErrorBoundary extends Component<Props, State> {
               <AlertTriangle className="h-8 w-8 text-destructive" />
               <div>
                 <h1 className="text-xl font-semibold text-card-foreground">
-                  Něco se pokazilo
+                  {t('boundary.title')}
                 </h1>
                 <p className="text-sm text-muted-foreground">
-                  Aplikace narazila na neočekávanou chybu
+                  {t('boundary.subtitle')}
                 </p>
               </div>
             </div>
@@ -102,7 +105,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 variant="default"
               >
                 <RefreshCw className="w-4 h-4 mr-2" />
-                Zkusit znovu
+                {t('boundary.retry')}
               </Button>
               
               <Button 
@@ -111,13 +114,13 @@ export class ErrorBoundary extends Component<Props, State> {
                 className="w-full"
               >
                 <Home className="w-4 h-4 mr-2" />
-                Zpět na hlavní stránku
+                {t('boundary.goHome')}
               </Button>
             </div>
 
             {this.state.retryCount > 2 && (
               <p className="mt-4 text-xs text-muted-foreground text-center">
-                Pokud problém přetrvává, kontaktujte podporu
+                {t('boundary.persistentError')}
               </p>
             )}
           </div>

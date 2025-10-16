@@ -1,8 +1,7 @@
-
 import { DiamondIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { PremiumBadge } from "@/components/premium/PremiumBadge";
+import { useTranslation } from "react-i18next";
 
 interface PremiumFeatureAlertProps {
   featureName: string;
@@ -18,6 +17,7 @@ export const PremiumFeatureAlert = ({
   compact = false 
 }: PremiumFeatureAlertProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation('premium-alert');
 
   if (compact) {
     return (
@@ -28,7 +28,7 @@ export const PremiumFeatureAlert = ({
           </div>
           <div>
             <p className="text-sm font-medium text-amber-800">{featureName}</p>
-            <p className="text-xs text-amber-600">Tato funkce vyžaduje Premium účet</p>
+            <p className="text-xs text-amber-600">{t('compact.requiresPremium')}</p>
           </div>
         </div>
         <Button 
@@ -37,7 +37,7 @@ export const PremiumFeatureAlert = ({
           size="sm"
           className="bg-amber-100 text-amber-800 hover:bg-amber-200 border-amber-300"
         >
-          Aktivovat Premium
+          {t('compact.activatePremium')}
         </Button>
       </div>
     );
@@ -48,9 +48,9 @@ export const PremiumFeatureAlert = ({
       <div className="p-3 bg-amber-200 rounded-full">
         <DiamondIcon className="h-10 w-10 text-amber-600" />
       </div>
-      <h3 className="text-xl font-semibold text-amber-800">Premium funkce</h3>
+      <h3 className="text-xl font-semibold text-amber-800">{t('full.title')}</h3>
       <p className="text-muted-foreground max-w-md">
-        Funkce <strong className="text-amber-700">{featureName}</strong> je dostupná pouze pro uživatele s Premium účtem.
+        <span dangerouslySetInnerHTML={{ __html: t('full.description', { featureName }) }} />
         {description && <span className="block mt-2">{description}</span>}
       </p>
       <div className="flex flex-col sm:flex-row gap-4 mt-4">
@@ -60,14 +60,14 @@ export const PremiumFeatureAlert = ({
           className="bg-amber-500 hover:bg-amber-600 text-white"
         >
           <DiamondIcon className="mr-2 h-4 w-4" />
-          Aktivovat Premium
+          {t('full.activatePremium')}
         </Button>
         <Button 
           onClick={() => navigate("/login")} 
           variant="outline"
           className="border-amber-300 text-amber-800 hover:bg-amber-100"
         >
-          Přihlásit se
+          {t('full.login')}
         </Button>
       </div>
     </div>

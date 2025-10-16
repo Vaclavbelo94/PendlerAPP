@@ -1,0 +1,19 @@
+{
+  "title": "O projekcie",
+  "subtitle": "PendlerHelfer to kompleksowe rozwiązanie dla czeskich pendlerów pracujących w Niemczech.",
+  "mission": {
+    "title": "Nasza misja",
+    "text1": "Naszym celem jest uproszczenie życia czeskich pendlerów pracujących w Niemczech poprzez praktyczne narzędzia i przydatne informacje. Chcemy usunąć językowe, prawne i logistyczne bariery, z którymi pendlerzy spotykają się na co dzień.",
+    "text2": "Wierzymy, że dzięki odpowiednim narzędziom i informacjom praca za granicą może być prostszym i przyjemniejszym doświadczeniem."
+  },
+  "history": {
+    "title": "Historia projektu",
+    "text1": "Projekt PendlerHelfer powstał w 2023 roku na podstawie własnych doświadczeń jego założycieli, którzy sami przez kilka lat pracowali jako pendlerzy w Niemczech. Dzięki własnym doświadczeniom udało im się zidentyfikować główne problemy i wyzwania, z którymi czescy pendlerzy borykają się na co dzień.",
+    "text2": "Od momentu powstania projekt rozrósł się z prostego słownika zwrotów do kompleksowej platformy obejmującej naukę niemieckiego, przegląd przepisów prawnych, zarządzanie pojazdami i planowanie zmian."
+  },
+  "team": {
+    "title": "Zespół",
+    "text1": "Nasz zespół składa się z profesjonalistów z bezpośrednim doświadczeniem w pracy w Niemczech, prawników specjalizujących się w międzynarodowym prawie pracy oraz ekspertów językowych. Wspólnie pracujemy nad stworzeniem najlepszego możliwego narzędzia dla czeskich pendlerów.",
+    "text2": "Jesteśmy dumni z tego, że wszystkie funkcje i treści naszej aplikacji są tworzone we współpracy z aktywnymi pendlerami, którzy dostarczają nam nieocenioną opinię i sugestie ulepszeń."
+  }
+}
