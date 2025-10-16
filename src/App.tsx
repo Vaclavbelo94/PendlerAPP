@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/hooks/auth";
 import { DHLThemeProvider } from "@/contexts/DHLThemeContext";
+import { MobileProvider } from "@/contexts/MobileContext";
 import { CompanyModuleProvider } from "@/components/company/CompanyModuleProvider";
 import Index from "./pages/Index";
 import CompanySelector from "./components/company/CompanySelector";
@@ -60,67 +61,69 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-        <QueryClientProvider client={queryClient}>
-          <TooltipProvider>
-            <BrowserRouter>
-              <AuthProvider>
-                <DHLThemeProvider>
-                  <CompanyModuleProvider>
-                    <Suspense fallback={<LoadingSpinner />}>
-                     <Routes>
-                        <Route path="/" element={<WelcomeScreen />} />
-                        <Route path="/welcome" element={<WelcomeScreen />} />
-                        <Route path="/company-selector" element={<CompanySelector />} />
-                        <Route path="/adecco" element={<CompanyLandingPage />} />
-                        <Route path="/randstad" element={<CompanyLandingPage />} />
-                        <Route path="/dhl" element={<CompanyLandingPage />} />
-                        <Route path="/register/:company" element={<CompanyRegister />} />
-                         <Route path="/old-index" element={<Index />} />
-                         <Route path="/login" element={<Login />} />
-                         <Route path="/forgot-password" element={<ForgotPassword />} />
-                         <Route path="/register" element={<Register />} />
-                        <Route path="/dashboard" element={<Dashboard />} />
-                        <Route path="/shifts" element={<Shifts />} />
-                        <Route path="/notifications" element={<NotificationsPage />} />
-                        <Route path="/overtime" element={<Overtime />} />
-                        <Route path="/travel" element={<TravelPlanning />} />
-                        <Route path="/translator" element={<Translator />} />
-                        <Route path="/tax-advisor" element={<TaxAdvisor />} />
-                        <Route path="/pendler-calculator" element={<PendlerCalculatorPage />} />
-                        <Route path="/wage-overview" element={<WageOverview />} />
-                        <Route path="/laws" element={<Laws />} />
-                        <Route path="/laws/:lawId" element={<LawDetail />} />
-                        <Route path="/profile" element={<ModernProfile />} />
-                        <Route path="/settings" element={<Settings />} />
-                         <Route path="/vehicle" element={<Vehicle />} />
-                         <Route path="/premium" element={<Premium />} />
-                         <Route path="/pricing" element={<Pricing />} />
-                         <Route path="/contact" element={<Contact />} />
-                         <Route path="/faq" element={<FAQ />} />
-                         <Route path="/terms" element={<Terms />} />
-                         <Route path="/privacy" element={<Privacy />} />
-                         <Route path="/admin" element={<Admin />} />
-        <Route path="/admin/v2/*" element={<AdminV2 />} />
-        <Route path="/admin/mobile/*" element={<MobileAdminV2 />} />
-                         <Route path="/dhl-admin" element={<DHLAdmin />} />
-                         <Route path="/dhl-setup" element={<DHLSetup />} />
-                         <Route path="/dhl-employee" element={<DHLEmployeePage />} />
-                         <Route path="/dhl-documents" element={<DHLDocumentsPage />} />
-                         <Route path="/dhl-travel" element={<DHLTravelPage />} />
-                         <Route path="/dhl-analytics" element={<DHLAnalyticsPage />} />
-                         <Route path="/dhl-time-tracking" element={<DHLTimeTrackingPage />} />
-                         <Route path="/dhl-recruitment" element={<DHLRecruitment />} />
-                      </Routes>
-                    </Suspense>
-                    <NotificationManager />
-                    <Toaster />
-                    <SonnerToaster position="top-right" />
-                  </CompanyModuleProvider>
-                </DHLThemeProvider>
-              </AuthProvider>
-            </BrowserRouter>
-          </TooltipProvider>
-        </QueryClientProvider>
+        <MobileProvider>
+          <QueryClientProvider client={queryClient}>
+            <TooltipProvider>
+              <BrowserRouter>
+                <AuthProvider>
+                  <DHLThemeProvider>
+                    <CompanyModuleProvider>
+                      <Suspense fallback={<LoadingSpinner />}>
+                       <Routes>
+                          <Route path="/" element={<WelcomeScreen />} />
+                          <Route path="/welcome" element={<WelcomeScreen />} />
+                          <Route path="/company-selector" element={<CompanySelector />} />
+                          <Route path="/adecco" element={<CompanyLandingPage />} />
+                          <Route path="/randstad" element={<CompanyLandingPage />} />
+                          <Route path="/dhl" element={<CompanyLandingPage />} />
+                          <Route path="/register/:company" element={<CompanyRegister />} />
+                           <Route path="/old-index" element={<Index />} />
+                           <Route path="/login" element={<Login />} />
+                           <Route path="/forgot-password" element={<ForgotPassword />} />
+                           <Route path="/register" element={<Register />} />
+                          <Route path="/dashboard" element={<Dashboard />} />
+                          <Route path="/shifts" element={<Shifts />} />
+                          <Route path="/notifications" element={<NotificationsPage />} />
+                          <Route path="/overtime" element={<Overtime />} />
+                          <Route path="/travel" element={<TravelPlanning />} />
+                          <Route path="/translator" element={<Translator />} />
+                          <Route path="/tax-advisor" element={<TaxAdvisor />} />
+                          <Route path="/pendler-calculator" element={<PendlerCalculatorPage />} />
+                          <Route path="/wage-overview" element={<WageOverview />} />
+                          <Route path="/laws" element={<Laws />} />
+                          <Route path="/laws/:lawId" element={<LawDetail />} />
+                          <Route path="/profile" element={<ModernProfile />} />
+                          <Route path="/settings" element={<Settings />} />
+                           <Route path="/vehicle" element={<Vehicle />} />
+                           <Route path="/premium" element={<Premium />} />
+                           <Route path="/pricing" element={<Pricing />} />
+                           <Route path="/contact" element={<Contact />} />
+                           <Route path="/faq" element={<FAQ />} />
+                           <Route path="/terms" element={<Terms />} />
+                           <Route path="/privacy" element={<Privacy />} />
+                           <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/v2/*" element={<AdminV2 />} />
+          <Route path="/admin/mobile/*" element={<MobileAdminV2 />} />
+                           <Route path="/dhl-admin" element={<DHLAdmin />} />
+                           <Route path="/dhl-setup" element={<DHLSetup />} />
+                           <Route path="/dhl-employee" element={<DHLEmployeePage />} />
+                           <Route path="/dhl-documents" element={<DHLDocumentsPage />} />
+                           <Route path="/dhl-travel" element={<DHLTravelPage />} />
+                           <Route path="/dhl-analytics" element={<DHLAnalyticsPage />} />
+                           <Route path="/dhl-time-tracking" element={<DHLTimeTrackingPage />} />
+                           <Route path="/dhl-recruitment" element={<DHLRecruitment />} />
+                        </Routes>
+                       </Suspense>
+                      <NotificationManager />
+                      <Toaster />
+                      <SonnerToaster position="top-right" />
+                    </CompanyModuleProvider>
+                  </DHLThemeProvider>
+                </AuthProvider>
+              </BrowserRouter>
+            </TooltipProvider>
+          </QueryClientProvider>
+        </MobileProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );
