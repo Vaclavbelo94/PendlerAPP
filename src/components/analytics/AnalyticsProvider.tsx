@@ -33,11 +33,7 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({
   } = config;
 
   // Initialize monitoring hooks
-  usePerformanceMonitoring({
-    enableRealTimeTracking: enablePerformanceMonitoring,
-    trackUserInteractions: enableUserAnalytics,
-    trackMemoryUsage: enablePerformanceMonitoring
-  });
+  usePerformanceMonitoring('AnalyticsProvider');
 
   const { reportError } = useErrorTracking({
     enableGlobalErrorHandling: enableErrorTracking,

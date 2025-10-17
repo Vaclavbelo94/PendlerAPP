@@ -1,5 +1,5 @@
 
-import { Suspense } from 'react';
+import { Suspense, lazy } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as SonnerToaster } from "sonner";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -11,53 +11,65 @@ import { AuthProvider } from "@/hooks/auth";
 import { DHLThemeProvider } from "@/contexts/DHLThemeContext";
 import { MobileProvider } from "@/contexts/MobileContext";
 import { CompanyModuleProvider } from "@/components/company/CompanyModuleProvider";
-import Index from "./pages/Index";
-import CompanySelector from "./components/company/CompanySelector";
-import CompanyLandingPage from "./components/company/CompanyLandingPage";
-import CompanyRegister from "./components/company/CompanyRegister";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import Shifts from "./pages/Shifts";
-import Overtime from "./pages/Overtime";
-import TravelPlanning from "./pages/TravelPlanning";
-import Translator from "./pages/Translator";
-import TaxAdvisor from "./pages/TaxAdvisor";
-import PendlerCalculatorPage from "./pages/PendlerCalculator";
-import WageOverview from "./pages/WageOverview";
-import Laws from "./pages/Laws";
-import LawDetail from "./pages/LawDetail";
-import ModernProfile from "./pages/ModernProfile";
-import Settings from "./pages/Settings";
-import Vehicle from "./pages/Vehicle";
-import Premium from "./pages/Premium";
-import Pricing from "./pages/Pricing";
-import Contact from "./pages/Contact";
-import FAQ from "./pages/FAQ";
-import Terms from "./pages/Terms";
-import Privacy from "./pages/Privacy";
-import Admin from "./pages/Admin";
-import AdminV2 from "./pages/AdminV2";
-import MobileAdminV2 from "./pages/MobileAdminV2";
-// DHL Routes - only setup and admin remain
-import DHLSetup from "./pages/DHLSetup";
-import DHLAdmin from "./pages/DHLAdmin"; // NEW DHL Admin route
-import DHLEmployeePage from "./pages/dhl/employee/DHLEmployeePage";
-import DHLDocumentsPage from "./pages/dhl/DHLDocumentsPage";
-import DHLTravelPage from "./pages/dhl/DHLTravelPage";
-import DHLAnalyticsPage from "./pages/dhl/DHLAnalyticsPage";
-import DHLTimeTrackingPage from "./pages/dhl/DHLTimeTrackingPage";
-import DHLRecruitment from "./pages/DHLRecruitment";
-import ForgotPassword from "./pages/ForgotPassword";
-import NotificationsPage from "./pages/NotificationsPage";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import { NotificationManager } from "./components/notifications/NotificationManager";
+import { PerformanceOptimizer } from "./components/performance/PerformanceOptimizer";
 import WelcomeScreen from "./components/welcome/WelcomeScreen";
+import { lazyLoadWithRetry } from "./utils/lazyLoad";
 import "./i18n/config";
 import './index.css';
 import './styles/mobile-touch.css';
 
-const queryClient = new QueryClient();
+// Lazy load all pages for better performance
+const Index = lazyLoadWithRetry(() => import("./pages/Index"));
+const CompanySelector = lazy(() => import("./components/company/CompanySelector"));
+const CompanyLandingPage = lazy(() => import("./components/company/CompanyLandingPage"));
+const CompanyRegister = lazy(() => import("./components/company/CompanyRegister"));
+const Login = lazyLoadWithRetry(() => import("./pages/Login"));
+const Register = lazyLoadWithRetry(() => import("./pages/Register"));
+const Dashboard = lazyLoadWithRetry(() => import("./pages/Dashboard"));
+const Shifts = lazyLoadWithRetry(() => import("./pages/Shifts"));
+const Overtime = lazy(() => import("./pages/Overtime"));
+const TravelPlanning = lazy(() => import("./pages/TravelPlanning"));
+const Translator = lazy(() => import("./pages/Translator"));
+const TaxAdvisor = lazy(() => import("./pages/TaxAdvisor"));
+const PendlerCalculatorPage = lazy(() => import("./pages/PendlerCalculator"));
+const WageOverview = lazy(() => import("./pages/WageOverview"));
+const Laws = lazy(() => import("./pages/Laws"));
+const LawDetail = lazy(() => import("./pages/LawDetail"));
+const ModernProfile = lazy(() => import("./pages/ModernProfile"));
+const Settings = lazy(() => import("./pages/Settings"));
+const Vehicle = lazy(() => import("./pages/Vehicle"));
+const Premium = lazy(() => import("./pages/Premium"));
+const Pricing = lazy(() => import("./pages/Pricing"));
+const Contact = lazy(() => import("./pages/Contact"));
+const FAQ = lazy(() => import("./pages/FAQ"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Admin = lazy(() => import("./pages/Admin"));
+const AdminV2 = lazy(() => import("./pages/AdminV2"));
+const MobileAdminV2 = lazy(() => import("./pages/MobileAdminV2"));
+const DHLSetup = lazy(() => import("./pages/DHLSetup"));
+const DHLAdmin = lazy(() => import("./pages/DHLAdmin"));
+const DHLEmployeePage = lazy(() => import("./pages/dhl/employee/DHLEmployeePage"));
+const DHLDocumentsPage = lazy(() => import("./pages/dhl/DHLDocumentsPage"));
+const DHLTravelPage = lazy(() => import("./pages/dhl/DHLTravelPage"));
+const DHLAnalyticsPage = lazy(() => import("./pages/dhl/DHLAnalyticsPage"));
+const DHLTimeTrackingPage = lazy(() => import("./pages/dhl/DHLTimeTrackingPage"));
+const DHLRecruitment = lazy(() => import("./pages/DHLRecruitment"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const NotificationsPage = lazy(() => import("./pages/NotificationsPage"));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 function App() {
   return (
@@ -115,10 +127,11 @@ function App() {
                            <Route path="/dhl-time-tracking" element={<DHLTimeTrackingPage />} />
                            <Route path="/dhl-recruitment" element={<DHLRecruitment />} />
                         </Routes>
-                       </Suspense>
-                      <NotificationManager />
-                      <Toaster />
-                      <SonnerToaster position="top-right" />
+                        </Suspense>
+                       <PerformanceOptimizer />
+                       <NotificationManager />
+                       <Toaster />
+                       <SonnerToaster position="top-right" />
                     </CompanyModuleProvider>
                   </DHLThemeProvider>
                 </AuthProvider>

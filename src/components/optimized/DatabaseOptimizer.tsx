@@ -1,21 +1,10 @@
 
 import React, { useEffect } from 'react';
 import { usePerformanceMonitoring } from '@/hooks/usePerformanceMonitoring';
-import { useResourceOptimization } from '@/hooks/useResourceOptimization';
+import { memoryManager } from '@/utils/memoryManager';
 
 export const DatabaseOptimizer: React.FC = () => {
-  const { collectMetrics } = usePerformanceMonitoring({
-    enableRealTimeTracking: true,
-    trackUserInteractions: true,
-    trackMemoryUsage: true,
-    reportingInterval: 60000 // Increased to 1 minute for better performance
-  });
-
-  const { optimizeFonts, optimizeCSS, optimizeImages } = useResourceOptimization({
-    enableImageOptimization: true,
-    enableFontOptimization: true,
-    enableCSSOptimization: true
-  });
+  usePerformanceMonitoring('DatabaseOptimizer');
 
   useEffect(() => {
     // Database query optimization
@@ -85,12 +74,12 @@ export const DatabaseOptimizer: React.FC = () => {
     };
 
     optimizeQueries();
-    optimizeFonts();
-    optimizeCSS();
-    optimizeImages();
     
     // Run cleanup every 5 minutes
-    const cleanupInterval = setInterval(cleanupMemory, 300000);
+    const cleanupInterval = setInterval(() => {
+      memoryManager.cleanup();
+      cleanupMemory();
+    }, 300000);
     
     // Initial cleanup after 10 seconds
     const initialCleanup = setTimeout(cleanupMemory, 10000);
@@ -99,7 +88,7 @@ export const DatabaseOptimizer: React.FC = () => {
       clearInterval(cleanupInterval);
       clearTimeout(initialCleanup);
     };
-  }, [optimizeFonts, optimizeCSS, optimizeImages]);
+  }, []);
 
   // Performance monitoring component (invisible)
   return null;
