@@ -70,7 +70,7 @@ const VehiclePageContent: React.FC<VehiclePageContentProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-safe">
       {/* Header with Add Button */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
         <div></div> {/* Spacer */}
@@ -81,10 +81,11 @@ const VehiclePageContent: React.FC<VehiclePageContentProps> = ({
           transition={{ duration: 0.4, delay: 0.3 }}
         >
           <Button 
-            onClick={onAddVehicle} 
+            onClick={onAddVehicle}
+            size={isMobile ? "mobile" : "default"}
             className="w-full md:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 transition-all duration-300"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-5 w-5 md:h-4 md:w-4" />
             {t('vehicle:addVehicle')}
           </Button>
         </motion.div>

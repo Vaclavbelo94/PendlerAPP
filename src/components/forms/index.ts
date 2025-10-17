@@ -1,0 +1,1 @@
+export { MobileOptimizedInput } from './MobileOptimizedInput';

@@ -54,6 +54,8 @@ import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import { NotificationManager } from "./components/notifications/NotificationManager";
 import WelcomeScreen from "./components/welcome/WelcomeScreen";
 import "./i18n/config";
+import './index.css';
+import './styles/mobile-touch.css';
 
 const queryClient = new QueryClient();
 

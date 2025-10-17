@@ -1,0 +1,127 @@
+/* Mobile Touch Optimization Utilities */
+
+/* Touch-friendly interactive elements */
+.touch-target {
+  min-height: var(--touch-target);
+  min-width: var(--touch-target);
+}
+
+/* Active state feedback for mobile */
+.touch-active {
+  @apply active:scale-95 transition-transform duration-100;
+}
+
+/* Prevent text selection on interactive elements */
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mobile-friendly spacing */
+.mobile-spacing {
+  @apply space-y-4 md:space-y-6;
+}
+
+/* Mobile card padding */
+.mobile-card-padding {
+  @apply p-4 md:p-6;
+}
+
+/* Mobile section spacing */
+.mobile-section {
+  @apply py-4 px-4 md:py-6 md:px-6;
+}
+
+/* Responsive text sizing for mobile */
+.mobile-heading {
+  @apply text-xl md:text-2xl lg:text-3xl;
+}
+
+.mobile-subheading {
+  @apply text-lg md:text-xl;
+}
+
+.mobile-body {
+  @apply text-base md:text-base;
+}
+
+/* Mobile-optimized form spacing */
+.mobile-form-spacing {
+  @apply space-y-4 md:space-y-5;
+}
+
+/* Touch-friendly button group */
+.mobile-button-group {
+  @apply flex flex-col sm:flex-row gap-3 md:gap-4;
+}
+
+/* Mobile-optimized icon sizes */
+.mobile-icon-sm {
+  @apply h-5 w-5 md:h-4 md:w-4;
+}
+
+.mobile-icon-md {
+  @apply h-6 w-6 md:h-5 md:w-5;
+}
+
+.mobile-icon-lg {
+  @apply h-7 w-7 md:h-6 md:w-6;
+}
+
+/* Scrollable container with touch momentum */
+.mobile-scroll {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Full-width on mobile, auto on desktop */
+.mobile-full {
+  @apply w-full md:w-auto;
+}
+
+/* Mobile-friendly modal/dialog */
+.mobile-dialog {
+  @apply max-h-[90vh] overflow-y-auto mobile-scroll;
+}
+
+/* Sticky header for mobile */
+.mobile-sticky-header {
+  @apply sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b;
+}
+
+/* Mobile-optimized grid */
+.mobile-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6;
+}
+
+/* Portrait-specific optimizations */
+@media (orientation: portrait) and (max-width: 768px) {
+  .portrait-stack {
+    @apply flex-col;
+  }
+  
+  .portrait-full {
+    @apply w-full;
+  }
+}
+
+/* Landscape-specific optimizations */
+@media (orientation: landscape) and (max-width: 896px) {
+  .landscape-row {
+    @apply flex-row;
+  }
+  
+  .landscape-compact {
+    @apply py-2;
+  }
+}
+
+/* Android-specific touch optimization */
+@supports (-webkit-touch-callout: none) {
+  .android-touch {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
