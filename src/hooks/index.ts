@@ -7,6 +7,7 @@ export { useFormValidation } from './useFormValidation';
 export { useImageOptimization, useResponsiveImage } from './useImageOptimization';
 export { useIntersectionObserver, useLazyLoad } from './useIntersectionObserver';
 export { usePerformanceMonitoring } from './usePerformanceMonitoring';
+export { useOfflineStatus } from './useOfflineStatus';
 
 // Phase 7: Native Features & PWA
 export { usePWA } from './usePWA';

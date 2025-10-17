@@ -3,14 +3,7 @@ import { Button } from '@/components/ui/button';
 import { CloudOff, RefreshCw, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useOfflineStatus } from '@/hooks/useOfflineStatus';
-
-interface QueuedAction {
-  id: string;
-  type: string;
-  timestamp: number;
-  data: any;
-  retries: number;
-}
+import { offlineQueue, type QueuedAction } from '@/utils/offlineQueue';
 
 /**
  * Offline Queue Indicator
@@ -23,16 +16,9 @@ export const OfflineQueueIndicator: React.FC = () => {
   const [isSyncing, setIsSyncing] = useState(false);
 
   useEffect(() => {
-    // Load queue from localStorage
+    // Load queue from manager
     const loadQueue = () => {
-      try {
-        const stored = localStorage.getItem('offline-queue');
-        if (stored) {
-          setQueue(JSON.parse(stored));
-        }
-      } catch (error) {
-        console.error('Failed to load offline queue:', error);
-      }
+      setQueue(offlineQueue.getAll());
     };
 
     loadQueue();
@@ -50,15 +36,8 @@ export const OfflineQueueIndicator: React.FC = () => {
     setIsSyncing(true);
     
     try {
-      // Trigger sync event
-      window.dispatchEvent(new CustomEvent('offline-sync-requested'));
-      
-      // Wait for sync to complete
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Reload queue
-      const stored = localStorage.getItem('offline-queue');
-      setQueue(stored ? JSON.parse(stored) : []);
+      await offlineQueue.processQueue();
+      setQueue(offlineQueue.getAll());
     } catch (error) {
       console.error('Failed to sync:', error);
     } finally {
@@ -68,9 +47,8 @@ export const OfflineQueueIndicator: React.FC = () => {
 
   const handleClear = () => {
     if (confirm('Clear all pending actions? This cannot be undone.')) {
-      localStorage.removeItem('offline-queue');
+      offlineQueue.clear();
       setQueue([]);
-      window.dispatchEvent(new CustomEvent('offline-queue-updated'));
     }
   };
 
