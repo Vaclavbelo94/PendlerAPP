@@ -13,3 +13,10 @@ export { usePWA } from './usePWA';
 export { usePushNotifications } from './usePushNotifications';
 export { useHaptics, useAutoHaptic } from './useHaptics';
 export { useNativeShare } from './useNativeShare';
+
+// Phase 8: Device Features
+export { useCamera } from './useCamera';
+export { useGeolocation } from './useGeolocation';
+export { useBiometrics } from './useBiometrics';
+export { useFileUpload } from './useFileUpload';
+export { useDeviceSensors } from './useDeviceSensors';
