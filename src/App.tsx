@@ -14,6 +14,9 @@ import { CompanyModuleProvider } from "@/components/company/CompanyModuleProvide
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 import { NotificationManager } from "./components/notifications/NotificationManager";
 import { PerformanceOptimizer } from "./components/performance/PerformanceOptimizer";
+import { PWAInstallPrompt } from "./components/pwa/PWAInstallPrompt";
+import { PWAUpdateNotification } from "./components/pwa/PWAUpdateNotification";
+import { OfflineQueueIndicator } from "./components/offline/OfflineQueueIndicator";
 import WelcomeScreen from "./components/welcome/WelcomeScreen";
 import { lazyLoadWithRetry } from "./utils/lazyLoad";
 import "./i18n/config";
@@ -126,10 +129,13 @@ function App() {
                            <Route path="/dhl-analytics" element={<DHLAnalyticsPage />} />
                            <Route path="/dhl-time-tracking" element={<DHLTimeTrackingPage />} />
                            <Route path="/dhl-recruitment" element={<DHLRecruitment />} />
-                        </Routes>
+                         </Routes>
                         </Suspense>
                        <PerformanceOptimizer />
                        <NotificationManager />
+                       <PWAInstallPrompt />
+                       <PWAUpdateNotification />
+                       <OfflineQueueIndicator />
                        <Toaster />
                        <SonnerToaster position="top-right" />
                     </CompanyModuleProvider>

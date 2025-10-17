@@ -7,3 +7,9 @@ export { useFormValidation } from './useFormValidation';
 export { useImageOptimization, useResponsiveImage } from './useImageOptimization';
 export { useIntersectionObserver, useLazyLoad } from './useIntersectionObserver';
 export { usePerformanceMonitoring } from './usePerformanceMonitoring';
+
+// Phase 7: Native Features & PWA
+export { usePWA } from './usePWA';
+export { usePushNotifications } from './usePushNotifications';
+export { useHaptics, useAutoHaptic } from './useHaptics';
+export { useNativeShare } from './useNativeShare';
