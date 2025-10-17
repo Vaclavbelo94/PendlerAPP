@@ -9,6 +9,12 @@ export { useIntersectionObserver, useLazyLoad } from './useIntersectionObserver'
 export { usePerformanceMonitoring } from './usePerformanceMonitoring';
 export { useOfflineStatus } from './useOfflineStatus';
 
+// Animation Hooks
+export { usePageTransition } from './usePageTransition';
+export { useMousePosition } from './useMousePosition';
+export { useScrollProgress } from './useScrollProgress';
+export { useSwipeGestures } from './useSwipeGestures';
+
 // Phase 7: Native Features & PWA
 export { usePWA } from './usePWA';
 export { usePushNotifications } from './usePushNotifications';
