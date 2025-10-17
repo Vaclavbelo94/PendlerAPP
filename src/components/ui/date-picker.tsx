@@ -54,13 +54,13 @@ export function DatePicker({
         <Button
           variant="outline"
           className={cn(
-            "w-full justify-start text-left font-normal",
+            "w-full min-h-[var(--touch-target-min)] justify-start text-left font-normal text-base md:text-sm",
             !selected && "text-muted-foreground",
             className
           )}
           disabled={disabled}
         >
-          <CalendarIcon className="mr-2 h-4 w-4" />
+          <CalendarIcon className="mr-2 h-5 w-5 md:h-4 md:w-4" />
           {selected ? format(selected, "PPP", { locale: getLocale() }) : <span>{getPlaceholder()}</span>}
         </Button>
       </PopoverTrigger>
@@ -70,7 +70,11 @@ export function DatePicker({
           selected={selected || undefined}
           onSelect={onSelect}
           initialFocus
-          className={cn("p-3 pointer-events-auto")}
+          className={cn(
+            "p-3 pointer-events-auto",
+            "[&_button]:min-h-[var(--touch-target-min)] [&_button]:min-w-[var(--touch-target-min)]",
+            "[&_button]:text-base md:[&_button]:text-sm"
+          )}
         />
       </PopoverContent>
     </Popover>

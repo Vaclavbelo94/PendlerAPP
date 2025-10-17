@@ -17,5 +17,12 @@
   "pleaseEnter": "Proszę wprowadzić",
   "invalidEmail": "Nieprawidłowy e-mail",
   "passwordTooShort": "Hasło za krótkie",
-  "passwordsDoNotMatch": "Hasła nie pasują do siebie"
+  "passwordsDoNotMatch": "Hasła nie pasują do siebie",
+  "fieldRequired": "To pole jest wymagane",
+  "invalidFormat": "Nieprawidłowy format",
+  "tooLong": "Tekst za długi",
+  "tooShort": "Tekst za krótki",
+  "invalidNumber": "Nieprawidłowa liczba",
+  "invalidPhone": "Nieprawidłowy numer telefonu",
+  "invalidUrl": "Nieprawidłowy adres URL"
 }

@@ -17,5 +17,12 @@
   "pleaseEnter": "Prosím zadejte",
   "invalidEmail": "Neplatný e-mail",
   "passwordTooShort": "Heslo je příliš krátké",
-  "passwordsDoNotMatch": "Hesla se neshodují"
+  "passwordsDoNotMatch": "Hesla se neshodují",
+  "fieldRequired": "Toto pole je povinné",
+  "invalidFormat": "Neplatný formát",
+  "tooLong": "Příliš dlouhý text",
+  "tooShort": "Příliš krátký text",
+  "invalidNumber": "Neplatné číslo",
+  "invalidPhone": "Neplatné telefonní číslo",
+  "invalidUrl": "Neplatná URL adresa"
 }

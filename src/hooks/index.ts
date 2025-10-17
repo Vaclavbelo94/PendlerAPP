@@ -3,3 +3,4 @@ export { useIsMobile } from './use-mobile';
 export { useUnifiedOrientation } from './useUnifiedOrientation';
 export { useCapacitor } from './useCapacitor';
 export { useResponsive, useResponsiveColumns } from './useResponsive';
+export { useFormValidation } from './useFormValidation';

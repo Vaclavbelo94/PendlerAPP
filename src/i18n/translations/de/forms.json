@@ -17,5 +17,12 @@
   "pleaseEnter": "Bitte eingeben",
   "invalidEmail": "Ungültige E-Mail",
   "passwordTooShort": "Passwort zu kurz",
-  "passwordsDoNotMatch": "Passwörter stimmen nicht überein"
+  "passwordsDoNotMatch": "Passwörter stimmen nicht überein",
+  "fieldRequired": "Dieses Feld ist erforderlich",
+  "invalidFormat": "Ungültiges Format",
+  "tooLong": "Text zu lang",
+  "tooShort": "Text zu kurz",
+  "invalidNumber": "Ungültige Nummer",
+  "invalidPhone": "Ungültige Telefonnummer",
+  "invalidUrl": "Ungültige URL-Adresse"
 }
