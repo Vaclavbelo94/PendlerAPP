@@ -97,7 +97,7 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
     await deleteNotification(notification.id);
   };
 
-  // Format relative date in Czech
+  // Format relative date with translations
   const formatRelativeDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -107,15 +107,15 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
     
     if (diffMinutes < 1) {
-      return 'Právě teď';
+      return t('time.now');
     } else if (diffMinutes < 60) {
-      return `Před ${diffMinutes} min`;
+      return t('time.minutesAgo', { count: diffMinutes });
     } else if (diffHours < 24) {
-      return `Před ${diffHours} h`;
+      return t('time.hoursAgo', { count: diffHours });
     } else if (diffDays === 1) {
-      return 'Včera, ' + format(date, 'HH:mm');
+      return t('time.dayAgo') + ', ' + format(date, 'HH:mm');
     } else if (diffDays < 7) {
-      return `Před ${diffDays} dny`;
+      return t('time.daysAgo', { count: diffDays });
     } else {
       return format(date, 'dd. MMMM', { locale: cs });
     }
@@ -180,15 +180,15 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
           {renderIcon()}
         </div>
         
-        <div className="flex-1 space-y-1 min-w-0">
-          <div className={cn(
-            'font-medium text-sm leading-tight',
+        <div className="flex-1 space-y-1.5 min-w-0">
+          <h3 className={cn(
+            'font-medium text-sm leading-snug break-words',
             !notification.read && 'text-foreground font-semibold'
           )}>
             {notification.title}
-          </div>
+          </h3>
           
-          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+          <p className="text-sm text-muted-foreground line-clamp-2 leading-snug break-words">
             {notification.message}
           </p>
 
@@ -253,10 +253,12 @@ export const MobileNotificationItem: React.FC<MobileNotificationItemProps> = ({
             </div>
           )}
           
-          <p className="text-xs text-muted-foreground flex items-center gap-1">
-            <Calendar className="h-3 w-3" />
-            {formatRelativeDate(notification.created_at)}
-          </p>
+          <div className="flex items-center gap-1.5 mt-1">
+            <Calendar className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+            <p className="text-xs text-muted-foreground">
+              {formatRelativeDate(notification.created_at)}
+            </p>
+          </div>
         </div>
         
         <Button
