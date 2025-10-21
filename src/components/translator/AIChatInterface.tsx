@@ -80,13 +80,10 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ onTextToSpeech }) => 
   return (
     <Card className="h-full flex flex-col">
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Bot className="h-5 w-5 text-primary" />
-            AI Překladač
-          </CardTitle>
-          {getServiceBadge()}
-        </div>
+        <CardTitle className="flex items-center gap-2">
+          <Bot className="h-5 w-5 text-primary" />
+          AI Překladač
+        </CardTitle>
         <p className="text-sm text-muted-foreground">
           Váš inteligentní asistent pro češtinu a němčinu
         </p>
