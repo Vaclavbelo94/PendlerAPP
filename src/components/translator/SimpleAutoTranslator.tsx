@@ -131,7 +131,7 @@ const SimpleAutoTranslator: React.FC<SimpleAutoTranslatorProps> = ({ onTextToSpe
       {currentService && (
         <div className="text-center p-2 rounded-lg bg-muted/50">
           <span className="text-sm text-muted-foreground">
-            {currentService === 'gemini' && '🤖 AI aktivní (Google Gemini)'}
+            {currentService === 'lovable-ai' && '🤖 AI aktivní (Lovable AI)'}
             {currentService === 'google-translate' && '🔄 Záložní režim (Google Translate)'}
             {currentService === 'none' && '⚠️ Služby nedostupné'}
           </span>

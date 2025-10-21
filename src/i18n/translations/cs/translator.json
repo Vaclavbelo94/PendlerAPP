@@ -58,11 +58,14 @@
     "sendingError": "Chyba při odesílání",
     "emailSendFailed": "Nepodařilo se odeslat email HR oddělení",
     "fallbackMode": "Záložní režim",
-    "fallbackDescription": "Překládám pomocí záložní služby",
-    "serviceActive": "Služba aktivní",
-    "serviceDescription": "Překládám text",
-    "translationError": "Chyba překladače",
-    "translationFailed": "Nepodařilo se přeložit text",
-    "noResponse": "Žádná odpověď od překladové služby"
+    "fallbackDescription": "Použit standardní překladač Google Translate",
+    "serviceActive": "Překladač připraven",
+    "serviceDescription": "Pokročilý překladač je aktivní",
+    "translationFailed": "Překlad se nezdařil",
+    "noResponse": "Žádná odpověď od překladače",
+    "rateLimitTitle": "Příliš mnoho požadavků",
+    "rateLimitDescription": "Počkejte prosím chvíli a zkuste to znovu",
+    "creditsTitle": "Nedostatek kreditů",
+    "creditsDescription": "Přidejte kredity v nastavení workspace"
   }
 }

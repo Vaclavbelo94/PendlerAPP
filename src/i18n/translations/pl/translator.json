@@ -57,12 +57,15 @@
     "messageSentToHR": "Wiadomość została pomyślnie wysłana do działu HR",
     "sendingError": "Błąd podczas wysyłania",
     "emailSendFailed": "Nie udało się wysłać e-maila do działu HR",
-    "fallbackMode": "Tryb zapasowy",
-    "fallbackDescription": "Tłumaczę za pomocą usługi zapasowej",
-    "serviceActive": "Usługa aktywna",
-    "serviceDescription": "Tłumaczę tekst",
-    "translationError": "Błąd tłumacza",
-    "translationFailed": "Nie udało się przetłumaczyć tekstu",
-    "noResponse": "Brak odpowiedzi od usługi tłumaczenia"
+    "fallbackMode": "Tryb zastępczy",
+    "fallbackDescription": "Użyto standardowego tłumacza Google Translate",
+    "serviceActive": "Tłumacz gotowy",
+    "serviceDescription": "Zaawansowany tłumacz jest aktywny",
+    "translationFailed": "Tłumaczenie nie powiodło się",
+    "noResponse": "Brak odpowiedzi od tłumacza",
+    "rateLimitTitle": "Zbyt wiele zapytań",
+    "rateLimitDescription": "Proszę poczekać chwilę i spróbować ponownie",
+    "creditsTitle": "Brak środków",
+    "creditsDescription": "Dodaj środki w ustawieniach workspace"
   }
 }

@@ -57,12 +57,15 @@
     "messageSentToHR": "Nachricht wurde erfolgreich an die Personalabteilung gesendet",
     "sendingError": "Fehler beim Senden",
     "emailSendFailed": "E-Mail konnte nicht an die Personalabteilung gesendet werden",
-    "fallbackMode": "Backup-Modus",
-    "fallbackDescription": "Übersetze mit Backup-Dienst",
-    "serviceActive": "Dienst aktiv",
-    "serviceDescription": "Übersetze Text",
-    "translationError": "Übersetzungsfehler",
-    "translationFailed": "Text konnte nicht übersetzt werden",
-    "noResponse": "Keine Antwort vom Übersetzungsdienst"
+    "fallbackMode": "Ersatzmodus",
+    "fallbackDescription": "Standard Google Translate Übersetzer verwendet",
+    "serviceActive": "Übersetzer bereit",
+    "serviceDescription": "Erweiterter Übersetzer ist aktiv",
+    "translationFailed": "Übersetzung fehlgeschlagen",
+    "noResponse": "Keine Antwort vom Übersetzer",
+    "rateLimitTitle": "Zu viele Anfragen",
+    "rateLimitDescription": "Bitte warten Sie einen Moment und versuchen Sie es erneut",
+    "creditsTitle": "Nicht genügend Credits",
+    "creditsDescription": "Fügen Sie Credits in den Workspace-Einstellungen hinzu"
   }
 }

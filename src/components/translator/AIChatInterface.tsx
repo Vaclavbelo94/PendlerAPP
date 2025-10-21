@@ -45,11 +45,11 @@ const AIChatInterface: React.FC<AIChatInterfaceProps> = ({ onTextToSpeech }) => 
 
   const getServiceBadge = () => {
     switch (currentService) {
-      case 'gemini':
+      case 'lovable-ai':
         return (
           <Badge variant="default" className="flex items-center gap-1">
             <Bot className="h-3 w-3" />
-            Google Gemini AI
+            Lovable AI
           </Badge>
         );
       case 'google-translate':

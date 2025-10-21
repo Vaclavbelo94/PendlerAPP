@@ -9,7 +9,7 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: Date;
-  service?: 'gemini' | 'google-translate' | 'none';
+  service?: 'lovable-ai' | 'google-translate' | 'none';
   fallback?: boolean;
 }
 
@@ -17,7 +17,7 @@ export const useAITranslator = () => {
   const { t } = useTranslation('translator');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [currentService, setCurrentService] = useState<'gemini' | 'google-translate' | 'none'>('gemini');
+  const [currentService, setCurrentService] = useState<'lovable-ai' | 'google-translate' | 'none'>('lovable-ai');
 
   const sendMessage = async (userMessage: string) => {
     if (!userMessage.trim()) return;
@@ -47,7 +47,7 @@ export const useAITranslator = () => {
         content: msg.content
       }));
 
-      const { data, error } = await supabase.functions.invoke('ai-translator', {
+      const { data, error } = await supabase.functions.invoke('ai-translator-v2', {
         body: {
           message: userMessage,
           conversationHistory
@@ -63,6 +63,29 @@ export const useAITranslator = () => {
 
       if (error) {
         console.error('❌ Supabase function error:', error);
+        
+        // Handle rate limit error
+        if (error.message?.includes('429') || data?.rateLimitExceeded) {
+          toast({
+            variant: "destructive",
+            title: t('toastMessages.rateLimitTitle'),
+            description: t('toastMessages.rateLimitDescription')
+          });
+          setIsLoading(false);
+          return;
+        }
+        
+        // Handle payment required error
+        if (error.message?.includes('402') || data?.paymentRequired) {
+          toast({
+            variant: "destructive",
+            title: t('toastMessages.creditsTitle'),
+            description: t('toastMessages.creditsDescription')
+          });
+          setIsLoading(false);
+          return;
+        }
+        
         throw error;
       }
 
@@ -97,9 +120,9 @@ export const useAITranslator = () => {
           description: t('toastMessages.fallbackDescription'),
           variant: "default",
         });
-      } else if (data.service === 'gemini') {
+      } else if (data.service === 'lovable-ai') {
         // Only show success toast on first successful call
-        if (currentService !== 'gemini') {
+        if (currentService !== 'lovable-ai') {
           toast({
             title: t('toastMessages.serviceActive'),
             description: t('toastMessages.serviceDescription'),

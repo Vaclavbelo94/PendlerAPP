@@ -67,5 +67,8 @@ verify_jwt = false
 [functions.ai-translator]
 verify_jwt = false
 
+[functions.ai-translator-v2]
+verify_jwt = false
+
 [functions.daily-shift-notifications]
 verify_jwt = false
