@@ -229,11 +229,6 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
                     <Badge variant={message.role === 'user' ? 'default' : 'secondary'}>
                       {message.role === 'user' ? t('hrCommunication.yourText') : t('hrCommunication.germanTranslation')}
                     </Badge>
-                    {message.service && (
-                      <Badge variant="outline" className="text-xs">
-                        {message.service}
-                      </Badge>
-                    )}
                   </div>
                   
                   <p className="text-sm leading-relaxed">{message.content}</p>
