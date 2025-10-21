@@ -27,10 +27,10 @@ const TranslationHistory: React.FC<TranslationHistoryProps> = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <History className="h-5 w-5" />
-          <span>Historie překladů</span>
+          <span>Poslední překlad</span>
         </CardTitle>
         <CardDescription>
-          Vaše poslední překlady
+          Váš naposledy použitý překlad
         </CardDescription>
       </CardHeader>
       <CardContent>

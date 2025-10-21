@@ -81,7 +81,7 @@ export const useTranslator = () => {
         timestamp: new Date()
       };
       
-      setHistory(prev => [newHistoryItem, ...prev.slice(0, 9)]);
+      setHistory([newHistoryItem]);
       
     } catch (error) {
       console.error('Chyba při překladu:', error);

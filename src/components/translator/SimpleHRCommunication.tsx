@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,6 +22,13 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState<SpeechRecognition | null>(null);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, [messages]);
 
   const getSpeechLang = () => {
     switch (i18n.language) {
@@ -259,6 +266,7 @@ const SimpleHRCommunication: React.FC<SimpleHRCommunicationProps> = ({ onTextToS
             </Card>
           </motion.div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Empty state */}
