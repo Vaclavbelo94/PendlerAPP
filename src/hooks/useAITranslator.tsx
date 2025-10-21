@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
+import { useTranslation } from 'react-i18next';
 
 export interface ChatMessage {
   id: string;
@@ -13,6 +14,7 @@ export interface ChatMessage {
 }
 
 export const useAITranslator = () => {
+  const { t } = useTranslation('translator');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentService, setCurrentService] = useState<'gemini' | 'google-translate' | 'none'>('gemini');
@@ -66,7 +68,7 @@ export const useAITranslator = () => {
 
       if (!data) {
         console.error('❌ No data received from function');
-        throw new Error('Žádná odpověď od překladové služby');
+        throw new Error('noResponse');
       }
 
       const aiMsg: ChatMessage = {
@@ -91,16 +93,16 @@ export const useAITranslator = () => {
       // Show service status toast
       if (data.fallback) {
         toast({
-          title: "Záložní režim",
-          description: "AI není dostupná, používám Google Translate",
+          title: t('toastMessages.fallbackMode'),
+          description: t('toastMessages.fallbackDescription'),
           variant: "default",
         });
       } else if (data.service === 'gemini') {
-        // Only show success toast on first successful Gemini call
+        // Only show success toast on first successful call
         if (currentService !== 'gemini') {
           toast({
-            title: "AI aktivní",
-            description: "Používám Google Gemini AI asistenta",
+            title: t('toastMessages.serviceActive'),
+            description: t('toastMessages.serviceDescription'),
             variant: "default",
           });
         }
@@ -125,10 +127,14 @@ export const useAITranslator = () => {
         stack: error.stack
       });
       
+      const errorMessage = error.message === 'noResponse' 
+        ? t('toastMessages.noResponse')
+        : `${t('toastMessages.translationFailed')}: ${error.message || t('toastMessages.error')}`;
+      
       toast({
         variant: "destructive",
-        title: "Chyba překladače",
-        description: `Nepodařilo se přeložit text: ${error.message || 'Neznámá chyba'}`
+        title: t('toastMessages.translationError'),
+        description: errorMessage
       });
     } finally {
       setIsLoading(false);

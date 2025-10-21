@@ -56,6 +56,13 @@
     "emailSent": "E-Mail gesendet",
     "messageSentToHR": "Nachricht wurde erfolgreich an die Personalabteilung gesendet",
     "sendingError": "Fehler beim Senden",
-    "emailSendFailed": "E-Mail konnte nicht an die Personalabteilung gesendet werden"
+    "emailSendFailed": "E-Mail konnte nicht an die Personalabteilung gesendet werden",
+    "fallbackMode": "Backup-Modus",
+    "fallbackDescription": "Übersetze mit Backup-Dienst",
+    "serviceActive": "Dienst aktiv",
+    "serviceDescription": "Übersetze Text",
+    "translationError": "Übersetzungsfehler",
+    "translationFailed": "Text konnte nicht übersetzt werden",
+    "noResponse": "Keine Antwort vom Übersetzungsdienst"
   }
 }

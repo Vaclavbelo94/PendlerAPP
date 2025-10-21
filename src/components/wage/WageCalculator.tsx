@@ -160,7 +160,15 @@ const WageCalculator = () => {
                   type="number"
                   min="0"
                   value={overtimeHours}
-                  onChange={(e) => setOvertimeHours(Number(e.target.value))}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setOvertimeHours(val === '' ? 0 : Number(val));
+                  }}
+                  onFocus={(e) => {
+                    if (e.target.value === '0') {
+                      e.target.select();
+                    }
+                  }}
                   className="text-lg"
                 />
               </div>

@@ -56,6 +56,13 @@
     "emailSent": "E-mail wysłany",
     "messageSentToHR": "Wiadomość została pomyślnie wysłana do działu HR",
     "sendingError": "Błąd podczas wysyłania",
-    "emailSendFailed": "Nie udało się wysłać e-maila do działu HR"
+    "emailSendFailed": "Nie udało się wysłać e-maila do działu HR",
+    "fallbackMode": "Tryb zapasowy",
+    "fallbackDescription": "Tłumaczę za pomocą usługi zapasowej",
+    "serviceActive": "Usługa aktywna",
+    "serviceDescription": "Tłumaczę tekst",
+    "translationError": "Błąd tłumacza",
+    "translationFailed": "Nie udało się przetłumaczyć tekstu",
+    "noResponse": "Brak odpowiedzi od usługi tłumaczenia"
   }
 }

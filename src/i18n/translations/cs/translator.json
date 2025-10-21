@@ -56,6 +56,13 @@
     "emailSent": "Email odeslán",
     "messageSentToHR": "Zpráva byla úspěšně odeslána HR oddělení",
     "sendingError": "Chyba při odesílání",
-    "emailSendFailed": "Nepodařilo se odeslat email HR oddělení"
+    "emailSendFailed": "Nepodařilo se odeslat email HR oddělení",
+    "fallbackMode": "Záložní režim",
+    "fallbackDescription": "Překládám pomocí záložní služby",
+    "serviceActive": "Služba aktivní",
+    "serviceDescription": "Překládám text",
+    "translationError": "Chyba překladače",
+    "translationFailed": "Nepodařilo se přeložit text",
+    "noResponse": "Žádná odpověď od překladové služby"
   }
 }
