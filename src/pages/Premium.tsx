@@ -12,6 +12,7 @@ import PeriodSelector from '@/components/premium/PeriodSelector';
 import Layout from '@/components/layouts/Layout';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { toast } from 'sonner';
+import { getPricing } from '@/config/pricing';
 
 const Premium = () => {
   const { isPremium } = useAuth();
@@ -19,36 +20,14 @@ const Premium = () => {
   const { handleCheckout, isLoading } = useStripePayments();
   const [selectedPeriod, setSelectedPeriod] = useState<PaymentPeriod>('monthly');
 
-  const currentLanguage = i18n.language;
-
-  // Currency and pricing based on language
-  const getPricingInfo = () => {
-    switch (currentLanguage) {
-      case 'pl':
-        return {
-          currency: 'PLN',
-          monthlyPrice: 17,
-          yearlyPrice: 170,
-          savings: '17%'
-        };
-      case 'de':
-        return {
-          currency: 'EUR',
-          monthlyPrice: 4,
-          yearlyPrice: 40,
-          savings: '17%'
-        };
-      default: // cs
-        return {
-          currency: 'CZK',
-          monthlyPrice: 100,
-          yearlyPrice: 1000,
-          savings: '17%'
-        };
-    }
+  // Get pricing from centralized config
+  const pricingConfig = getPricing(i18n.language);
+  const pricing = {
+    currency: pricingConfig.currency,
+    monthlyPrice: pricingConfig.monthlyPrice,
+    yearlyPrice: pricingConfig.yearlyPrice,
+    savings: `${pricingConfig.savings}%`
   };
-
-  const pricing = getPricingInfo();
 
   const premiumFeatures = [
     {

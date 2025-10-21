@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/auth';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
+import { getPricing } from '@/config/pricing';
 
 type PaymentPeriod = 'monthly' | 'yearly';
 
@@ -21,34 +22,14 @@ const Pricing = () => {
   const [selectedPeriod, setSelectedPeriod] = useState<PaymentPeriod>('yearly');
   const [showAuthDialog, setShowAuthDialog] = useState(false);
 
-  // Pricing based on language/region
-  const getPricingInfo = () => {
-    const lang = i18n.language;
-    if (lang === 'cs') {
-      return {
-        currency: 'CZK',
-        monthly: '99',
-        yearly: '950',
-        savings: '20'
-      };
-    } else if (lang === 'de') {
-      return {
-        currency: 'EUR',
-        monthly: '4',
-        yearly: '38',
-        savings: '20'
-      };
-    } else {
-      return {
-        currency: 'PLN',
-        monthly: '23',
-        yearly: '220',
-        savings: '20'
-      };
-    }
+  // Get pricing from centralized config
+  const pricingConfig = getPricing(i18n.language);
+  const pricing = {
+    currency: pricingConfig.currency,
+    monthly: pricingConfig.monthlyPrice.toString(),
+    yearly: pricingConfig.yearlyPrice.toString(),
+    savings: pricingConfig.savings.toString()
   };
-
-  const pricing = getPricingInfo();
   const features = [
     'pricingFeature1',
     'pricingFeature2',
