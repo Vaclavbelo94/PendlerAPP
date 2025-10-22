@@ -1,8 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/hooks/auth';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Crown, Star, Check, Zap, Shield, Rocket, Loader2 } from "lucide-react";
@@ -15,7 +16,10 @@ import { toast } from 'sonner';
 import { getPricing } from '@/config/pricing';
 
 const Premium = () => {
-  const { isPremium } = useAuth();
+  const { user, isPremium, isLoading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const wasCanceled = searchParams.get('canceled') === 'true';
   const { t, i18n } = useTranslation('premium');
   const { handleCheckout, isLoading } = useStripePayments();
   const [selectedPeriod, setSelectedPeriod] = useState<PaymentPeriod>('monthly');
@@ -51,6 +55,20 @@ const Premium = () => {
       description: t('features.advancedFeatures.description')
     }
   ];
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/login', { state: { from: '/premium' } });
+    }
+  }, [user, authLoading, navigate]);
+
+  // Show toast if payment was canceled
+  useEffect(() => {
+    if (wasCanceled) {
+      toast.info(t('errors.paymentCanceled') || 'Platba byla zrušena. Můžete to zkusit znovu.');
+    }
+  }, [wasCanceled, t]);
 
   const handlePremiumActivation = async () => {
     try {

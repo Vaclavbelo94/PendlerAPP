@@ -23,9 +23,8 @@ export const useStripePayments = () => {
       }
 
       if (data?.url) {
-        console.log('Redirecting to checkout:', data.url);
-        // Open checkout in new tab instead of current window
-        window.open(data.url, '_blank');
+        console.log('Redirecting to Stripe checkout:', data.url);
+        window.location.href = data.url;
       } else {
         throw new Error('No checkout URL received');
       }

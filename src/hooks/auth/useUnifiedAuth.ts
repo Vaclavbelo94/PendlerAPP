@@ -148,6 +148,9 @@ export const useUnifiedAuth = () => {
 
   const signUp = useCallback(async (email: string, password: string, username?: string, promoCode?: string, company?: string) => {
     try {
+      // Get current language from i18n
+      const currentLanguage = document.documentElement.lang || 'cs';
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -156,7 +159,8 @@ export const useUnifiedAuth = () => {
           data: {
             username: username || email.split('@')[0],
             promo_code: promoCode,
-            company: company
+            company: company,
+            language: currentLanguage
           }
         }
       });

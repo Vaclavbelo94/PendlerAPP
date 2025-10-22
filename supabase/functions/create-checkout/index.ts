@@ -51,6 +51,10 @@ serve(async (req) => {
       logStep("No body or period provided, using default monthly");
     }
 
+    // Detect user language from metadata or default to 'cs'
+    const userLanguage = user.user_metadata?.language || 'cs';
+    logStep("User language detected", { language: userLanguage });
+
     const stripe = new Stripe(stripeKey, { apiVersion: "2023-10-16" });
     
     // Check if customer already exists
@@ -63,24 +67,32 @@ serve(async (req) => {
       logStep("No existing customer found, will create new one");
     }
 
-    const origin = req.headers.get("origin") || "http://localhost:3000";
+    const origin = req.headers.get("origin") || 
+                   req.headers.get("referer")?.split('/').slice(0, 3).join('/') ||
+                   "https://ghfjdgnnhhxhamcwjodx.supabase.co";
     
-    // Define pricing based on period
-    const pricing = {
-      monthly: {
-        amount: 9900, // 99 CZK
-        interval: "month" as const,
-        description: "Měsíční Premium předplatné"
+    // Multi-currency pricing based on user language
+    const pricingConfig = {
+      cs: {
+        currency: "czk",
+        monthly: { amount: 10000, description: "Měsíční Premium předplatné" },
+        yearly: { amount: 100000, description: "Roční Premium předplatné (17% úspora)" }
       },
-      yearly: {
-        amount: 99000, // 990 CZK
-        interval: "year" as const,
-        description: "Roční Premium předplatné (17% úspora)"
+      de: {
+        currency: "eur",
+        monthly: { amount: 400, description: "Monatliches Premium-Abonnement" },
+        yearly: { amount: 4000, description: "Jährliches Premium-Abonnement (17% Ersparnis)" }
+      },
+      pl: {
+        currency: "pln",
+        monthly: { amount: 1700, description: "Miesięczna subskrypcja Premium" },
+        yearly: { amount: 17000, description: "Roczna subskrypcja Premium (17% rabatu)" }
       }
     };
 
-    const selectedPricing = pricing[period as keyof typeof pricing] || pricing.monthly;
-    logStep("Pricing selected", { period, pricing: selectedPricing });
+    const config = pricingConfig[userLanguage as keyof typeof pricingConfig] || pricingConfig.cs;
+    const selectedPricing = period === 'yearly' ? config.yearly : config.monthly;
+    logStep("Pricing selected", { period, language: userLanguage, currency: config.currency, amount: selectedPricing.amount });
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -88,13 +100,13 @@ serve(async (req) => {
       line_items: [
         {
           price_data: {
-            currency: "czk",
+            currency: config.currency,
             product_data: { 
               name: "Premium Předplatné",
               description: selectedPricing.description
             },
             unit_amount: selectedPricing.amount,
-            recurring: { interval: selectedPricing.interval },
+            recurring: { interval: period === 'yearly' ? 'year' : 'month' },
           },
           quantity: 1,
         },
@@ -105,7 +117,9 @@ serve(async (req) => {
       metadata: {
         user_id: user.id,
         user_email: user.email,
-        period: period
+        period: period,
+        language: userLanguage,
+        currency: config.currency
       }
     });
 

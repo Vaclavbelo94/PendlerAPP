@@ -18,9 +18,9 @@ const PremiumSuccess = () => {
   const [retryCount, setRetryCount] = useState(0);
   const [isManualRefresh, setIsManualRefresh] = useState(false);
 
-  const MAX_RETRIES = 10;
-  const INITIAL_DELAY = 3000; // Start with 3 seconds
-  const RETRY_INTERVAL = 2000; // Then check every 2 seconds
+  const MAX_RETRIES = 5;
+  const INITIAL_DELAY = 1000; // Start with 1 second
+  const RETRY_INTERVAL = 1000; // Then check every 1 second
 
   const verifySubscription = async (attempt = 1, isManual = false) => {
     console.log(`Verification attempt ${attempt}, manual: ${isManual}`);

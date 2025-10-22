@@ -58,7 +58,8 @@
     "description": "Dlaczego wybrać subskrypcję Premium"
   },
   "errors": {
-    "paymentFailed": "Płatność nie powiodła się. Spróbuj ponownie."
+    "paymentFailed": "Płatność nie powiodła się. Spróbuj ponownie.",
+    "paymentCanceled": "Płatność została anulowana. Możesz spróbować ponownie."
   },
   "premiumFeatures": "Funkcje Premium",
   "upgradeToPremium": "Przejdź na Premium",

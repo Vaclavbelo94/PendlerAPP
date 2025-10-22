@@ -44,6 +44,7 @@ const ModernProfile = lazy(() => import("./pages/ModernProfile"));
 const Settings = lazy(() => import("./pages/Settings"));
 const Vehicle = lazy(() => import("./pages/Vehicle"));
 const Premium = lazy(() => import("./pages/Premium"));
+const PremiumSuccess = lazy(() => import("./pages/PremiumSuccess"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Contact = lazy(() => import("./pages/Contact"));
 const FAQ = lazy(() => import("./pages/FAQ"));
@@ -112,8 +113,9 @@ function App() {
                           <Route path="/profile" element={<ModernProfile />} />
                           <Route path="/settings" element={<Settings />} />
                            <Route path="/vehicle" element={<Vehicle />} />
-                           <Route path="/premium" element={<Premium />} />
-                           <Route path="/pricing" element={<Pricing />} />
+                            <Route path="/premium" element={<Premium />} />
+                            <Route path="/premium/success" element={<PremiumSuccess />} />
+                            <Route path="/pricing" element={<Pricing />} />
                            <Route path="/contact" element={<Contact />} />
                            <Route path="/faq" element={<FAQ />} />
                            <Route path="/terms" element={<Terms />} />

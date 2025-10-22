@@ -58,7 +58,8 @@
     "description": "Proč si vybrat Premium předplatné"
   },
   "errors": {
-    "paymentFailed": "Platba se nezdařila. Zkuste to prosím znovu."
+    "paymentFailed": "Platba se nezdařila. Zkuste to prosím znovu.",
+    "paymentCanceled": "Platba byla zrušena. Můžete to zkusit znovu."
   },
   "premiumFeatures": "Premium funkce",
   "upgradeToPremium": "Přejít na Premium",

@@ -58,7 +58,8 @@
     "description": "Warum ein Premium-Abonnement wählen"
   },
   "errors": {
-    "paymentFailed": "Zahlung fehlgeschlagen. Bitte versuchen Sie es erneut."
+    "paymentFailed": "Zahlung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "paymentCanceled": "Zahlung wurde abgebrochen. Sie können es erneut versuchen."
   },
   "premiumFeatures": "Premium-Funktionen",
   "upgradeToPremium": "Auf Premium upgraden",
