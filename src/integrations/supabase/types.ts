@@ -20,7 +20,7 @@ export type Database = {
           admin_user_id: string
           created_at: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           metadata: Json | null
           new_values: Json | null
           old_values: Json | null
@@ -33,7 +33,7 @@ export type Database = {
           admin_user_id: string
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           metadata?: Json | null
           new_values?: Json | null
           old_values?: Json | null
@@ -46,7 +46,7 @@ export type Database = {
           admin_user_id?: string
           created_at?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           metadata?: Json | null
           new_values?: Json | null
           old_values?: Json | null
@@ -395,6 +395,7 @@ export type Database = {
           created_at: string
           created_by: string | null
           description: string | null
+          google_play_offer_id: string | null
           id: string
           is_active: boolean
           max_users: number | null
@@ -413,6 +414,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          google_play_offer_id?: string | null
           id?: string
           is_active?: boolean
           max_users?: number | null
@@ -431,6 +433,7 @@ export type Database = {
           created_at?: string
           created_by?: string | null
           description?: string | null
+          google_play_offer_id?: string | null
           id?: string
           is_active?: boolean
           max_users?: number | null
@@ -1798,6 +1801,7 @@ export type Database = {
           location: string | null
           phone_number: string | null
           premium_expiry: string | null
+          subscription_source: string | null
           updated_at: string
           username: string | null
           website: string | null
@@ -1817,6 +1821,7 @@ export type Database = {
           location?: string | null
           phone_number?: string | null
           premium_expiry?: string | null
+          subscription_source?: string | null
           updated_at?: string
           username?: string | null
           website?: string | null
@@ -1836,6 +1841,7 @@ export type Database = {
           location?: string | null
           phone_number?: string | null
           premium_expiry?: string | null
+          subscription_source?: string | null
           updated_at?: string
           username?: string | null
           website?: string | null
@@ -1946,6 +1952,59 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      revenuecat_transactions: {
+        Row: {
+          created_at: string | null
+          event_type: string
+          expiration_date: string | null
+          id: string
+          is_trial: boolean | null
+          product_id: string
+          purchase_date: string
+          raw_data: Json | null
+          store: string
+          transaction_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_type: string
+          expiration_date?: string | null
+          id?: string
+          is_trial?: boolean | null
+          product_id: string
+          purchase_date: string
+          raw_data?: Json | null
+          store: string
+          transaction_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          event_type?: string
+          expiration_date?: string | null
+          id?: string
+          is_trial?: boolean | null
+          product_id?: string
+          purchase_date?: string
+          raw_data?: Json | null
+          store?: string
+          transaction_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "revenuecat_transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ride_requests: {
         Row: {
@@ -2391,7 +2450,7 @@ export type Database = {
           details: Json | null
           event_type: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           risk_level: string | null
           user_agent: string | null
           user_id: string | null
@@ -2401,7 +2460,7 @@ export type Database = {
           details?: Json | null
           event_type: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           risk_level?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -2411,7 +2470,7 @@ export type Database = {
           details?: Json | null
           event_type?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           risk_level?: string | null
           user_agent?: string | null
           user_id?: string | null
@@ -3604,14 +3663,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      cleanup_expired_notifications: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      cleanup_rate_limit_logs: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      cleanup_expired_notifications: { Args: never; Returns: undefined }
+      cleanup_rate_limit_logs: { Args: never; Returns: undefined }
       create_enhanced_notification: {
         Args: {
           p_action_url?: string
@@ -3638,20 +3691,14 @@ export type Database = {
         }
         Returns: string
       }
-      get_admin_statistics: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
+      get_admin_statistics: { Args: never; Returns: Json }
       get_company_stats: {
         Args: { target_company?: Database["public"]["Enums"]["company_type"] }
         Returns: Json
       }
-      get_current_user_admin_status: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      get_current_user_admin_status: { Args: never; Returns: boolean }
       get_current_user_company: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: Database["public"]["Enums"]["company_type"]
       }
       get_user_admin_permission: {
@@ -3679,10 +3726,7 @@ export type Database = {
         }
         Returns: boolean
       }
-      is_admin: {
-        Args: { user_id: string }
-        Returns: boolean
-      }
+      is_admin: { Args: { user_id: string }; Returns: boolean }
       log_security_event: {
         Args: {
           p_details?: Json
@@ -3705,10 +3749,7 @@ export type Database = {
         }
         Returns: string
       }
-      sync_rideshare_notifications: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      sync_rideshare_notifications: { Args: never; Returns: undefined }
       validate_promo_code_raw: {
         Args: { promo_code_input: string }
         Returns: {
