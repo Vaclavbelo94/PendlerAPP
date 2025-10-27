@@ -16,11 +16,8 @@ class RevenueCatService {
     try {
       await Purchases.setLogLevel({ level: LOG_LEVEL.DEBUG });
       
-      // Initialize with your RevenueCat API key
-      // TODO: Replace with actual API key from RevenueCat dashboard
-      const apiKey = platform === 'ios' 
-        ? 'appl_YOUR_IOS_KEY' 
-        : 'goog_YOUR_ANDROID_KEY';
+      // Initialize with RevenueCat API key
+      const apiKey = 'test_xtvHHCShKKLbkrhrZDenbjvCYGq';
       
       await Purchases.configure({ apiKey });
       this.initialized = true;
