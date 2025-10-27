@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { Check, Crown, Star } from 'lucide-react';
+import { Capacitor } from '@capacitor/core';
 import Layout from '@/components/layouts/Layout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import { useAuth } from '@/hooks/auth';
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { NavbarRightContent } from '@/components/layouts/NavbarPatch';
 import { getPricing } from '@/config/pricing';
+import { PlayBillingPurchase } from '@/components/premium/PlayBillingPurchase';
 
 type PaymentPeriod = 'monthly' | 'yearly';
 
@@ -74,6 +76,8 @@ const Pricing = () => {
   };
 
   const premiumStatus = getPremiumStatusInfo();
+  const platform = Capacitor.getPlatform();
+  const isNative = platform === 'android' || platform === 'ios';
 
   return (
     <>
@@ -84,6 +88,16 @@ const Pricing = () => {
       
       <Layout navbarRightContent={<NavbarRightContent />}>
         <div className="container mx-auto px-4 py-8 max-w-4xl">
+          {/* Android/iOS Native Billing */}
+          {isNative && user && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8"
+            >
+              <PlayBillingPurchase />
+            </motion.div>
+          )}
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}

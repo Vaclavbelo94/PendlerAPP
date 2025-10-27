@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { User, Session } from '@supabase/supabase-js';
+import { Capacitor } from '@capacitor/core';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { AuthContextType, UnifiedUser, UserRole } from '@/types/auth';
 import { roleManager, AuthData } from '@/services/RoleManager';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { revenueCatService } from '@/services/revenueCat';
 
 interface OptimizedAuthState {
   user: User | null;
@@ -74,6 +76,16 @@ export const useOptimizedAuth = (): AuthContextType => {
               setTimeout(async () => {
                 if (!isMounted) return;
                 await loadUserData(user);
+                
+                // Sync RevenueCat on native platforms
+                const platform = Capacitor.getPlatform();
+                if (platform === 'android' || platform === 'ios') {
+                  try {
+                    await revenueCatService.loginUser(user.id);
+                  } catch (error) {
+                    console.error('RevenueCat login failed:', error);
+                  }
+                }
                 
                 // Handle admin redirect to mobile version
                 handleAdminRedirect(user);
@@ -266,6 +278,17 @@ export const useOptimizedAuth = (): AuthContextType => {
   const signOut = useCallback(async () => {
     try {
       roleManager.clearCache();
+      
+      // Logout from RevenueCat on native platforms
+      const platform = Capacitor.getPlatform();
+      if (platform === 'android' || platform === 'ios') {
+        try {
+          await revenueCatService.logoutUser();
+        } catch (error) {
+          console.error('RevenueCat logout failed:', error);
+        }
+      }
+      
       await supabase.auth.signOut();
       
       // Clear local state
