@@ -20,8 +20,8 @@ const VocabularySettings: React.FC<VocabularySettingsProps> = ({ dailyGoal, onSa
   const [newDailyGoal, setNewDailyGoal] = useState(dailyGoal);
   const [useSpacedRepetition, setUseSpacedRepetition] = useState(true);
   
-  // Check if user has access to spaced repetition premium feature
-  const { isLoading, canAccess, isPremiumFeature } = usePremiumCheck("language");
+  // Check if user has premium access
+  const { isPremium, isLoading } = usePremiumCheck();
 
   // Update state when dailyGoal prop changes
   useEffect(() => {
@@ -39,7 +39,7 @@ const VocabularySettings: React.FC<VocabularySettingsProps> = ({ dailyGoal, onSa
       return <div className="py-1">Načítání...</div>;
     }
 
-    if (isPremiumFeature && !canAccess) {
+    if (!isPremium) {
       return <PremiumFeatureAlert 
         featureName="Inteligentní opakování" 
         description="Chytré plánování opakování slovíček podle vaší úspěšnosti."
